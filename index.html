@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -212,6 +212,30 @@
     </div>
 
     <script>
+        // Script de Fuerza Bruta para Autoplay en Móviles
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.querySelector('.video-background');
+            if (!video) return;
+
+            const iniciarVideo = () => {
+                video.muted = true;
+                video.play()
+                    .then(() => {
+                        console.log("✅ Video de fondo iniciado correctamente.");
+                        document.removeEventListener('click', iniciarVideo);
+                        document.removeEventListener('touchstart', iniciarVideo);
+                    })
+                    .catch(error => {
+                        console.error("❌ Autoplay bloqueado por el navegador:", error.message);
+                    });
+            };
+
+            video.currentTime = 0;
+            iniciarVideo();
+            document.addEventListener('click', iniciarVideo);
+            document.addEventListener('touchstart', iniciarVideo);
+        });
+
         const launch = new Date("June 15, 2026 00:00:00").getTime();
         setInterval(() => {
             const now = new Date().getTime();
