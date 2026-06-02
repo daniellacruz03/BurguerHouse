@@ -1,5 +1,5 @@
 /**
- * Burguer House — lógica de menú, carrito, horarios y geolocalización.
+ * burger House — lógica de menú, carrito, horarios y geolocalización.
  * Mantiene el mismo comportamiento que el script inline original.
  */
 (function () {
@@ -18,10 +18,10 @@
         // REEMPLAZA ESTO CON TUS CREDENCIALES DE FIREBASE CONSOLE
         FIREBASE_CONFIG: {
             apiKey: "AIzaSyCOIK3Xc_IzKvDc1hm05aAdLSt0KE8f9P8",
-            authDomain: "burguer-house-17e76.firebaseapp.com",
-            databaseURL: "https://burguer-house-17e76-default-rtdb.firebaseio.com",
-            projectId: "burguer-house-17e76",
-            storageBucket: "burguer-house-17e76.firebasestorage.app",
+            authDomain: "burger-house-17e76.firebaseapp.com",
+            databaseURL: "https://burger-house-17e76-default-rtdb.firebaseio.com",
+            projectId: "burger-house-17e76",
+            storageBucket: "burger-house-17e76.firebasestorage.app",
             messagingSenderId: "641974770181",
             appId: "1:641974770181:web:5e348815b735d26cb7da6c"
         }
