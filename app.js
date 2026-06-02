@@ -241,6 +241,14 @@
                 );
                 section.classList.toggle('hidden-search', !hasVisible);
             });
+
+            // Siempre ocultar bebidas cuando estamos en categoría "Todos"
+            if (activeCategory === 'all') {
+                const bebidasSection = document.getElementById('bebidas');
+                if (bebidasSection) {
+                    bebidasSection.classList.add('hidden-search');
+                }
+            }
         });
 
         const categoryBtns = document.querySelectorAll('.category-btn');
@@ -259,10 +267,15 @@
 
                 document.querySelectorAll('#main-menu section').forEach((section) => {
                     if (category === 'all' || section.id === category) {
-                        section.classList.remove('hidden-search');
-                        section
-                            .querySelectorAll('.menu-item')
-                            .forEach((item) => item.classList.remove('hidden-search'));
+                        // Excluir bebidas de la categoría "Todos"
+                        if (category === 'all' && section.id === 'bebidas') {
+                            section.classList.add('hidden-search');
+                        } else {
+                            section.classList.remove('hidden-search');
+                            section
+                                .querySelectorAll('.menu-item')
+                                .forEach((item) => item.classList.remove('hidden-search'));
+                        }
                     } else {
                         section.classList.add('hidden-search');
                     }
@@ -1030,16 +1043,16 @@
 
             const url = `https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
 
-            // --- REGISTRO DE PEDIDO (FIREBASE + SHEETDB) ---
+            // --- REGISTRO DE PEDIDO (FIREBASE) ---
             const registrarOrden = async () => {
                 const fechaActual = new Date().toLocaleString();
-                const productosResumen = carrito.map(item => `${item.cantidad}x ${item.nombre}`).join(', ');
 
-                // 1. Guardar en Firebase Realtime Database
+                // Guardar en Firebase Realtime Database con push() para ID único automático
                 if (typeof firebase !== 'undefined' && firebase.apps.length) {
                     const db = firebase.database();
                     db.ref('pedidos').push({
-                        cliente: { nombre, metodo: currentDeliveryMethod, notas_referencia: notas, ubicacion_maps: mapsLink },
+                        cliente: nombre,
+                        metodo: currentDeliveryMethod,
                         productos: carrito.map(item => ({
                             nombre: item.nombre,
                             cantidad: item.cantidad,
@@ -1047,32 +1060,13 @@
                             subtotal: item.subtotal,
                             detalles_personalizacion: item.extras.map(ex => ({ nombre: ex.nombre, cantidad: ex.qty, opcion: ex.val }))
                         })),
-                        total_usd: totalPedido,
+                        total: totalPedido,
                         fecha: fechaActual,
+                        notas: notas || "Sin notas adicionales",
+                        ubicacion: mapsLink || "N/A",
                         timestamp: firebase.database.ServerValue.TIMESTAMP,
-                        estado: "Pendiente"
+                        estado: "pendiente"
                     });
-                }
-
-                // 2. Guardar en Google Sheets vía SheetDB
-                try {
-                    await fetch('https://sheetdb.io/api/v1/qyjuou0mbnjhc', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            data: [{
-                                fecha: fechaActual,
-                                cliente: nombre,
-                                metodo: currentDeliveryMethod,
-                                productos: productosResumen,
-                                total: totalPedido.toFixed(2),
-                                notas: notas || "Sin notas adicionales",
-                                ubicacion: mapsLink || "N/A"
-                            }]
-                        })
-                    });
-                } catch (err) {
-                    console.error('Error al guardar en SheetDB:', err);
                 }
             };
 

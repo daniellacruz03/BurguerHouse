@@ -463,6 +463,13 @@ h1, h2, h3, h4, h5, h6 {
     touch-action: manipulation;
 }
 
+/* Eliminar margin-bottom en pantallas con grid responsivo */
+@media (min-width: 768px) {
+    .menu-item {
+        margin-bottom: 0;
+    }
+}
+
 @media (hover: hover) {
     .menu-item:hover {
         transform: translateY(-8px) scale(1.02);
