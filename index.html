@@ -1,254 +1,2665 @@
-<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Burguer House - Próximamente</title>
+    <title>Burger House Merida</title>
+    <!-- Favicon e Icono de Aplicación -->
     <link rel="icon" href="logobh.webp" type="image/webp">
+    <link rel="apple-touch-icon" href="logobh.webp">
+    <!-- Precarga del logo para evitar que desaparezca durante la carga -->
     
-    <!-- Fuentes sincronizadas con el App ADN -->
+    <!-- Meta Tags para Redes Sociales (Open Graph) -->
+    <meta property="og:title" content="Burger House | Menú Digital">
+    <meta property="og:description" content="Explora nuestras hamburguesas artesanales y haz tu pedido directamente por WhatsApp.">
+    <meta property="og:image" content="logobh.webp">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#080808">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YBR4MCPDXQ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YBR4MCPDXQ');
+    </script>
+
+    <link rel="preload" href="logobh.webp" as="image">
+    <!-- Optimización de fuentes: Preconectar y cargar vía link es más rápido que @import -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;800&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="style.css">
     <style>
-        :root {
-            --primary-color: #e60000;
-            --bg-color: #080808;
-            --text-main: #ffffff;
-            --text-muted: #aaaaaa;
-            --font-heading: 'Montserrat', sans-serif;
-            --font-body: 'Montserrat', sans-serif;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
+        * {
+            -webkit-tap-highlight-color: transparent;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+        *::-webkit-scrollbar {
+            display: none;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: var(--font-body);
-            min-height: 100vh;
+            background: linear-gradient(to bottom, #1a0000 0%, #080808 100%) !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-attachment: fixed !important;
+            height: 100% !important;
+            min-height: 100vh !important;
+            min-height: 100dvh !important;
+            overflow-x: hidden !important;
+            color: #ffffff !important;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        section {
+            scroll-margin-top: 30px;
+            margin-top: 0 !important;
+            position: relative;
+            clear: both;
+        }
+
+        .contenedor-logo {
+            position: fixed;
+            inset: 0;
+            z-index: calc(var(--layer-c3) + 500);
             display: flex;
             align-items: center;
             justify-content: center;
+            background: linear-gradient(to bottom, #1a0000 0%, #080808 100%);
             overflow: hidden;
-            padding: 20px;
+            transition: opacity 0.9s ease, filter 0.9s ease;
+        }
+
+        .contenedor-logo::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle at 20% 18%, rgba(255, 255, 255, 0.07) 0 1px, transparent 1px),
+                radial-gradient(circle at 80% 42%, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px);
+            background-size: 6px 6px, 7px 7px;
+            opacity: 0.2;
+        }
+
+        .preloader-inner {
             position: relative;
-        }
-
-        /* Estilo para el video de fondo que reemplaza la imagen anterior */
-        .video-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: blur(6px) brightness(0.6);
-            z-index: -2;
-        }
-
-        /* Capa 2: Overlay de misterio y viñeta hacia negro absoluto */
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, rgba(0, 0, 0, 0.2) 0%, rgba(8, 8, 8, 0.6) 60%, rgba(0, 0, 0, 0.98) 100%);
-            z-index: -1;
-        }
-
-        /* Contenedor compacto estilo App (Max 400px) */
-        .app-shell {
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
+            z-index: 2;
+            width: min(82vw, 360px);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 25px;
-            padding: 40px 10px;
+            gap: 18px;
         }
 
-        /* Tarjeta de Texto con Glassmorphism */
-        .text-card {
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px; /* Sincronizado con bloques del contador */
-            padding: 20px 15px;
-            width: 95%;
-            max-width: 350px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Logo sutil (ADN Navigation) */
-        .logo-header {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            filter: drop-shadow(0 0 10px rgba(230, 0, 0, 0.3));
-            animation: latido 3s ease-in-out infinite;
-        }
-
-        @keyframes latido {
-            0%, 100% { transform: scale(0.95); opacity: 0.8; }
-            50% { transform: scale(1); opacity: 1; }
-        }
-
-        .text-card h1 {
-            font-family: var(--font-heading);
-            font-size: 2.6rem;
-            font-weight: 800;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            line-height: 1;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            font-weight: 500;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-        }
-
-        /* Contador Minimalista y Compacto */
-        .countdown-container {
+        .logo-glow-wrap {
+            position: relative;
+            width: 190px;
+            height: 190px;
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            place-items: center;
+        }
+
+        .logo-animado {
+            width: 165px !important;
+            max-width: 165px !important;
+            border-radius: 50%;
+            position: relative;
+            z-index: 1;
+            will-change: transform;
+        }
+
+        .preloader-bar {
+            width: 100%;
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .preloader-progress {
+            width: 0%;
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #8b0000 0%, #ff0000 55%, #ff6a00 100%);
+            box-shadow: 0 0 16px rgba(255, 106, 0, 0.45);
+            transition: width 0.18s ease;
+            position: relative;
+        }
+
+        .preloader-progress::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: -3px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 214, 130, 0.95) 0%, rgba(255, 214, 130, 0) 72%);
+            filter: blur(0.5px);
+        }
+
+        .preloader-sparks span {
+            position: absolute;
+            bottom: -2px;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: #ffb347;
+            opacity: 0;
+            animation: spark-rise 1.7s linear infinite;
+        }
+
+        .preloader-sparks span:nth-child(1) { left: 18%; animation-delay: 0s; }
+        .preloader-sparks span:nth-child(2) { left: 37%; animation-delay: 0.35s; }
+        .preloader-sparks span:nth-child(3) { left: 57%; animation-delay: 0.8s; }
+        .preloader-sparks span:nth-child(4) { left: 73%; animation-delay: 1.1s; }
+        .preloader-sparks span:nth-child(5) { left: 88%; animation-delay: 1.35s; }
+
+        .preloader-caption {
+            font-size: 0.72rem;
+            letter-spacing: 2.8px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        .contenedor-logo.ocultar {
+            opacity: 0;
+            filter: blur(2px);
+            visibility: hidden;
+        }
+        .closed-store-content {
+            background-color: #121212 !important;
+            color: #ffffff !important;
+            border: 1px solid #333;
+            border-radius: 40px !important;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        }
+        .closed-store-content .modal-title {
+            color: #ff0000 !important;
+            text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
+        }
+        .closed-store-content .modal-description {
+            color: #cccccc !important;
+        }
+        .closed-store-content .btn-add-order {
+            background-color: #ff0000 !important;
+        }
+
+        .warning-box {
+            background-color: #f7941d !important;
+            border-radius: 12px !important;
+            padding: 8px 15px !important;
+            margin: 10px auto !important;
+            max-width: 280px !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .warning-icon { display: none !important; }
+        .warning-text {
+            font-size: 0.85rem !important;
+            margin: 0 !important;
+            color: #fff !important;
+            font-weight: 600;
+            text-align: center;
+        }
+        .btn-variation-helper {
+            background-color: #ffc107 !important;
+            color: #000 !important;
+            font-weight: 900 !important;
+            border-radius: 50px !important;
+            border: none !important;
+            padding: 12px 20px !important;
+            font-size: 0.8rem !important;
+            width: 100% !important;
+            margin: 10px auto 0 !important;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4) !important;
+            cursor: pointer;
+            display: block;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+        }
+        .pulse-animation {
+            animation: pulse-latido 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse-latido {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        #cart-floating-btn {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 58px !important;
+            height: 58px !important;
+            border-radius: 50% !important;
+            transition: transform 0.22s ease, filter 0.22s ease !important;
+        }
+
+        #cart-floating-btn:hover {
+            transform: scale(1.1);
+            filter: brightness(1.06);
+        }
+
+        .icono-moto {
+            width: 30px !important;
+            height: auto !important;
+            background-color: transparent !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            filter: brightness(0) invert(1) drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+        }
+
+        #cart-floating-btn .icono-moto {
+            filter: brightness(0) invert(1) !important;
+        }
+
+        #cart-badge {
+            position: absolute !important;
+            top: -2px !important;
+            right: -2px !important;
+            z-index: 10 !important;
+            width: 22px !important;
+            height: 22px !important;
+            border-radius: 50% !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.9) !important;
+            background: rgba(0, 0, 0, 0.9) !important;
+            color: #ffffff !important;
+            font-size: 0.72rem !important;
+            font-weight: 700 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .background-decor {
+            z-index: 10 !important; /* C1 */
+            pointer-events: auto;
+        }
+
+        .corner-item {
+            z-index: 10; /* C1 */
+            pointer-events: auto;
+            opacity: 0.9;
+            filter: drop-shadow(0 10px 18px rgba(255, 140, 0, 0.5));
+            animation: floating 11s ease-in-out infinite !important;
+            transition: transform 0.35s ease, opacity 0.35s ease, filter 0.35s ease;
+            will-change: transform;
+        }
+
+        .papa-top-left,
+        .papa-top-right,
+        .burger-bottom-left,
+        .plato-bottom-right {
+            filter: blur(1.5px) drop-shadow(0 10px 20px rgba(255, 140, 0, 0.45));
+        }
+
+        .nuggets-bottom-left {
+            filter: drop-shadow(0 10px 20px rgba(255, 140, 0, 0.55));
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-13px); }
+        }
+
+        .papa-top-right { animation-delay: -2.5s !important; }
+        .burger-bottom-left { animation-delay: -4s !important; }
+        .nuggets-bottom-left { animation-delay: -1.5s !important; }
+        .plato-bottom-right { animation-delay: -3.2s !important; }
+
+        .corner-item:hover {
+            transform: translateY(-6px) scale(1.02);
+            opacity: 1;
+            filter: drop-shadow(0 12px 22px rgba(255, 175, 70, 0.62));
+        }
+
+        .menu-container {
+            background: 
+                radial-gradient(circle at 0% 0%, rgba(255, 0, 0, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 100% 0%, rgba(255, 0, 0, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 0% 100%, rgba(255, 0, 0, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(255, 0, 0, 0.1) 0%, transparent 40%),
+                rgba(10, 10, 10, 0.98);
+            padding: 0 15px 0 !important;
+            border-radius: 50px 50px 0 0 !important;
+            backdrop-filter: blur(8px);
+            margin: 0 auto;
+            max-width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            opacity: 0;
+            transform: translateY(40px);
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+            position: relative;
+            z-index: var(--layer-c2);
+            filter: blur(8px);
+            min-height: 100dvh !important;
+        }
+
+        .sticky-nav {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            z-index: calc(var(--layer-c2) + 20) !important;
+            background: rgba(8, 8, 8, 0.95) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            padding: calc(10px + env(safe-area-inset-top)) 15px 5px !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+            width: 100% !important;
+            max-width: 100vw !important;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .sticky-nav.mostrar-menu {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 3px;
+            width: 100%;
+            max-width: 100%;
+            padding: 0 15px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .menu-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(255, 0, 0, 0) 0%, rgba(255, 0, 0, 0.6) 50%, rgba(255, 0, 0, 0) 100%);
+            pointer-events: none;
+        }
+
+        .menu-container::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: linear-gradient(180deg, rgba(255, 0, 0, 0.12) 0%, rgba(255, 0, 0, 0) 100%);
+            pointer-events: none;
+        }
+
+        .menu-container.mostrar-menu {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+
+        @keyframes grill-glow {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        /* Estilo de Tarjeta Global (PC y Móvil) */
+        section:not(#bebidas) .menu-item {
+            height: auto; /* Altura automática para acomodar imagen + texto */
+            padding: 0 !important;
+            margin-bottom: 8px !important;
+            border-radius: 30px !important;
+            overflow: hidden !important;
+            display: flex !important;
+            flex-direction: column !important;
+            position: relative !important;
+            border: none !important;
+            box-shadow: none !important;
+            transition: transform 0.3s ease;
+            background: transparent !important;
+        }
+
+
+        section:not(#bebidas) .item-img-bg {
+            display: block !important;
+            position: relative; /* Ya no es absoluto, ocupa su propio espacio */
+            width: 100%;
+            height: auto; /* Altura automática para no recortar la foto */
+            object-fit: contain; /* Muestra la imagen completa sin recortes */
+            object-position: center; 
+            z-index: 1; /* Mantener z-index si hay otros elementos */
+        }
+
+        /* Ajustes de encuadre para que las fotos se vean más arriba */
+        .ajuste-subir,
+        .ajuste-baby,
+        .ajuste-crispy {
+            object-position: center !important; /* Reset de posición para evitar cortes forzados */
+        }
+
+        .ajuste-alejar {
+            object-fit: cover !important;
+        }
+
+        .menu-item::after {
+            display: none;
+        }
+
+        .menu-item:hover {
+            transform: translateX(5px);
+        }
+
+        .item-name {
+            color: #ffffff !important; /* Explicitly white as requested */
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.5) !important;
+            font-size: 1.1rem !important;
+            font-weight: 800 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            font-family: 'Montserrat', sans-serif !important;
+        }
+
+        .seccion-titulo {
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.9);
+        }
+
+        .seccion-titulo {
+            color: #ffffff !important;
+            margin-top: 10px;
+            margin-bottom: 12px;
+        }
+
+        .menu-item .item-name {
+            transition: color 0.28s ease;
+        }
+
+        .menu-item:hover .item-name {
+            color: inherit !important;
+        }
+
+        .badge-best,
+        .badge-new {
+            color: #ffffff !important;
+            border: none !important;
+            border-radius: 999px !important;
+            padding: 2px 8px !important;
+            font-size: 0.65rem !important;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+            font-weight: 700 !important;
+            box-shadow: none !important;
+        }
+
+        .badge-best {
+            background: #28a745 !important;
+        }
+
+        .badge-new {
+            background: #ff0000 !important;
+        }
+
+        /* Posicionamiento de Info y Precio en Tarjeta */
+        /* Eliminamos los display: none !important para que se muestren */
+        section:not(#bebidas) .item-info {
+            display: flex !important; /* Habilitar display */
+            flex-direction: column;
+            align-items: flex-start;
+            flex: 1; /* Ocupa el espacio disponible */
+            padding-right: 10px; /* Espacio entre info y precio */
+            /* Eliminamos estilos de posicionamiento absoluto antiguos */
+            position: static !important;
+            z-index: auto !important;
+            padding: 0 !important; /* Resetear padding si venía de otro lado */
+            width: auto !important; /* Resetear width */
+        }
+
+        section:not(#bebidas) .item-price-wrapper {
+            display: flex !important; /* Habilitar display */
+            flex-direction: column;
+            align-items: flex-end; /* Alinear precio a la derecha */
+            flex-shrink: 0; /* Evitar que se encoja */
+            /* Eliminamos estilos de posicionamiento absoluto antiguos */
+            position: static !important;
+            z-index: auto !important;
+            margin: 0 !important; /* Resetear margen */
+            min-width: auto !important; /* Resetear min-width */
+            padding: 0 !important; /* Resetear padding */
+            background: transparent !important; /* Asegurar fondo transparente */
+            border: none !important; /* Asegurar sin borde */
+            box-shadow: none !important; /* Asegurar sin sombra */
+        }
+
+        /* Nuevo contenedor para la información dividida */
+        .item-info-split {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 12px 15px 14px; /* Espaciado más compacto */
+            width: 100%;
+        }
+
+        /* Grid para PC */
+        @media (min-width: 769px) {
+            .menu-container {
+                height: 90vh; /* El contenedor ocupa casi toda la pantalla */
+                overflow-y: auto; /* Permite el scroll solo dentro del menú */
+                position: sticky; /* Se queda pegado a la pantalla */
+                top: 5vh; /* Se separa un poco del borde superior */
+                padding-bottom: 0 !important; 
+            }
+            section:not(#bebidas) {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+            .seccion-titulo { grid-column: span 2; }
+        }
+
+        .item-price {
+            color: #ffffff !important; /* Precio en blanco como solicitaste */
+            font-size: 1.4rem !important; 
+            font-weight: bold !important; /* Más grueso */
+            line-height: 1; /* Ajustar línea */
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.8); /* Sombra para que resalte en blanco */
+            /* Resetear otros estilos si vienen de otro lado */
+            background: transparent !important;
+            padding: 0 !important;
+            border: none !important;
+            border-radius: 0 !important;
+        }
+
+        .item-ref {
+            color: #aaa !important; /* Gris claro para la referencia */
+            font-size: 0.7rem !important; /* Más pequeño */
+            font-weight: 600 !important; /* Menos negrita que el precio */
+            letter-spacing: 0.3px;
+            opacity: 1; /* Asegurar visibilidad */
+            margin-top: 2px; /* Pequeño margen superior */
+            line-height: 1;
+            text-align: right; /* Alinear a la derecha */
+            align-self: flex-end; /* Asegurar alineación con el precio */
+            background: transparent !important;
+            font-size: 0.64rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.4px;
+            opacity: 0.95;
+            margin-top: 3px;
+            line-height: 1;
+            text-align: center;
+            align-self: center;
+            padding: 0;
+            border: none;
+            border-radius: 0;
+        }
+
+        .menu-item:hover .item-price-wrapper {
+            transform: none; /* Desactivar transform en hover para el wrapper */
+            filter: none; /* Desactivar filtro en hover para el wrapper */
+        }
+
+        .item-desc {
+            display: block !important; /* Mostrar la descripción */
+            color: #aaa; /* Color gris claro */
+            font-size: 0.8rem;
+            margin-top: 2px;
+            font-weight: 500;
+            line-height: 1.6;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        #cart-sidebar {
+            background: #0a0a0a !important;
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            border-radius: 0 !important;
+            z-index: var(--layer-c3) !important;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            overflow-y: auto !important;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+
+        #cart-sidebar.cart-closed {
+            transform: translateX(100vw) !important;
+        }
+
+        .cart-header {
+            position: relative;
+            padding: 12px 20px !important;
+            border-bottom: none !important;
+        }
+
+        .cart-header::after {
+            content: "";
+            position: absolute;
+            left: 16px;
+            right: 16px;
+            bottom: 0;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(255, 0, 0, 0) 0%, rgba(255, 90, 70, 0.65) 50%, rgba(255, 0, 0, 0) 100%);
+        }
+
+        #close-cart {
+            background: #ff1f1f !important;
+            color: #ffffff !important;
+            box-shadow: 0 6px 14px rgba(255, 31, 31, 0.35);
+        }
+
+        #btn-go-checkout {
+            background: linear-gradient(180deg, #8b0000 0%, #ff0000 100%) !important;
+            border: none !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.3) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        #cart-grand-total {
+            color: #ffffff !important;
+            font-weight: 900 !important;
+            font-size: 1.75rem !important;
+            text-shadow: 0 2px 12px rgba(255, 255, 255, 0.18);
+        }
+
+        #checkout-view {
+            padding: 24px 20px calc(60px + env(safe-area-inset-bottom)) !important;
+            display: flex;
+            flex-direction: column;
+            max-height: none !important;
+            flex: 1 !important;
+        }
+
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
             width: 100%;
-            margin: 10px 0;
         }
 
-        .count-block {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px; /* ADN: Bordes limpios */
-            padding: 10px 5px;
+        .back-icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
         }
 
-        .count-number {
-            display: block;
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 1.4rem;
-            color: var(--primary-color);
-            line-height: 1;
+        .cart-item-row {
+            padding: 12px 16px !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
         }
 
-        .count-label {
-            font-size: 0.55rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            text-transform: uppercase;
+        .cart-item-info h4 {
+            color: #f3f3f3 !important;
+            margin: 0 0 4px 0 !important;
+        }
+
+        .cart-item-extras {
+            color: #d8b77a !important;
+        }
+
+        .modal {
+            background: rgba(0, 0, 0, 0.8) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            /* Estilos para fade-in suave */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+            display: none !important;
+            pointer-events: none;
+            z-index: var(--layer-c3);
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+        }
+
+        .modal.active {
+            display: flex !important;
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: rgba(15, 15, 15, 0.9) !important;
+            border-radius: 30px !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.55) !important;
+            overflow: hidden;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 0 !important;
+            will-change: transform;
+            transform: translateZ(0);
+        }
+
+        .modal-title {
+            color: #ffffff !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.3px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+            margin-bottom: 12px !important;
+        }
+
+        .modal-description {
+            color: #f0f0f0 !important;
+            line-height: 1.55;
+            margin-bottom: 12px !important;
+        }
+
+        /* Estilos antiguos de búsqueda (mantenidos para compatibilidad, pero sobrescritos por .search-container-full) */
+        .search-container {
+            flex: 1;
+            max-width: 200px;
+            position: relative;
+            margin-bottom: 0;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-header-logo {
+            background: transparent !important;
+            backdrop-filter: none !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .search-input {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 50px !important;
+            padding: 10px 15px 10px 38px !important;
+            width: 100%;
+            backdrop-filter: none !important;
+            box-shadow: none !important;
+        }
+
+        .search-input:focus {
+            border-color: rgba(255, 0, 0, 0.5) !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.15) !important;
+        }
+
+        #main-menu .menu-item.hidden-search,
+        #main-menu section.hidden-search {
+            display: none !important;
+        }
+
+        .modal-main-qty {
+            margin: 0 !important;
+        }
+
+        .modal-price {
+            display: inline-flex !important;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: transparent !important;
+            color: #ffffff !important;
+            padding: 0 !important;
+            border: none !important;
+            font-family: 'Montserrat', sans-serif !important;
+            box-shadow: none !important;
+            min-width: auto !important;
+            font-size: 2.1rem !important;
+            font-weight: 800 !important;
+            margin: 15px auto 25px !important;
+            line-height: 1 !important;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8) !important;
+        }
+
+        .modal-ref {
+            font-size: 0.8rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.5px;
             margin-top: 4px;
+            opacity: 0.95;
         }
 
-        /* Botón de Acción Premium (ADN index.html) */
-        .btn-action {
-            width: 85%;
-            background: linear-gradient(180deg, #8b0000 0%, #ff0000 100%);
-            color: white;
+        .modal-extras-container {
+            margin-top: 5px !important;
+        }
+
+        .modal .btn-add-order {
+            background: linear-gradient(180deg, #8b0000 0%, #ff0000 100%) !important;
+            border: none !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.3) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+            color: #ffffff !important;
+        }
+
+        .modal .btn-back-to-cart {
+            background: linear-gradient(180deg, #c65b00 0%, #ff8a00 100%) !important;
+            border: none !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.28) !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
+        }
+
+        .modal .btn-large-cancel {
+            background: transparent !important;
+            border: 1px solid rgba(255, 255, 255, 0.18) !important;
+            color: rgba(255, 255, 255, 0.78) !important;
+            box-shadow: none !important;
+        }
+
+        .modal .btn-large-cancel:hover {
+            color: #ffffff !important;
+            border-color: rgba(255, 255, 255, 0.42) !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .checkout-title {
+            color: #ffffff !important;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 1.1rem !important;
+        }
+
+        #btn-back-to-cart {
+            background: linear-gradient(180deg, #8b0000 0%, #ff0000 100%) !important;
+            border: none !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.3) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+            color: #fff !important;
+            padding: 12px 20px !important;
+            border-radius: 12px !important;
+            font-size: 1rem !important;
+            font-weight: 700 !important;
+            margin-bottom: 20px !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            width: 100% !important;
+            font-family: inherit;
+        }
+
+        /* Selector de Método de Entrega Estilo Farmatodo */
+        .selector-metodo {
+            display: flex;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 4px;
+            margin-bottom: 15px;
+        }
+        .metodo-btn {
+            flex: 1;
             border: none;
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 14px;
-            border-radius: 30px; /* ADN: Redondeado App */
-            font-family: var(--font-heading);
-            font-size: 0.95rem;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.5);
+            padding: 12px;
+            border-radius: 11px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .metodo-btn.active {
+            background: #B20000;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(178, 0, 0, 0.3);
+        }
+
+        .checkout-form input,
+        .checkout-form textarea {
+            background-color: rgba(0, 0, 0, 0.3) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #ffffff !important;
+            border-radius: 14px !important;
+            padding: 14px 18px !important;
+            margin-bottom: 8px !important;
+            width: 100%;
+            outline: none;
+            font-size: 16px !important; /* Evita zoom automático en iOS */
+            font-family: inherit;
+            -webkit-appearance: none;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .checkout-form input:focus,
+        .checkout-form textarea:focus {
+            border-color: #e60000 !important;
+            background-color: rgba(230, 0, 0, 0.05) !important;
+            box-shadow: 0 0 12px rgba(230, 0, 0, 0.25), inset 0 2px 4px rgba(0,0,0,0.2) !important;
+        }
+
+        .checkout-form textarea {
+            resize: none;
+            min-height: 100px;
+        }
+
+        /* Estilos para el botón de geolocalización */
+        .input-with-location {
+            position: relative;
+            width: 100%;
+        }
+        
+        #pickup-location-info {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            color: #ddd;
+        }
+        
+        .btn-maps-pickup {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 0.8rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            cursor: pointer;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-            transition: transform 0.2s ease;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .btn-maps-pickup:active {
+            transform: scale(0.98);
+            background: rgba(255, 255, 255, 0.1);
         }
 
-        .btn-action:active {
-            transform: scale(0.96);
+        .input-with-location input {
+            padding-right: 18px !important;
         }
+
+        #btn-get-location {
+            position: relative;
+            background: var(--primary-color) !important;
+            border: none !important;
+            border-radius: 50px !important;
+            color: #ffffff !important;
+            height: auto !important;
+            padding: 10px 30px !important;
+            grid-column: span 2 !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 12px !important;
+            cursor: pointer;
+            font-size: 0.75rem !important;
+            font-weight: 700 !important;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(230, 0, 0, 0.3) !important;
+        }
+
+        #btn-get-location svg {
+            stroke: #ffffff;
+            width: 24px;
+            height: 24px;
+        }
+
+        #btn-get-location:active { transform: scale(0.96); }
+        #btn-get-location:hover {
+            filter: brightness(1.1);
+        }
+        #btn-get-location.loading { opacity: 0.6; pointer-events: none; }
+
+        /* Animación de éxito para el input de ubicación */
+        .location-success {
+            border-color: #28a745 !important;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.4) !important;
+            background: rgba(40, 167, 69, 0.1) !important;
+            transition: all 0.5s ease;
+        }
+
+
+        .btn-checkout-final {
+            background: linear-gradient(180deg, #1b5e20 0%, #28a745 100%) !important;
+            border: none !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.3) !important;
+            color: #fff !important;
+            font-weight: 700 !important;
+            padding: 14px !important;
+            border-radius: 12px !important;
+            margin-top: 24px !important;
+            position: relative !important;
+            bottom: auto !important;
+            width: 100%;
+            margin-bottom: 20px !important;
+        }
+
+        .delivery-notice-premium {
+            background: rgba(255, 193, 7, 0.08) !important;
+            border: 1px solid rgba(255, 193, 7, 0.2) !important;
+            padding: 12px 16px !important;
+            border-radius: 12px !important;
+            display: flex !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+            margin-top: -5px !important;
+            margin-bottom: 10px !important;
+        }
+        .delivery-notice-premium svg {
+            flex-shrink: 0 !important;
+            margin-top: 2px !important;
+        }
+        .delivery-notice-content {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 4px !important;
+        }
+        .delivery-notice-main {
+            color: #ffc107 !important;
+            font-size: 0.85rem !important;
+            font-weight: 600 !important;
+            line-height: 1.3 !important;
+        }
+        .delivery-notice-sub {
+            color: rgba(255, 255, 255, 0.7) !important;
+            font-size: 0.75rem !important;
+            font-weight: 400 !important;
+            line-height: 1.3 !important;
+        }
+
+        .checkout-form input::placeholder {
+            color: rgba(255, 255, 255, 0.45) !important;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-image-container {
+            width: 100%;
+            height: 440px;
+            overflow: hidden;
+            position: relative;
+            background: transparent !important;
+            padding: 0 !important;
+        }
+
+        /* Barra de Categorías Horizontal */
+        .category-bar {
+            background: transparent !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border-radius: 0;
+            padding: 8px 15px !important;
+            border: none !important;
+            box-shadow: none !important;
+            margin-top: 3px;
+            width: 100%;
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .category-bar::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+        }
+
+        .category-btn {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Centrado horizontal del contenido del botón */
+            gap: 10px;
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05) !important;
+            color: rgba(255, 255, 255, 0.75) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            cursor: pointer;
+            font-size: 0.85rem !important;
+            font-weight: 600 !important;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+        }
+
+        .category-btn.active {
+            background: #b91c1c !important;
+            color: #ffffff !important;
+            border-color: #ef4444 !important;
+            box-shadow: 0 4px 15px rgba(185, 28, 28, 0.4);
+        }
+
+        #modal-img {
+            width: 100%;
+            height: 100%;
+            display: block !important;
+            object-fit: cover !important;
+            object-position: center 85%;
+            transform: scale(1.15); /* Reducimos el zoom para que se vea más aire alrededor */
+            filter: none;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        #modal-img.modal-img-alejar {
+            transform: scale(1) !important;
+            object-fit: cover !important;
+        }
+
+        #modal-img.modal-img-bottom-aligned {
+            object-position: center 92% !important;
+            transform: scale(1.15) translateY(-2%) !important;
+        }
+
+        #modal-img.modal-img-junior-crispy-lower {
+            object-position: center 70% !important;
+        }
+
+        .modal-image-container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(15, 15, 15, 0.8) 0%, rgba(15, 15, 15, 0) 20%);
+            pointer-events: none;
+        }
+
+        .modal-details {
+            padding: 15px 25px 30px !important;
+            position: relative;
+            z-index: 10;
+        }
+
+        #modal-hamburguesa .modal-details {
+            margin-top: 0 !important;
+        }
+
+        .upsell-img {
+            width: 180px;
+            height: 180px;
+            display: block;
+            margin: 0 auto 10px;
+            object-fit: contain;
+            transform: scale(1.15);
+            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8));
+        }
+
+        @media (max-width: 768px) {
+            body {
+                background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('brasas.webp') !important;
+                background-attachment: scroll !important;
+                background-size: cover !important;
+                background-position: center !important;
+            }
+
+            .menu-container {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 185px 15px 40px !important;
+                border-radius: 0 !important;
+                backdrop-filter: none !important;
+                background: rgba(10, 10, 10, 0.98) !important;
+                min-height: 100dvh !important;
+            }
+
+            .sticky-nav {
+                margin: 0 !important;
+                padding: 0 !important;
+                border-radius: 0 !important;
+            }
+
+            .header-top-row {
+                padding: 10px 15px 6px !important;
+            }
+
+            .menu-header-logo {
+                width: 42px !important;
+                height: auto !important;
+            }
+
+            .header-search-row {
+                padding: 0 15px 8px !important;
+            }
+
+            .category-bar {
+                padding: 0 15px 10px !important;
+                gap: 8px !important;
+            }
+
+            section:not(#bebidas) .item-img-bg {
+                object-position: center 30% !important;
+            }
+
+            #bebidas .menu-item {
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                background: transparent !important;
+                border: none !important;
+                border-left: none !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+                border-radius: 0 !important;
+                padding: 14px 10px !important;
+                margin-bottom: 0 !important;
+                box-shadow: none !important;
+                height: auto !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+            }
+
+            #bebidas .menu-item:last-child {
+                border-bottom: none !important;
+            }
+
+            #bebidas .item-info {
+                width: auto !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                position: static !important;
+                z-index: 1 !important;
+            }
+
+            #bebidas .item-price-wrapper {
+                position: static !important;
+                min-width: auto !important;
+                transform: none !important;
+                margin: 0 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-end !important;
+            }
+
+            .badge-best, .badge-new {
+                position: relative !important;
+                display: inline-block !important;
+                top: 0 !important;
+                left: 0 !important;
+                z-index: 4;
+                margin: 4px 0 0 0 !important;
+            }
+
+            #bebidas .item-name {
+                color: #ffffff !important;
+                font-size: 0.95rem !important;
+                font-weight: 500 !important;
+                text-transform: uppercase;
+                text-shadow: none !important;
+            }
+
+            #bebidas .item-price {
+                font-size: 1.15rem !important;
+                color: #ffffff !important;
+                font-weight: 700 !important;
+                text-shadow: none !important;
+            }
+
+            #bebidas .item-ref { font-size: 0.5rem !important; opacity: 0.4; margin-top: 0 !important; }
+
+            .modal-image-container {
+                height: 35vh !important;
+                max-height: 250px !important;
+                position: relative;
+                z-index: 1 !important;
+                background: #000;
+            }
+
+            .modal-image-container::after {
+                background: linear-gradient(to bottom, transparent 80%, rgba(0, 0, 0, 0.9) 100%) !important;
+                z-index: 6 !important;
+            }
+            
+            .modal-content:not(.food-modal) .modal-image-container {
+                height: 22vh !important;
+                background: transparent !important;
+            }
+
+            .modal-content:not(.food-modal) #modal-img {
+                object-fit: contain !important;
+                transform: scale(0.8) !important;
+                object-position: center center !important;
+            }
+
+            .upsell-img {
+                width: 110px !important;
+                height: 110px !important;
+                transform: scale(1) !important;
+                margin-bottom: 5px !important;
+            }
+            
+            #modal-img {
+                width: 100% !important;
+                height: 100% !important;
+                transform: scale(1.3) !important;
+                object-fit: cover !important;
+                z-index: 5 !important;
+                position: relative;
+                object-position: center 85% !important;
+            }
+
+            .modal-details {
+                padding: 12px 18px 20px !important;
+                background: #0f0f0f !important;
+                margin-top: 0 !important;
+                position: relative;
+                z-index: 10;
+            }
+
+            .extras-title {
+                font-size: 0.9rem !important;
+                margin-bottom: 10px !important;
+            }
+
+            .extras-grid {
+                gap: 6px !important;
+            }
+
+            .extra-card {
+                padding: 6px 10px !important;
+                min-height: 45px !important;
+            }
+
+            .extra-name { font-size: 0.78rem !important; }
+            
+            .extra-qty-btn, .main-qty-btn {
+                width: 28px !important;
+                height: 28px !important;
+                font-size: 0.8rem !important;
+            }
+            
+            .extra-qty-val { font-size: 0.8rem !important; }
+        }
+
+        /* --- BARRA DE CATEGORÍAS FIJA (ESTILO FARMATODO) --- */
+        .category-bar-bottom-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #0a0a0a;
+            z-index: calc(var(--layer-c2) + 10);
+            padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.8);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        /* Clase para mostrar la barra sincronizada con el menú */
+        .category-bar-bottom-wrapper.mostrar-barra {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .category-bar {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            padding: 0 20px;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .category-bar::-webkit-scrollbar { display: none; }
+
+        .category-btn {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .category-btn.active {
+            background: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            box-shadow: 0 4px 12px rgba(230, 0, 0, 0.4);
+        }
+
+        /* --- ESTILOS DE INTERRUPTORES PREMIUM PARA PROMOS --- */
+        #modal-promo-selection .extras-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .promo-burguer-card {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 18px !important;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            padding: 14px 20px !important;
+            cursor: pointer;
+            transition: all 0.3s ease !important;
+            height: auto !important;
+        }
+
+        .promo-burguer-card.selected {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .promo-toggle-switch {
+            width: 42px;
+            height: 22px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .promo-switch-indicator {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .promo-burger-card.selected .promo-toggle-switch {
+            background: var(--primary-color);
+        }
+
+        .promo-burger-card.selected .promo-switch-indicator {
+            transform: translateX(20px);
+        }
+
+    /* Eliminar padding para que el anuncio cubra todo */
+    #modal-promo-lunes-miercoles {
+        padding: 0 !important;
+    }
+
+    /* Ajuste para dar más protagonismo a la imagen y bajar el texto en la promo */
+    #modal-promo-selection .modal-image-container {
+        height: 620px !important;
+    }
+
+    @media (max-width: 768px) {
+        #modal-promo-selection .modal-image-container {
+            height: 65vh !important;
+            max-height: 550px !important;
+        }
+    }
+
+        .hidden { display: none !important; }
 
     </style>
 </head>
 <body>
-    <!-- Video de fondo optimizado -->
-    <video id="bg-video" autoplay muted loop playsinline poster="assets/videos/comingsoon.jpg" class="video-background" preload="auto" style="pointer-events: none;">
-        <source src="assets/videos/comingsoon.mp4" type="video/mp4" muted>
-    </video>
 
-    <div class="app-shell">
-        <img src="logobh.webp" alt="BH Logo" class="logo-header">
-        
-        <div class="text-card">
-            <h1>BURGUER HOUSE</h1>
-            <p class="subtitle">¿Preparado para lo que se viene?</p>
+    <div class="contenedor-logo" id="preloader">
+        <div class="preloader-inner">
+            <div class="logo-glow-wrap">
+                <img src="logobh.webp" alt="Logo Burger House" class="logo-animado" width="165" height="165">
+            </div>
+            <div class="preloader-bar" aria-hidden="true">
+                <div id="preloader-progress" class="preloader-progress"></div>
+            </div>
+            <p class="preloader-caption">Encendiendo la parrilla</p>
         </div>
-
-        <div class="countdown-container" id="timer">
-            <div class="count-block"><span class="count-number" id="d">00</span><span class="count-label">Días</span></div>
-            <div class="count-block"><span class="count-number" id="h">00</span><span class="count-label">Hrs</span></div>
-            <div class="count-block"><span class="count-number" id="m">00</span><span class="count-label">Min</span></div>
-            <div class="count-block"><span class="count-number" id="s">00</span><span class="count-label">Seg</span></div>
-        </div>
-
-        <button class="btn-action" onclick="alert('¡Excelente! Te avisaremos apenas encendamos la parrilla.')">
-            Activar Notificacion
-        </button>
     </div>
 
-    <script>
-        // Script de Fuerza Bruta para Autoplay en Móviles
-        document.addEventListener('DOMContentLoaded', () => {
-            const video = document.getElementById('bg-video');
-            if (!video) return;
+    <!-- Menú fijo fuera del contenedor principal -->
+    <div class="sticky-nav">
+        <!-- Fila Superior: Logo (izquierda) y Carrito (derecha) -->
+        <div class="header-top-row">
+            <img src="logobh.webp" alt="Logo Burger House" class="menu-header-logo" width="50" height="50">
+            <div id="cart-floating-btn" class="cart-btn-hidden">
+                <span id="cart-badge">0</span>
+                <img src="bolsadelivery.webp" alt="Delivery" class="icono-moto" width="30" height="30">
+            </div>
+        </div>
+        
+        <!-- Fila Central: Barra de búsqueda -->
+        <div class="header-search-row">
+            <div class="search-container-full">
+                <div class="search-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </div>
+                <input type="text" id="menu-search" class="search-input" placeholder="Busca aquí tu producto..." aria-label="Buscar productos">
+            </div>
+        </div>
+        
+        <!-- Fila Inferior: Categorías horizontales -->
+        <div class="category-bar">
+            <button class="category-btn active" data-category="all">Todos</button>
+            <button class="category-btn" data-category="hamburguesas">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                Hamburguesas
+            </button>
+            <button class="category-btn" data-category="ensaladas">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.5 2 7a7 7 0 0 1-10 11Z"/><path d="M7 12.1a3 3 0 0 1 5-2.4"/></svg>
+                Ensaladas
+            </button>
+            <button class="category-btn" data-category="kids">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                Menú Kids
+            </button>
+            <button class="category-btn" data-category="servicios">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 10V2"/><path d="M9 10V5"/><path d="M13 10V3"/><path d="M17 10V6"/><path d="M2 10h20l-2 12H4L2 10Z"/></svg>
+                Servicios
+            </button>
+            <button class="category-btn" data-category="bebidas">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 8h12l-1 11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2Z"/><path d="M5 5h14"/><path d="M12 5V2"/><path d="m9 2 3 3"/></svg>
+                Bebidas
+            </button>
+        </div>
+    </div>
 
-            const iniciarVideo = () => {
-                video.muted = true;
-                video.play()
-                    .then(() => {
-                        console.log("✅ Video de fondo iniciado correctamente.");
-                        // Limpieza de listeners para liberar memoria tras el éxito
-                        document.removeEventListener('click', iniciarVideo);
-                        document.removeEventListener('touchstart', iniciarVideo);
-                    })
-                    .catch(error => {
-                        console.error("❌ Autoplay bloqueado por el navegador:", error.message);
-                    });
-            };
+    <main id="main-menu" class="menu-container">
+        <!-- Carrusel de Historias Minimalista -->
+        <div id="bh-video-feed-scroll" class="bh-video-feed-scroll"></div>
 
-            video.currentTime = 0;
-            iniciarVideo();
-            // Fallback: Si no arrancó solo, arrancará al primer toque del usuario
-            document.addEventListener('click', iniciarVideo);
-            document.addEventListener('touchstart', iniciarVideo);
-        });
+        <!-- Texto de instrucción para clientes -->
+        <div class="start-order-text">
+            <span>Empieza a Pedir</span>
+            <button class="help-btn" id="help-btn" data-tooltip="¿Cómo pedir?">
+                <span>!</span>
+            </button>
+            <div class="help-tooltip" id="help-tooltip">
+                <span class="tooltip-text">¿Cómo pedir?</span>
+                <div class="tooltip-arrow"></div>
+            </div>
+        </div>
 
-        const launch = new Date("June 15, 2026 00:00:00").getTime();
-        setInterval(() => {
-            const now = new Date().getTime();
-            const diff = launch - now;
-            if (diff < 0) {
-                document.getElementById("timer").innerHTML = `<p style='grid-column: span 4; font-family: var(--font-heading); font-weight: 800; color: var(--primary-color);'>¡YA ESTAMOS ABIERTOS!</p>`;
-                return;
-            }
-            document.getElementById("d").innerText = Math.floor(diff / (864e5)).toString().padStart(2, '0');
-            document.getElementById("h").innerText = Math.floor((diff % 864e5) / 36e5).toString().padStart(2, '0');
-            document.getElementById("m").innerText = Math.floor((diff % 36e5) / 6e4).toString().padStart(2, '0');
-            document.getElementById("s").innerText = Math.floor((diff % 6e4) / 1e3).toString().padStart(2, '0');
-        }, 1000);
-    </script>
+        <section id="hamburguesas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            
+            <div class="menu-item">
+                <img src="bowl.webp" class="item-img-bg ajuste-subir" alt="Crispy Bowl" loading="lazy" width="900" height="500">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="badge-new">NUEVO</span>
+                        <span class="item-name">Crispy Bowl</span>
+                        <p class="item-desc">150grs de pechuga crispy, 250grs de papas fritas, barbecue, queso fundido y salsa de la casa.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="bowl.webp">
+                        <span class="item-price">$8,49</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <img src="cheese house.webp" class="item-img-bg ajuste-subir" alt="Cheese House" loading="lazy" width="900" height="500">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="badge-best">LAS MÁS VENDIDAS</span>
+                        <span class="item-name">Cheese House</span>
+                        <p class="item-desc">Pan de papa, carne, tocineta, triple queso americano, salsa de la casa, papas fritas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="cheese house.webp">
+                        <span class="item-price">$9,99</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <img src="houseclasic.webp" class="item-img-bg ajuste-subir" alt="House Classics" loading="lazy" width="900" height="500">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="badge-best">LAS MÁS VENDIDAS</span>
+                        <span class="item-name">House Classics</span>
+                        <p class="item-desc">Pan de papa, carne, pepinillo, tocineta, queso americano, lechuga, salsa de la casa, papas fritas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="houseclasic.webp">
+                        <span class="item-price">$9,49</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <img src="crispy house.webp" class="item-img-bg ajuste-alejar" alt="Crispy House" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="item-name">Crispy House</span>
+                        <p class="item-desc">Pan de papa, pollo crispy, tocineta, doble queso americano, pepinillos, lechuga, salsa de la casa, papas fritas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="crispy house.webp">
+                        <span class="item-price">$12,99</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <img src="junior crispy.webp" class="item-img-bg ajuste-crispy" alt="Junior Crispy" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="item-name">Junior Crispy</span>
+                        <p class="item-desc">Pan de papa, pollo crispy, pepinillos, tocineta, queso americano, lechuga, salsa de la casa, papas fritas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="junior crispy.webp">
+                        <span class="item-price">$10,99</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <img src="baby crispy.webp" class="item-img-bg ajuste-baby" alt="Baby Crispy" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="badge-new">NUEVA</span>
+                        <span class="item-name">Baby Crispy</span>
+                        <p class="item-desc">Pan de papa, pollo crispy, salsa de la casa, servicio de papas fritas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="baby crispy.webp">
+                        <span class="item-price">$8,99</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <img src="combo house.webp" class="item-img-bg" alt="Combo House" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="item-name">Combo House</span>
+                        <p class="item-desc">4 Burgers (carne 100gr), papas fritas y Pepsi de litro.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="combo house.webp">
+                        <span class="item-price">$24,99</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <img src="grand house.webp" class="item-img-bg" alt="Grand House Burguer" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="item-name">Grand House Burguer</span>
+                        <p class="item-desc">Pan de papa, triple carne, tocineta, pepinillo, triple queso americano, lechuga, salsa de la casa, papas fritas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="grand house.webp">
+                        <span class="item-price">$14,49</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <img src="pork house.webp" class="item-img-bg" alt="Pork House" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="item-name">Pork House</span>
+                        <p class="item-desc">Pan de papa, chuleta, pepinillo, tocineta, queso americano, lechuga, salsa de la casa, papas fritas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="pork house.webp">
+                        <span class="item-price">$11,49</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <img src="chiken house.webp" class="item-img-bg" alt="Chicken House" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="item-name">Chicken House</span>
+                        <p class="item-desc">Pan de papa, pollo, pepinillo, tocineta, queso americano, lechuga, salsa de la casa, papas fritas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="chiken house.webp">
+                        <span class="item-price">$9,99</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <img src="big house.webp" class="item-img-bg" alt="Big House" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="item-name">Big House</span>
+                        <p class="item-desc">Pan de papa, doble carne, pepinillo, tocineta, queso americano, lechuga, salsa de la casa, papas fritas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="big house.webp">
+                        <span class="item-price">$12,49</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <img src="town house.webp" class="item-img-bg" alt="Town House" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="item-name">Town House</span>
+                        <p class="item-desc">Pan de papa, carne, pollo, pepinillo, tocineta, queso americano, lechuga, salsa de la casa, papas fritas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="town house.webp">
+                        <span class="item-price">$12,99</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <img src="titan house.webp" class="item-img-bg" alt="Titan House" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="item-name">Titan House</span>
+                        <p class="item-desc">Pan de papa, triple carne, tocineta, queso americano, salsa de la casa, papas fritas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="titan house.webp">
+                        <span class="item-price">$12,99</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <img src="house especial.webp" class="item-img-bg" alt="House Special" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="item-name">House Special</span>
+                        <p class="item-desc">Pan de papa, pollo, chuleta, pepinillo, tocineta, queso americano, lechuga, salsa de la casa, papas fritas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="house especial.webp">
+                        <span class="item-price">$14,49</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <img src="housetower.webp" class="item-img-bg ajuste-alejar" alt="House Tower" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="item-name">House Tower</span>
+                        <p class="item-desc">Pan de papa, carne, chuleta, pollo, pepinillo, tocineta, queso americano, lechuga, salsa de la casa, papas fritas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="housetower.webp">
+                        <span class="item-price">$17,99</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ensaladas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div class="menu-item">
+                <img src="ensalada.webp" class="item-img-bg" alt="House Salad" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="item-name">House Salad</span>
+                        <p class="item-desc">Lechuga, crotones, tocineta, queso parmesano, pechuga 200gr, salsa de la casa.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="ensalada.webp">
+                        <span class="item-price">$9,49</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="kids" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div class="menu-item">
+                <img src="kids house.webp" class="item-img-bg ajuste-subir" alt="Kids House" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="item-name">Kids House</span>
+                        <p class="item-desc">Pan de papa, carne, queso americano, papas fritas, huevito sorpresa y juguito.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="kids house.webp">
+                        <span class="item-price">$9,49</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="servicios" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div class="menu-item">
+                <img src="bowl.webp" class="item-img-bg" alt="Crispy Bowl" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="badge-new">NUEVO</span>
+                        <span class="item-name">Crispy Bowl</span>
+                        <p class="item-desc">150grs de pechuga crispy, 250grs de papas fritas, barbecue, queso fundido y salsa de la casa.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="bowl.webp">
+                        <span class="item-price">$8,49</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+            <div class="menu-item">
+                <img src="papacontoppings.webp" class="item-img-bg" alt="Papas con Topping" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="item-name">Servicio de Papas con Topping</span>
+                        <p class="item-desc">Papas fritas, salsa de queso y topping de tocineta.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="papacontoppings.webp">
+                        <span class="item-price">$7,49</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+            <div class="menu-item">
+                <img src="papassintopping.webp" class="item-img-bg" alt="Papas Sin Topping" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="item-name">Servicio de Papas (Sin Toppings)</span>
+                        <p class="item-desc">Ración generosa de papas fritas clásicas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="papassintopping.webp">
+                        <span class="item-price">$4,5</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+            <div class="menu-item">
+                <img src="papascajita.webp" class="item-img-bg" alt="Cajita Papas" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="item-name">Cajita Papas (115g)</span>
+                        <p class="item-desc">Porción individual de papas fritas crujientes.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="papascajita.webp">
+                        <span class="item-price">$3</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+            <div class="menu-item">
+            <img src="tequeños.webp" class="item-img-bg" alt="Tequeños" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="item-name">Servicio de Tequeños</span>
+                        <p class="item-desc">Tequeños (6 unidades).</p>
+                    </div>
+                <div class="item-price-wrapper" data-img-src="tequeños.webp">
+                        <span class="item-price">$5,99</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+            <div class="menu-item">
+                <img src="nuggetsmenu.webp" class="item-img-bg" alt="Nuggets" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="item-name">Servicio de Nuggets</span>
+                        <p class="item-desc">Nuggets de pollo súper crujientes.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="nuggetsmenu.webp">
+                        <span class="item-price">$7,99</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="bebidas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div class="menu-item">
+                <div class="item-info"><span class="item-name">Coca-Cola Bombita 355 ML</span></div>
+                <div class="item-price-wrapper" data-img-src="cocacolabombita.webp">
+                    <span class="item-price">$1</span>
+                    <span class="item-ref">REF</span>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info"><span class="item-name">Coca-Cola Bombita Light 355 ML</span></div>
+                <div class="item-price-wrapper" data-img-src="cocacolalight.webp">
+                    <span class="item-price">$1</span>
+                    <span class="item-ref">REF</span>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info"><span class="item-name">Coca-Cola Bombita Zero 355 ML</span></div>
+                <div class="item-price-wrapper" data-img-src="cocacolalatazero.webp">
+                    <span class="item-price">$1</span>
+                    <span class="item-ref">REF</span>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info"><span class="item-name">Coca-Cola Lata 350 ML</span></div>
+                <div class="item-price-wrapper" data-img-src="cocacolalataclasica.webp">
+                    <span class="item-price">$1,5</span>
+                    <span class="item-ref">REF</span>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info"><span class="item-name">Coca-Cola 1L</span></div>
+                <div class="item-price-wrapper" data-img-src="cocacolabotella.webp">
+                    <span class="item-price">$1,5</span>
+                    <span class="item-ref">REF</span>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info"><span class="item-name">Pepsi 1L</span></div>
+                <div class="item-price-wrapper" data-img-src="pepsi1l.webp">
+                    <span class="item-price">$1,5</span>
+                    <span class="item-ref">REF</span>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info"><span class="item-name">Manzanita 1L</span></div>
+                <div class="item-price-wrapper" data-img-src="gaseosa.webp">
+                    <span class="item-price">$1,5</span>
+                    <span class="item-ref">REF</span>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info"><span class="item-name">7Up 1L</span></div>
+                <div class="item-price-wrapper" data-img-src="7up.webp">
+                    <span class="item-price">$1,5</span>
+                    <span class="item-ref">REF</span>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info"><span class="item-name">Lipton Durazno</span></div>
+                <div class="item-price-wrapper" data-img-src="lipton.webp">
+                    <span class="item-price">$1,5</span>
+                    <span class="item-ref">REF</span>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info"><span class="item-name">Lipton Limón</span></div>
+                <div class="item-price-wrapper" data-img-src="lipton.webp">
+                    <span class="item-price">$1,5</span>
+                    <span class="item-ref">REF</span>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info"><span class="item-name">Coca-Cola 1.5L</span></div>
+                <div class="item-price-wrapper" data-img-src="cocacolabotella.webp">
+                    <span class="item-price">$2,5</span>
+                    <span class="item-ref">REF</span>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info"><span class="item-name">Coca-Cola 2L</span></div>
+                <div class="item-price-wrapper" data-img-src="cocacolabotella.webp">
+                    <span class="item-price">$3</span>
+                    <span class="item-ref">REF</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- --- FOOTER (REDES Y PAGOS) --- -->
+        <footer class="bh-footer">
+            <div class="footer-section">
+                <p class="footer-label">SÍGUENOS EN REDES</p>
+                <div class="footer-social-links">
+                    <a href="https://www.instagram.com/burgerhouse.merida?igsh=M2lwZXk3djJtbTdh" target="_blank" aria-label="Instagram">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                    </a>
+                    <a href="https://www.facebook.com/share/1LbFWBEYvY/" target="_blank" aria-label="Facebook">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                        </svg>
+                    </a>
+                    <a href="https://wa.me/584127510090" target="_blank" aria-label="WhatsApp">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <p class="footer-label">MÉTODOS DE PAGO</p>
+                <div class="payment-grid">
+                    <div class="payment-item">Efectivo</div>
+                    <div class="payment-item">Pago Móvil</div>
+                    <div class="payment-item">Zelle</div>
+                    <div class="payment-item">Binance</div>
+                </div>
+            </div>
+
+            <div class="footer-credits">
+                <p>&copy; 2026<b>Burger House</b>. Todos los derechos reservados.</p>
+                <p>Las mejores hamburguesas de la ciudad.</p>
+                <div style="margin-top: 20px; opacity: 0.4; font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase;">
+                    <p>Digital Experience by <b>lacrush</b></p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <div id="cart-sidebar" class="cart-closed">
+        <div class="cart-header">
+            <h2>
+                <img src="bolsadelivery.webp" alt="Delivery" class="icono-moto" width="30" height="30">
+                Mi Pedido</h2>
+            <button id="close-cart">&times;</button>
+        </div>
+        
+        <div id="cart-content-wrapper">
+            <div id="cart-items-view">
+                <div id="cart-items-container">
+                </div>
+                <div class="cart-footer">
+                    <div class="cart-total-info">
+                        <span>Total:</span>
+                        <span id="cart-grand-total">$0.00</span>
+                    </div>
+                    <button id="btn-go-checkout">Confirmar Pedido</button>
+                    <div class="sugerencia-bebida">
+                        <span>¿Deseas añadir una bebida?</span>
+                        <button id="btn-ver-bebidas" class="btn-sugerencia-outline">Ver Bebidas</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="checkout-view" class="hidden">
+                <button id="btn-back-to-cart">
+                    <svg viewBox="0 0 24 24" class="back-icon">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                    </svg>
+                    Volver al pedido
+                </button>
+                <form id="form-delivery" class="checkout-form">
+                    <h3 class="checkout-title">Datos de Entrega</h3>
+                    <div class="selector-metodo">
+                        <button type="button" class="metodo-btn active" id="btn-mode-delivery">Delivery</button>
+                        <button type="button" class="metodo-btn" id="btn-mode-pickup">Pick Up</button>
+                    </div>
+                    
+                    <div class="delivery-notice-premium">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffc107" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                        <div class="delivery-notice-content">
+                            <span class="delivery-notice-main">Si cancelas en divisas el delivery es gratis en el casco central de la ciudad</span>
+                            <span class="delivery-notice-sub">El costo del delivery varía según la zona de entrega</span>
+                        </div>
+                    </div>
+                    <input type="text" id="full-name" name="full-name" placeholder="Tu nombre completo" required autocomplete="name" enterkeyhint="next">
+                    <textarea id="additional-notes" name="additional-notes" placeholder="Notas adicionales / Punto de referencia (Ej: Portón blanco, llamar al llegar...)" enterkeyhint="done"></textarea>
+                    <input type="hidden" id="maps" name="maps">
+                    
+                    <div id="pickup-location-info" class="hidden">
+                        <p><b>Dirección de retiro:</b><br>Urb. La Mara, Calle Principal, 3ra. calle a la izquierda. Al final de la calle, ingresar junto al quiosco azul. Townhouse beige con marrón, Nro. 3 (a mano izquierda).</p>
+                        <a href="https://maps.google.com/?q=8.553563,-71.205238" target="_blank" class="btn-maps-pickup">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            Ver ubicación en Maps
+                        </a>
+                    </div>
+
+                    <div class="checkout-grid" id="delivery-tools">
+                        <button type="button" id="btn-get-location" title="Obtener ubicación" style="width: 100%; margin: 0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.6-1.8A2 2 0 0 1 22 5.541V17.5a2 2 0 0 1-1.106 1.789l-3.6 1.8a2 2 0 0 1-1.788 0l-7.2-3.6a2 2 0 0 0-1.788 0l-3.6 1.8A2 2 0 0 1 2 17.5V5.5a2 2 0 0 1 1.106-1.789l3.6-1.8a2 2 0 0 1 1.788 0z"></path>
+                                <path d="M15 18.677V5.823"></path>
+                                <path d="M9 18.177V5.323"></path>
+                            </svg>
+                            <span>Enviar dirección</span>
+                        </button>
+                    </div>
+
+                    <button type="submit" id="btn-whatsapp-final" class="btn-checkout-final">
+                        <svg viewBox="0 0 448 512" class="whatsapp-icon">
+                            <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.7 17.7 69.4 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-5.5-2.8-23.2-8.5-44.2-27.1-16.4-14.6-27.4-32.7-30.6-38.2-3.2-5.6-.3-8.6 2.4-11.3 2.5-2.5 5.5-6.5 8.3-9.7 2.8-3.3 3.7-5.6 5.5-9.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 13.2 5.7 23.5 9.2 31.6 11.8 13.3 4.2 25.4 3.6 35 2.2 10.7-1.5 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
+                        </svg>Confirmar pedido
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-hamburguesa" class="modal">
+        <div class="modal-content">
+            <button class="close-modal">&times;</button>
+            <div class="modal-image-container">
+                <img src="" alt="Imagen del producto" id="modal-img" width="440" height="440">
+            </div>
+            <div class="modal-details">
+                <h2 class="modal-title">Nombre de la Hamburguesa</h2>
+                <p class="modal-description">Una explosión de sabor con los mejores ingredientes seleccionados para ti.</p>
+                
+                <div class="modal-main-qty">
+                    <div style="width: 100%;">
+                        <div id="qty-selector-row" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="qty-label">Cantidad:</span>
+                            <div class="counter-control">
+                                <button class="main-qty-btn" id="main-minus">-</button>
+                                <span id="main-qty-val">1</span>
+                                <button class="main-qty-btn" id="main-plus">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-extras-container">
+                    <h3 class="extras-title">Personaliza tu orden</h3>
+                    <div class="extras-grid">
+                        <div class="extra-card" data-extra-price="2.50">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Extra Pollo</span> <span class="extra-cost">+$2.50</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">0</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="2.00">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Extra Carne</span> <span class="extra-cost">+$2.00</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">0</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="3.00">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Extra Pollo Crispy</span> <span class="extra-cost">+$3.00</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">0</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="3.50">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Extra Chuleta</span> <span class="extra-cost">+$3.50</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">0</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="1.00">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Huevo (proteína)</span> <span class="extra-cost">+$1.00</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">0</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="1.00">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Extra Huevito Sorpresa</span> <span class="extra-cost">+$1.00</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">0</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="1.20">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Extra Cheese</span> <span class="extra-cost">+$1.20</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">0</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="2.00">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Extra Tocineta</span> <span class="extra-cost">+$2.00</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">0</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="0.00" data-is-toggle="true" data-product="crispy bowl">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Salsa BBQ</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">SÍ</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="0.00" data-is-toggle="true" data-product="crispy bowl">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Salsa de la Casa</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">SÍ</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="0.00" data-is-toggle="true" data-product="crispy bowl">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Queso Fundido</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">SÍ</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="0.00" data-is-toggle="true">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Carne</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">SÍ</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="0.00" data-is-toggle="true">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Pollo</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">SÍ</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="0.00" data-is-toggle="true">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Pollo Crispy</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">SÍ</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="0.00" data-is-toggle="true">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Chuleta</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">SÍ</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="0.00" data-is-toggle="true">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Tocineta</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">SÍ</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="1.00"> 
+                            <div class="extra-info-text">
+                                <span class="extra-name">Servicio de salsa BBQ</span> <span class="extra-cost">+$1.00</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">0</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="1.00">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Servicio de Mayonesa</span> <span class="extra-cost">+$1.00</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">0</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="1.00">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Servicio de Queso Fundido</span> <span class="extra-cost">+$1.00</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">0</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="1.00"> 
+                            <div class="extra-info-text">
+                                <span class="extra-name">Servicio de Ketchup</span> <span class="extra-cost">+$1.00</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">0</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="1.00">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Servicio de Mostaza</span> <span class="extra-cost">+$1.00</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">0</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="0.00" data-is-toggle="true">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Pepinillos</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">SÍ</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="0.00" data-is-toggle="true">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Huevito Sorpresa</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">SÍ</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="0.00" data-is-toggle="true">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Salsa de la Casa</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">SÍ</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="1.20">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Extra Salsa de la Casa</span> <span class="extra-cost">+$1.20</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">0</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="1.00">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Extra Lechuga</span> <span class="extra-cost">+$1.00</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">0</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="0.00" data-is-toggle="true">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Queso</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">SÍ</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="0.00" data-is-toggle="true">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Pan</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">SÍ</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                        <div class="extra-card" data-extra-price="0.00" data-is-toggle="true">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Lechuga</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">SÍ</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <span class="modal-price">$0.00</span>
+                <button class="btn-add-order">Añadir al pedido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Publicitario Lunes a Miércoles -->
+    <div id="modal-promo-lunes-miercoles" class="modal">
+        <div class="modal-content promo-modal-content">
+            <button class="close-promo" id="btn-close-promo">&times;</button>
+            <div class="promo-img-container">
+                <img src="promolunesmiercoles.webp" alt="Promoción Especial">
+                <button id="btn-promo-ordenar" class="btn-promo-premium">
+                    ¡ORDENAR AHORA!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Selección de Promo -->
+    <div id="modal-promo-selection" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" id="close-promo-selection">&times;</button>
+            <div class="modal-image-container">
+                <img src="houseclasic.webp" alt="Promoción" id="modal-promo-img" style="object-fit: cover; width: 100%; height: 100%;">
+            </div>
+            <div class="modal-details">
+                <h2 class="modal-title">Elige tu Promo</h2>
+                <p class="modal-description">Selecciona una de nuestras burgers en promoción por solo $6.50 REF.</p>
+                
+                <div class="modal-extras-container">
+                    <h3 class="extras-title">Selecciona tu Burger</h3>
+                    <div class="extras-grid" id="promo-burger-options">
+                        <div class="extra-card promo-burger-card selected" data-burger="House Classic" data-img-src="houseclasic.webp">
+                            <div class="extra-info-text"><span class="extra-name">House Classic</span></div>
+                            <div class="promo-toggle-switch">
+                                <span class="promo-switch-indicator"></span>
+                                <span class="extra-qty-val hidden">SÍ</span>
+                            </div>
+                        </div>
+                        <div class="extra-card promo-burger-card" data-burger="Cheese House" data-img-src="cheese house.webp">
+                            <div class="extra-info-text"><span class="extra-name">Cheese House</span></div>
+                            <div class="promo-toggle-switch">
+                                <span class="promo-switch-indicator"></span>
+                                <span class="extra-qty-val hidden">NO</span>
+                            </div>
+                        </div>
+                        <div class="extra-card promo-burger-card" data-burger="Baby Crispy" data-img-src="baby crispy.webp">
+                            <div class="extra-info-text"><span class="extra-name">Baby Crispy</span></div>
+                            <div class="promo-toggle-switch">
+                                <span class="promo-switch-indicator"></span>
+                                <span class="extra-qty-val hidden">NO</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="extras-title" style="margin-top: 20px;">Potencia tu Promo</h3>
+                    <div class="extras-grid">
+                        <div class="extra-card promo-burguer-card" id="promo-combo-option">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Papitas + Bombita</span> <span class="extra-cost">+$2.00</span>
+                            </div>
+                            <div class="promo-toggle-switch">
+                                <span class="promo-switch-indicator"></span>
+                                <span class="extra-qty-val hidden">NO</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <span class="modal-price" id="promo-selection-price">$6.50 <span class="modal-ref">REF</span></span>
+                <button class="btn-add-order" id="btn-add-promo-to-cart">Añadir al pedido</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-reminder" class="modal">
+        <div class="modal-content upsell-content">
+            <div class="modal-details">
+                <div class="clock-container">
+                    <svg class="clock-svg" viewBox="0 0 100 100">
+                        <circle class="clock-face" cx="50" cy="50" r="45" />
+                        <line class="clock-hand hour" x1="50" y1="50" x2="50" y2="30" />
+                        <line class="clock-hand minute" x1="50" y1="50" x2="50" y2="20" />
+                        <circle fill="var(--primary-color)" cx="50" cy="50" r="3" />
+                    </svg>
+                </div>
+                <p class="preparing-text">Preparando<span>.</span><span>.</span><span>.</span></p>
+                <h2 class="modal-title">¡Pedido en proceso!</h2>
+                <p class="modal-description">¡Tu pedido está en camino! Recuerda completar el proceso en WhatsApp para que podamos procesarlo correctamente.</p>
+                <div class="upsell-buttons">
+                    <button id="btn-new-order" class="btn-add-order">Hacer otro pedido</button>
+                    <button id="btn-reminder-ok" class="btn-back-to-cart btn-large-cancel" style="margin-top: 10px; width: 100%;">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="modal-closed" class="modal" style="z-index: var(--layer-c3);">
+        <div class="modal-content upsell-content closed-store-content">
+            <div class="modal-details">
+                <img src="logobh.webp" alt="Logo" style="width: 70px; border-radius: 50%; margin-bottom: 15px;">
+                <h2 class="modal-title">¡Hola! Estamos cerrados</h2>
+                <p class="modal-description">Nuestro horario de atención es:<br><br>
+                <b>Lunes a Viernes:</b> 5:00 PM - 10:30 PM<br>
+                <b>Sábados y Domingos:</b> 1:00 PM - 10:30 PM</p>
+                <p class="modal-description" style="margin-top: 15px; font-weight: bold; color: #ff0000; text-shadow: 0.5px 0.5px 0px rgba(255, 255, 255, 0.3);">Estamos cerrados por ahora, pero puedes pre-ordenar tu pedido.</p>
+                <div class="upsell-buttons" style="margin-top: 20px;">
+                    <button id="btn-pre-order" class="btn-add-order">Pre-ordenar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Ayuda -->
+    <div id="modal-help" class="modal" aria-hidden="true">
+        <div class="modal-content-help">
+            <button class="help-close-btn" id="help-close-btn">&times;</button>
+            <h2 class="help-title">¿Cómo empezar a pedir?</h2>
+            <div class="help-steps">
+                <div class="help-step">
+                    <span class="step-number">1</span>
+                    <div class="step-content">
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#e60000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+                            </svg>
+                        </div>
+                        <h3>Selecciona tu hamburguesa</h3>
+                        <p>Pasa por las categorías y presiona sobre la hamburguesa que deseas.</p>
+                    </div>
+                </div>
+                <div class="help-step">
+                    <span class="step-number">2</span>
+                    <div class="step-content">
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#e60000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                            </svg>
+                        </div>
+                        <h3>Personaliza tu pedido</h3>
+                        <p>Agrega o quita extras según tu preferencia.</p>
+                    </div>
+                </div>
+                <div class="help-step">
+                    <span class="step-number">3</span>
+                    <div class="step-content">
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#e60000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="9" cy="21" r="1"/>
+                                <circle cx="20" cy="21" r="1"/>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                            </svg>
+                        </div>
+                        <h3>Agrega al carrito</h3>
+                        <p>Presiona "Agregar al pedido" para añadir tu hamburguesa al carrito.</p>
+                    </div>
+                </div>
+                <div class="help-step">
+                    <span class="step-number">4</span>
+                    <div class="step-content">
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#e60000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 3h18v18H3zM9 9h6M9 13h6M9 17h6"/>
+                            </svg>
+                        </div>
+                        <h3>Completa tu pedido</h3>
+                        <p>Revisa tu carrito, agrega más productos si lo deseas y completa los datos de entrega.</p>
+                    </div>
+                </div>
+                <div class="help-step">
+                    <span class="step-number">5</span>
+                    <div class="step-content">
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#e60000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                        </div>
+                        <h3>Envía por WhatsApp</h3>
+                        <p>Presiona "Enviar Pedido" para enviar tu orden directamente por WhatsApp.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <!-- Firebase SDK (Compat para facilitar integración) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <!-- Carga de lógica de historias -->
+    <script src="app.js"></script>
+    <script src="stories.js"></script>
 </body>
 </html>
