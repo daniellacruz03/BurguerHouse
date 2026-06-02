@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Optimiza videos MP4 para historias web Burguer House.
+Optimiza videos MP4 para historias web burger House.
 
 - Entrada:  videos_crudos/*.mp4 (raíz del proyecto)
 - Salida:   assets/videos/*.mp4 (H.264, 480×854, CRF 28)
@@ -79,7 +79,7 @@ def main() -> None:
         print(f"⚠ No hay archivos .mp4 en {INPUT_DIR}")
         return
 
-    print(f"🎬 Burguer House — optimización de {len(videos)} video(s)\n")
+    print(f"🎬 burger House — optimización de {len(videos)} video(s)\n")
     print(f"   Entrada:  {INPUT_DIR}")
     print(f"   Salida:   {OUTPUT_DIR}")
     print(f"   Perfil:   {WIDTH}×{HEIGHT}, H.264, CRF {CRF}\n")
