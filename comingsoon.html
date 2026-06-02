@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Burguer House - Próximamente</title>
+    <title>Burger House - Próximamente</title>
     <link rel="icon" href="logobh.webp" type="image/webp">
+    <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Fuentes sincronizadas con el App ADN -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,8 +73,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 25px;
-            padding: 40px 10px;
+            gap: 30px;
+            padding: 40px 20px;
         }
 
         /* Tarjeta de Texto con Glassmorphism */
@@ -83,7 +84,7 @@
             -webkit-backdrop-filter: blur(8px);
             border: 1px solid var(--glass-border);
             border-radius: 16px; /* Sincronizado con bloques del contador */
-            padding: 20px 15px;
+            padding: 25px 20px;
             width: 95%;
             max-width: 350px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -128,7 +129,7 @@
             grid-template-columns: repeat(4, 1fr);
             gap: 12px;
             width: 100%;
-            margin: 10px 0;
+            margin: 5px 0;
         }
 
         .count-block {
@@ -185,18 +186,18 @@
 </head>
 <body>
     <!-- Video de fondo optimizado -->
-    <video id="bg-video" autoplay muted loop playsinline poster="assets/videos/comingsoon.jpg" class="video-background" preload="auto" style="pointer-events: none;">
-        <source src="assets/videos/comingsoon.mp4" type="video/mp4" muted>
+    <video autoplay muted loop playsinline class="video-background" poster="assets/videos/comingsoon.jpg">
+        <source src="assets/videos/comingsoon.mp4" type="video/mp4">
     </video>
 
     <div class="app-shell">
-        <img src="logobh.webp" alt="BH Logo" class="logo-header">
-        
+        <!-- Texto de Impacto (La Broma) -->
         <div class="text-card">
-            <h1>BURGUER HOUSE</h1>
-            <p class="subtitle">¿Preparado para lo que se viene?</p>
+            <h1 style="color: white;">¿EN SERIO TE LO CREÍSTE?</h1>
+            <p class="subtitle">No caigas en trampas... Prepárate para lo que de verdad se viene.</p>
         </div>
 
+        <!-- Contador Regresivo -->
         <div class="countdown-container" id="timer">
             <div class="count-block"><span class="count-number" id="d">00</span><span class="count-label">Días</span></div>
             <div class="count-block"><span class="count-number" id="h">00</span><span class="count-label">Hrs</span></div>
@@ -204,38 +205,14 @@
             <div class="count-block"><span class="count-number" id="s">00</span><span class="count-label">Seg</span></div>
         </div>
 
-        <button class="btn-action" onclick="alert('¡Excelente! Te avisaremos apenas encendamos la parrilla.')">
-            Activar Notificacion
-        </button>
+        <!-- Identidad de la Marca -->
+        <div class="flex flex-col items-center gap-4 mt-2">
+            <img src="logobh.webp" alt="Burger House" class="logo-header" style="width: 70px; height: 70px;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 1.8rem; letter-spacing: 2px; text-transform: uppercase; color: white;">BURGUER HOUSE</h2>
+        </div>
     </div>
 
     <script>
-        // Script de Fuerza Bruta para Autoplay en Móviles
-        document.addEventListener('DOMContentLoaded', () => {
-            const video = document.getElementById('bg-video');
-            if (!video) return;
-
-            const iniciarVideo = () => {
-                video.muted = true;
-                video.play()
-                    .then(() => {
-                        console.log("✅ Video de fondo iniciado correctamente.");
-                        // Limpieza de listeners para liberar memoria tras el éxito
-                        document.removeEventListener('click', iniciarVideo);
-                        document.removeEventListener('touchstart', iniciarVideo);
-                    })
-                    .catch(error => {
-                        console.error("❌ Autoplay bloqueado por el navegador:", error.message);
-                    });
-            };
-
-            video.currentTime = 0;
-            iniciarVideo();
-            // Fallback: Si no arrancó solo, arrancará al primer toque del usuario
-            document.addEventListener('click', iniciarVideo);
-            document.addEventListener('touchstart', iniciarVideo);
-        });
-
         const launch = new Date("June 15, 2026 00:00:00").getTime();
         setInterval(() => {
             const now = new Date().getTime();
