@@ -274,6 +274,7 @@
 
         // Escuchar cambios en tiempo real
         pedidosRef.on('value', (snapshot) => {
+            console.log('Firebase: Snapshot recibido', snapshot.val());
             loadingElement.classList.add('hidden');
 
             const orders = snapshot.val();
