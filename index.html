@@ -176,7 +176,7 @@
 </head>
 <body>
     <!-- Video de fondo optimizado -->
-    <video autoplay muted loop playsinline class="video-background" poster="assets/videos/comingsoon.jpg">
+    <video autoplay muted loop playsinline preload="auto" webkit-playsinline class="video-background" poster="assets/videos/comingsoon.jpg">
         <source src="assets/videos/comingsoon.mp4" type="video/mp4">
     </video>
 
@@ -196,35 +196,56 @@
         </div>
 
         <!-- Identidad de la Marca -->
-        <div class="flex flex-col items-center gap-4 mt-2">
-            <img src="logobh.webp" alt="Burger House" class="logo-header" style="width: 70px; height: 70px;">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 16px; margin-top: 8px;">
+            <img src="logobh.webp" alt="Burger House" class="logo-header">
             <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 1.8rem; letter-spacing: 2px; text-transform: uppercase; color: white;">BURGER HOUSE</h2>
         </div>
     </div>
 
     <script>
-        // Script de Fuerza Bruta para Autoplay en Móviles
+        // Script de Fuerza Bruta para Autoplay en Móviles (Android e iOS)
         document.addEventListener('DOMContentLoaded', () => {
             const video = document.querySelector('.video-background');
             if (!video) return;
 
             const iniciarVideo = () => {
                 video.muted = true;
+                video.playsInline = true;
+                video.setAttribute('playsinline', '');
+                video.setAttribute('webkit-playsinline', '');
+                video.playbackRate = 0.7; // Video más lento (70% de velocidad normal)
+                
                 video.play()
                     .then(() => {
                         console.log("✅ Video de fondo iniciado correctamente.");
+                        // Remover event listeners después del éxito
                         document.removeEventListener('click', iniciarVideo);
                         document.removeEventListener('touchstart', iniciarVideo);
+                        document.removeEventListener('touchend', iniciarVideo);
+                        document.removeEventListener('scroll', iniciarVideo);
+                        document.removeEventListener('visibilitychange', iniciarVideo);
                     })
                     .catch(error => {
                         console.error("❌ Autoplay bloqueado por el navegador:", error.message);
                     });
             };
 
+            // Intentar autoplay inicial
             video.currentTime = 0;
             iniciarVideo();
-            document.addEventListener('click', iniciarVideo);
-            document.addEventListener('touchstart', iniciarVideo);
+
+            // Múltiples eventos para forzar reproducción en móviles
+            document.addEventListener('click', iniciarVideo, { once: true });
+            document.addEventListener('touchstart', iniciarVideo, { once: true });
+            document.addEventListener('touchend', iniciarVideo, { once: true });
+            document.addEventListener('scroll', iniciarVideo, { once: true });
+            
+            // Cuando la página vuelve a estar visible
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden && video.paused) {
+                    iniciarVideo();
+                }
+            });
         });
 
         const launch = new Date("June 15, 2026 00:00:00").getTime();
