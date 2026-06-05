@@ -1,5 +1,5 @@
 /**
- * burger House — lógica de menú, carrito, horarios y geolocalización.
+ * Burguer House — lógica de menú, carrito, horarios y geolocalización.
  * Mantiene el mismo comportamiento que el script inline original.
  */
 (function () {
@@ -18,10 +18,10 @@
         // REEMPLAZA ESTO CON TUS CREDENCIALES DE FIREBASE CONSOLE
         FIREBASE_CONFIG: {
             apiKey: "AIzaSyCOIK3Xc_IzKvDc1hm05aAdLSt0KE8f9P8",
-            authDomain: "burger-house-17e76.firebaseapp.com",
-            databaseURL: "https://burger-house-17e76-default-rtdb.firebaseio.com",
-            projectId: "burger-house-17e76",
-            storageBucket: "burger-house-17e76.firebasestorage.app",
+            authDomain: "burguer-house-17e76.firebaseapp.com",
+            databaseURL: "https://burguer-house-17e76-default-rtdb.firebaseio.com",
+            projectId: "burguer-house-17e76",
+            storageBucket: "burguer-house-17e76.firebasestorage.app",
             messagingSenderId: "641974770181",
             appId: "1:641974770181:web:5e348815b735d26cb7da6c"
         }
@@ -111,29 +111,24 @@
         setTimeout(() => flyImg.remove(), 750);
     };
 
-    /**
-     * Registra la visita en Firebase y premia a los primeros 20.
-     */
     const registrarVisitaFirebase = () => {
         if (typeof firebase === 'undefined' || !firebase.apps.length) return;
-
-        const db = firebase.database();
-        const counterRef = db.ref('stats/unique_visitors_count');
-        
-        // Usamos localStorage para no contar a la misma persona varias veces
-        if (!localStorage.getItem('bh_visitor_registered')) {
-            counterRef.transaction((currentValue) => {
-                return (currentValue || 0) + 1;
-            }, (error, committed, snapshot) => {
-                if (committed) {
-                    const count = snapshot.val();
-                    localStorage.setItem('bh_visitor_registered', 'true');
-                    // Lógica pausada hasta el lanzamiento oficial
-                    // if (count <= 20) {
-                    //     showToast(`¡ERES DE LOS PRIMEROS! Visitante #${count}. ¡Menciona esto al pedir y recibe una sorpresa!`, 'success');
-                    // }
-                }
-            });
+        try {
+            const db = firebase.database();
+            const counterRef = db.ref('stats/unique_visitors_count');
+            if (!localStorage.getItem('bh_visitor_registered')) {
+                counterRef.transaction((currentValue) => {
+                    return (currentValue || 0) + 1;
+                }, (error, committed, snapshot) => {
+                    if (error) {
+                        console.error("Error en la transacción de Firebase:", error);
+                    } else if (committed) {
+                        localStorage.setItem('bh_visitor_registered', 'true');
+                    }
+                });
+            }
+        } catch (err) {
+            console.error("Error al inicializar el contador de Firebase:", err);
         }
     };
 
@@ -241,14 +236,6 @@
                 );
                 section.classList.toggle('hidden-search', !hasVisible);
             });
-
-            // Siempre ocultar bebidas cuando estamos en categoría "Todos"
-            if (activeCategory === 'all') {
-                const bebidasSection = document.getElementById('bebidas');
-                if (bebidasSection) {
-                    bebidasSection.classList.add('hidden-search');
-                }
-            }
         });
 
         const categoryBtns = document.querySelectorAll('.category-btn');
@@ -267,15 +254,10 @@
 
                 document.querySelectorAll('#main-menu section').forEach((section) => {
                     if (category === 'all' || section.id === category) {
-                        // Excluir bebidas de la categoría "Todos"
-                        if (category === 'all' && section.id === 'bebidas') {
-                            section.classList.add('hidden-search');
-                        } else {
-                            section.classList.remove('hidden-search');
-                            section
-                                .querySelectorAll('.menu-item')
-                                .forEach((item) => item.classList.remove('hidden-search'));
-                        }
+                        section.classList.remove('hidden-search');
+                        section
+                            .querySelectorAll('.menu-item')
+                            .forEach((item) => item.classList.remove('hidden-search'));
                     } else {
                         section.classList.add('hidden-search');
                     }
@@ -1043,16 +1025,16 @@
 
             const url = `https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
 
-            // --- REGISTRO DE PEDIDO (FIREBASE) ---
+            // --- REGISTRO DE PEDIDO (FIREBASE + SHEETDB) ---
             const registrarOrden = async () => {
                 const fechaActual = new Date().toLocaleString();
+                const productosResumen = carrito.map(item => `${item.cantidad}x ${item.nombre}`).join(', ');
 
-                // Guardar en Firebase Realtime Database con push() para ID único automático
+                // 1. Guardar en Firebase Realtime Database
                 if (typeof firebase !== 'undefined' && firebase.apps.length) {
                     const db = firebase.database();
                     db.ref('pedidos').push({
-                        cliente: nombre,
-                        metodo: currentDeliveryMethod,
+                        cliente: { nombre, metodo: currentDeliveryMethod, notas_referencia: notas, ubicacion_maps: mapsLink },
                         productos: carrito.map(item => ({
                             nombre: item.nombre,
                             cantidad: item.cantidad,
@@ -1060,13 +1042,32 @@
                             subtotal: item.subtotal,
                             detalles_personalizacion: item.extras.map(ex => ({ nombre: ex.nombre, cantidad: ex.qty, opcion: ex.val }))
                         })),
-                        total: totalPedido,
+                        total_usd: totalPedido,
                         fecha: fechaActual,
-                        notas: notas || "Sin notas adicionales",
-                        ubicacion: mapsLink || "N/A",
                         timestamp: firebase.database.ServerValue.TIMESTAMP,
-                        estado: "pendiente"
+                        estado: "Pendiente"
                     });
+                }
+
+                // 2. Guardar en Google Sheets vía SheetDB
+                try {
+                    await fetch('https://sheetdb.io/api/v1/qyjuou0mbnjhc', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            data: [{
+                                fecha: fechaActual,
+                                cliente: nombre,
+                                metodo: currentDeliveryMethod,
+                                productos: productosResumen,
+                                total: totalPedido.toFixed(2),
+                                notas: notas || "Sin notas adicionales",
+                                ubicacion: mapsLink || "N/A"
+                            }]
+                        })
+                    });
+                } catch (err) {
+                    console.error('Error al guardar en SheetDB:', err);
                 }
             };
 
