@@ -2658,6 +2658,52 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
+
+    <!-- Firebase Analytics Initialization -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("🔍 Iniciando validación de Firebase Analytics...");
+            
+            // Verificar si Firebase está cargado
+            if (typeof firebase === 'undefined') {
+                console.error("❌ Firebase SDK no está cargado. Verifica que los scripts se cargaron correctamente.");
+                return;
+            }
+            console.log("✅ Firebase SDK cargado correctamente.");
+
+            // Verificar si Analytics está disponible
+            if (typeof firebase.analytics === 'undefined') {
+                console.warn("⚠️ Firebase Analytics no está disponible en el SDK cargado.");
+                return;
+            }
+            console.log("✅ Firebase Analytics SDK disponible.");
+
+            try {
+                // Inicializar Analytics
+                const analytics = firebase.analytics();
+                console.log("✅ Firebase Analytics inicializado correctamente.");
+                
+                // Enviar evento de prueba para verificar que funciona
+                analytics.logEvent('page_view', {
+                    page_title: document.title,
+                    page_location: window.location.href,
+                    page_path: window.location.pathname
+                });
+                console.log("✅ Evento de prueba 'page_view' enviado a Firebase Analytics.");
+                
+                // Verificar si gtag está disponible (para Firebase Analytics v8+)
+                if (typeof gtag !== 'undefined') {
+                    console.log("✅ gtag disponible para eventos avanzados.");
+                } else {
+                    console.warn("⚠️ gtag no disponible (normal para Firebase SDK v8).");
+                }
+                
+            } catch (error) {
+                console.error("❌ Error al inicializar Firebase Analytics:", error);
+            }
+        });
+    </script>
 
     <!-- Carga de lógica de historias -->
     <script src="app.js"></script>
