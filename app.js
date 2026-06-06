@@ -1,5 +1,5 @@
 /**
- * Burguer House — lógica de menú, carrito, horarios y geolocalización.
+ * Burger House — lógica de menú, carrito, horarios y geolocalización.
  * Mantiene el mismo comportamiento que el script inline original.
  */
 (function () {
