@@ -1024,7 +1024,7 @@
 
             if (isPreOrder) mensaje += '\n\nPROCESAR AL ABRIR';
 
-            const url = `https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
+            const url = `https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURI(mensaje)}`;
 
             // --- REGISTRO DE PEDIDO (FIREBASE + SHEETDB) ---
             const registrarOrden = async () => {
