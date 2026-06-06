@@ -2740,20 +2740,15 @@
         const launch = new Date("2026-06-15T17:00:00").getTime();
         const overlay = document.getElementById('launch-overlay');
         
-        // Verificar si el overlay ya fue mostrado anteriormente
-        const overlayShown = localStorage.getItem('bh_launch_overlay_shown');
-        
-        // Si el contador ya pasó o el overlay ya fue mostrado, ocultar inmediatamente
+        // Verificar si el contador ya pasó (solo ocultar si ya pasó, no por localStorage)
         const now = new Date().getTime();
         const diff = launch - now;
         
-        if (diff < 0 || overlayShown === 'true') {
+        if (diff < 0) {
             if (overlay) {
                 overlay.style.display = 'none';
             }
-            if (diff < 0) {
-                localStorage.setItem('bh_launch_overlay_shown', 'true');
-            }
+            localStorage.setItem('bh_launch_overlay_shown', 'true');
         }
         
         setInterval(() => {
