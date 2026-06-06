@@ -2738,12 +2738,29 @@
     <!-- Script del Contador Regresivo con Fade-out -->
     <script>
         const launch = new Date("2026-06-15T17:00:00").getTime();
+        const overlay = document.getElementById('launch-overlay');
+        
+        // Verificar si el overlay ya fue mostrado anteriormente
+        const overlayShown = localStorage.getItem('bh_launch_overlay_shown');
+        
+        // Si el contador ya pasó o el overlay ya fue mostrado, ocultar inmediatamente
+        const now = new Date().getTime();
+        const diff = launch - now;
+        
+        if (diff < 0 || overlayShown === 'true') {
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
+            if (diff < 0) {
+                localStorage.setItem('bh_launch_overlay_shown', 'true');
+            }
+        }
+        
         setInterval(() => {
             const now = new Date().getTime();
             const diff = launch - now;
             if (diff < 0) {
                 // Fade-out del overlay y mostrar el menú principal
-                const overlay = document.getElementById('launch-overlay');
                 if (overlay) {
                     overlay.style.transition = 'opacity 1s ease';
                     overlay.style.opacity = '0';
@@ -2751,6 +2768,8 @@
                         overlay.style.display = 'none';
                     }, 1000);
                 }
+                // Guardar estado para que no reaparezca
+                localStorage.setItem('bh_launch_overlay_shown', 'true');
                 return;
             }
             document.getElementById("d").innerText = Math.floor(diff / (864e5)).toString().padStart(2, '0');

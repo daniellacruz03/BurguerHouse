@@ -1166,6 +1166,12 @@
 
         if (btnLocation && inputMaps && textSpan) {
             btnLocation.addEventListener('click', () => {
+                // Verificar si estamos en HTTPS (requerido para geolocalización en navegadores modernos)
+                if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                    showToast('La geolocalización requiere HTTPS. Por favor, usa una conexión segura o localhost.', 'error');
+                    return;
+                }
+
                 if (!navigator.geolocation) {
                     showToast('Lo sentimos, tu navegador no soporta geolocalización.', 'error');
                     return;
@@ -1191,14 +1197,16 @@
                     (error) => {
                         textSpan.innerText = originalText;
                         btnLocation.classList.remove('loading');
+                        console.error('Error de geolocalización:', error);
                         const mensajes = {
-                            1: 'Por favor, permite el acceso a tu ubicación para facilitarnos la entrega.',
-                            2: 'No pudimos determinar tu ubicación. Verifica tu señal GPS o conexión a internet.',
-                            3: 'Se agotó el tiempo de espera al intentar obtener tu ubicación. Por favor, intenta de nuevo.'
+                            1: '❌ Permiso denegado. Por favor, permite el acceso a tu ubicación en la configuración del navegador.',
+                            2: '❌ No pudimos determinar tu ubicación. Verifica tu señal GPS o conexión a internet.',
+                            3: '❌ Se agotó el tiempo de espera. Por favor, intenta de nuevo.',
+                            4: '❌ Error desconocido al obtener ubicación.'
                         };
-                        showToast(mensajes[error.code] ?? 'No pudimos obtener tu ubicación.', 'error');
+                        showToast(mensajes[error.code] ?? mensajes[4], 'error');
                     },
-                    { enableHighAccuracy: true, timeout: 10000 }
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
                 );
             });
         }
