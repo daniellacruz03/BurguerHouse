@@ -1533,13 +1533,13 @@
 <body>
 
     <!-- Overlay de Lanzamiento (Coming Soon) -->
-    <div id="launch-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; background-color: var(--bg-color);">
+    <div id="launch-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; background-color: var(--bg-color); display: flex; align-items: center; justify-content: center;">
         <!-- Video de fondo optimizado -->
         <video autoplay muted loop playsinline preload="auto" webkit-playsinline class="video-background" poster="assets/videos/comingsoon.jpg" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(6px) brightness(0.6); z-index: -2;">
             <source src="assets/videos/comingsoon.mp4" type="video/mp4">
         </video>
 
-        <div class="app-shell" style="max-width: 400px; width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 25px; padding: 40px 10px; position: relative; z-index: 1;">
+        <div class="app-shell" style="max-width: 500px; width: 90%; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 25px; padding: 40px 20px; position: relative; z-index: 1;">
             <!-- Texto de Impacto (La Broma) -->
             <div class="text-card" style="background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px 15px; width: 95%; max-width: 350px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
                 <h1 style="font-family: var(--font-heading); font-size: 2.6rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; line-height: 1; margin-bottom: 8px; color: white;">¿EN SERIO TE LO CREÍSTE?</h1>
