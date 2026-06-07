@@ -14,24 +14,11 @@
         WEEKEND_OPEN: 780,
         PROMO_BASE_PRICE: 6.5,
         PROMO_COMBO_PRICE: 8.5,
-        PROMO_COMBO_EXTRA: 2.0,
-        // REEMPLAZA ESTO CON TUS CREDENCIALES DE FIREBASE CONSOLE
-        FIREBASE_CONFIG: {
-            apiKey: "AIzaSyCOIK3Xc_IzKvDc1hmO5aAdLST0KE8f9P8",
-            authDomain: "burguer-house-17e76.firebaseapp.com",
-            databaseURL: "https://burguer-house-17e76-default-rtdb.firebaseio.com",
-            projectId: "burguer-house-17e76",
-            storageBucket: "burguer-house-17e76.firebasestorage.app",
-            messagingSenderId: "641974770181",
-            appId: "1:641974770181:web:5e348815b735d26cb7da6c",
-            measurementId: "G-YBR4MCPDXQ"
-        }
+        PROMO_COMBO_EXTRA: 2.0
     };
 
-    // Inicializar Firebase
-    if (typeof firebase !== 'undefined' && CONFIG.FIREBASE_CONFIG.apiKey !== "TU_API_KEY") {
-        firebase.initializeApp(CONFIG.FIREBASE_CONFIG);
-    }
+    // Firebase se inicializa globalmente en index.html
+    // No es necesario re-inicializar aquí para evitar conflictos
 
     const getCaracasDate = () =>
         new Date(new Date().toLocaleString('en-US', { timeZone: CONFIG.TIMEZONE }));
