@@ -134,8 +134,12 @@
                     if (error) {
                         console.error("Error en la transacción de primeras 20:", error);
                     } else if (committed && snapshot && snapshot.val() <= 20) {
+                        const visitorNumber = snapshot.val();
                         localStorage.setItem('bh_first20_registered', 'true');
-                        console.log(`✅ Registrado como visitante #${snapshot.val()} de las primeras 20 después del lanzamiento`);
+                        localStorage.setItem('bh_first20_number', visitorNumber.toString());
+                        console.log(`✅ Registrado como visitante #${visitorNumber} de las primeras 20 después del lanzamiento`);
+                        // Mostrar aviso visual al usuario
+                        showToast(`🎉 ¡Eres la persona #${visitorNumber}! Disfruta del 40% de descuento en tu compra`, 'success');
                     } else if (committed && snapshot && snapshot.val() > 20) {
                         console.log("ℹ️ Ya se completaron las primeras 20 visitas después del lanzamiento");
                     }
@@ -1028,7 +1032,22 @@
             });
 
             mensaje += '\n------------------------------\n';
-            mensaje += `*TOTAL DEL PEDIDO: $${totalPedido.toFixed(2)} REF*\n`;
+
+            // Verificar si es de las primeras 20 personas para aplicar descuento del 40%
+            const isFirst20 = localStorage.getItem('bh_first20_registered') === 'true';
+            const visitorNumber = localStorage.getItem('bh_first20_number');
+            let totalConDescuento = totalPedido;
+
+            if (isFirst20 && visitorNumber) {
+                const descuento = totalPedido * 0.40;
+                totalConDescuento = totalPedido - descuento;
+                mensaje += `🎉 *¡Eres la persona #${visitorNumber} de las primeras 20!*\n`;
+                mensaje += `*Descuento 40%: -$${descuento.toFixed(2)} REF*\n`;
+                mensaje += `*TOTAL CON DESCUENTO: $${totalConDescuento.toFixed(2)} REF*\n`;
+            } else {
+                mensaje += `*TOTAL DEL PEDIDO: $${totalPedido.toFixed(2)} REF*\n`;
+            }
+
             if (currentDeliveryMethod === 'delivery') {
                 mensaje += '_(El costo del delivery se calcula al recibir la ubicación)_\n';
             }
