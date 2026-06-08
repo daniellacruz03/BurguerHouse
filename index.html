@@ -1533,9 +1533,9 @@
 <body>
 
     <!-- Overlay de Lanzamiento (Coming Soon) -->
-    <div id="launch-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; background-color: var(--bg-color); display: flex; align-items: center; justify-content: center;">
+    <div id="launch-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; background-color: var(--bg-color); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.5s ease;">
         <!-- Video de fondo optimizado -->
-        <video autoplay muted loop playsinline preload="auto" webkit-playsinline class="video-background" poster="assets/videos/comingsoon.jpg" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(6px) brightness(0.6); z-index: -2;">
+        <video autoplay muted loop playsinline preload="auto" webkit-playsinline inline class="video-background" poster="assets/videos/comingsoon.jpg" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(6px) brightness(0.6); z-index: -2;">
             <source src="assets/videos/comingsoon.mp4" type="video/mp4">
         </video>
 
@@ -2753,11 +2753,23 @@
     <script>
         const launch = new Date("2026-06-15T17:00:00").getTime();
         const overlay = document.getElementById('launch-overlay');
-        
+        const video = document.querySelector('.video-background');
+
+        // Forzar autoplay del video en cualquier dispositivo
+        function forceVideoAutoplay() {
+            if (video) {
+                video.play().catch(error => {
+                    console.log('Autoplay falló, intentando con muted:', error);
+                    video.muted = true;
+                    video.play().catch(e => console.log('Autoplay completamente bloqueado:', e));
+                });
+            }
+        }
+
         // Verificar si el contador ya pasó
         const now = new Date().getTime();
         const diff = launch - now;
-        
+
         // Si la fecha es futura, limpiar localStorage para asegurar que el overlay se muestre
         if (diff > 0) {
             localStorage.removeItem('bh_launch_overlay_shown');
@@ -2768,8 +2780,9 @@
             }
             localStorage.setItem('bh_launch_overlay_shown', 'true');
         }
-        
-        setInterval(() => {
+
+        // Calcular valores iniciales del contador
+        function updateCounter() {
             const now = new Date().getTime();
             const diff = launch - now;
             if (diff < 0) {
@@ -2789,7 +2802,23 @@
             document.getElementById("h").innerText = Math.floor((diff % 864e5) / 36e5).toString().padStart(2, '0');
             document.getElementById("m").innerText = Math.floor((diff % 36e5) / 6e4).toString().padStart(2, '0');
             document.getElementById("s").innerText = Math.floor((diff % 6e4) / 1e3).toString().padStart(2, '0');
-        }, 1000);
+        }
+
+        // Calcular contador inicialmente antes de mostrar el overlay
+        updateCounter();
+
+        // Mostrar overlay solo cuando el contador esté cargado
+        if (overlay && diff > 0) {
+            setTimeout(() => {
+                overlay.style.opacity = '1';
+                forceVideoAutoplay();
+            }, 100);
+        } else if (overlay && diff <= 0) {
+            overlay.style.display = 'none';
+        }
+
+        // Iniciar intervalo del contador
+        setInterval(updateCounter, 1000);
     </script>
 
     <!-- Carga de lógica de historias -->
