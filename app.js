@@ -1145,7 +1145,21 @@
 
             if (isPreOrder) mensaje += '\n\nPROCESAR AL ABRIR';
 
-            const url = `https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
+            // Codificar mensaje para WhatsApp usando encodeURIComponent para emojis
+            const encodedMessage = mensaje
+                .replace(/🍔/g, '%F0%9F%8D%94')
+                .replace(/👤/g, '%F0%9F%91%A4')
+                .replace(/📝/g, '%F0%9F%93%9D')
+                .replace(/🎉/g, '%F0%9F%8E%89')
+                .replace(/🛵/g, '%F0%9F%9B%B5')
+                .replace(/🏠/g, '%F0%9F%8F%A0')
+                .replace(/🔢/g, '%F0%9F%94%A2')
+                .replace(/📍/g, '%F0%9F%93%8D')
+                .replace(/\n/g, '%0A')
+                .replace(/\*/g, '%2A')
+                .replace(/_/g, '%5F');
+            
+            const url = `https://wa.me/${CONFIG.WHATSAPP}?text=${encodedMessage}`;
 
             // --- REGISTRO DE PEDIDO (FIREBASE + SHEETDB) ---
             const registrarOrden = async () => {
