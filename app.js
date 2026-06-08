@@ -758,6 +758,10 @@
                 const mainProteins = ['carne', 'pollo crispy', 'pollo', 'chuleta'];
                 const mainProtFound =
                     mainProteins.find((p) => nameLower.includes(p) || descLower.includes(p)) || '';
+                
+                // Determinar si es pollo crispy o pollo normal
+                const isPolloCrispy = descLower.includes('pollo crispy');
+                const isPolloNormal = descLower.includes('pollo') && !isPolloCrispy;
                 const recipeKeywords = [
                     'tocineta',
                     'queso',
@@ -786,6 +790,14 @@
                             defaultValue = descLower.includes('pan') ? 'SÍ' : 'NO';
                             rank = 0;
                         } else if (mainProtFound && cn.includes(mainProtFound)) {
+                            visible = true;
+                            defaultValue = 'SÍ';
+                            rank = 1;
+                        } else if (isPolloCrispy && cn.includes('pollo crispy')) {
+                            visible = true;
+                            defaultValue = 'SÍ';
+                            rank = 1;
+                        } else if (isPolloNormal && cn === 'pollo') {
                             visible = true;
                             defaultValue = 'SÍ';
                             rank = 1;
