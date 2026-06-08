@@ -2601,6 +2601,26 @@
         </div>
     </div>
 
+    <!-- Modal de Descuento Primeras 20 Personas -->
+    <div id="modal-discount" class="modal" style="z-index: 10001;">
+        <div class="modal-content upsell-content" style="background: linear-gradient(135deg, #e60000 0%, #cc0000 100%); border: 2px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);">
+            <button class="close-modal" id="close-discount-modal" style="color: white; opacity: 0.8;">&times;</button>
+            <div class="modal-details" style="text-align: center;">
+                <div style="font-size: 4rem; margin-bottom: 15px;">🎉</div>
+                <h2 class="modal-title" style="color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">¡FELICIDADES!</h2>
+                <p class="modal-description" style="color: white; font-size: 1.2rem; font-weight: 600; margin-bottom: 10px;">
+                    Eres la persona #<span id="discount-visitor-number">X</span> de las primeras 20
+                </p>
+                <p class="modal-description" style="color: rgba(255,255,255,0.95); font-size: 1.1rem; margin-bottom: 20px;">
+                    Disfruta del <span style="font-weight: 800; font-size: 1.3rem;">40% de descuento</span> en tu compra
+                </p>
+                <div class="upsell-buttons" style="margin-top: 20px;">
+                    <button id="btn-close-discount" class="btn-add-order" style="background: white; color: #e60000; border: none;">¡GENIAL!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal de Ayuda -->
     <div id="modal-help" class="modal" aria-hidden="true">
         <div class="modal-content-help">

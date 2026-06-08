@@ -64,45 +64,28 @@
         }, 3000);
     };
 
-    const showDiscountToast = (visitorNumber) => {
-        const container = document.getElementById('toast-container');
-        if (!container) return;
+    const showDiscountModal = (visitorNumber) => {
+        const modal = document.getElementById('modal-discount');
+        const visitorNumberSpan = document.getElementById('discount-visitor-number');
+        if (!modal || !visitorNumberSpan) return;
 
-        const toast = document.createElement('div');
-        toast.style.cssText = `
-            background: linear-gradient(135deg, #e60000 0%, #cc0000 100%);
-            color: white;
-            padding: 20px 25px;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(230, 0, 0, 0.4);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            animation: toastSlideIn 0.5s ease-out forwards;
-            max-width: 400px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-        `;
+        visitorNumberSpan.textContent = visitorNumber;
+        modal.classList.add('active');
+        lockBodyScroll(true);
 
-        toast.innerHTML = `
-            <div style="font-size: 2.5rem; line-height: 1;">🎉</div>
-            <div style="flex: 1;">
-                <div style="font-weight: 800; font-size: 1.1rem; margin-bottom: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-                    ¡Eres la persona #${visitorNumber}!
-                </div>
-                <div style="font-weight: 500; font-size: 0.9rem; opacity: 0.95;">
-                    Disfruta del 40% de descuento en tu compra
-                </div>
-            </div>
-        `;
+        // Función para cerrar modal y continuar con promo
+        const closeDiscountModal = () => {
+            modal.classList.remove('active');
+            lockBodyScroll(false);
+            // Mostrar promo después de cerrar modal de descuento
+            setTimeout(verificarYMostrarPromo, 300);
+        };
 
-        container.appendChild(toast);
+        // Cerrar modal con botón X
+        document.getElementById('close-discount-modal')?.addEventListener('click', closeDiscountModal);
 
-        setTimeout(() => {
-            toast.style.animation = 'toastSlideOut 0.5s ease-out forwards';
-            setTimeout(() => toast.remove(), 500);
-        }, 5000);
+        // Cerrar modal con botón "¡GENIAL!"
+        document.getElementById('btn-close-discount')?.addEventListener('click', closeDiscountModal);
     };
 
     /**
@@ -144,7 +127,7 @@
         if (typeof firebase === 'undefined' || !firebase.apps.length) return;
         try {
             const db = firebase.database();
-            const launchDate = new Date(Date.now() - 3600000).getTime(); // -1 hora para pruebas locales (ya pasó)
+            const launchDate = new Date("2026-06-15T17:00:00").getTime();
             const now = new Date().getTime();
             const isAfterLaunch = now >= launchDate;
 
@@ -179,8 +162,8 @@
                         localStorage.setItem('bh_first20_registered', 'true');
                         localStorage.setItem('bh_first20_number', visitorNumber.toString());
                         console.log(`✅ Registrado como visitante #${visitorNumber} de las primeras 20 después del lanzamiento`);
-                        // Mostrar aviso visual al usuario con estética Burger House
-                        showDiscountToast(visitorNumber);
+                        // Mostrar modal de descuento después del preloader
+                        setTimeout(() => showDiscountModal(visitorNumber), 500);
                     } else if (committed && snapshot && snapshot.val() > 20) {
                         console.log("ℹ️ Ya se completaron las primeras 20 visitas después del lanzamiento");
                     }
@@ -218,7 +201,12 @@
 
                 stickyNav?.classList.add('mostrar-menu');
                 document.getElementById('cart-floating-btn')?.classList.remove('cart-btn-hidden');
-                setTimeout(verificarYMostrarPromo, 1000);
+
+                // Solo mostrar promo si NO es de las primeras 20 personas
+                const isFirst20 = localStorage.getItem('bh_first20_registered') === 'true';
+                if (!isFirst20) {
+                    setTimeout(verificarYMostrarPromo, 1000);
+                }
             }, 200);
         };
 
