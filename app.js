@@ -1272,9 +1272,7 @@
 
                         textSpan.innerText = '¡Ubicado!';
                         btnLocation.classList.remove('loading');
-                        setTimeout(() => {
-                            textSpan.innerText = originalText;
-                        }, 2000);
+                        // El mensaje "¡Ubicado!" queda permanente, no se reinicia
                     },
                     (error) => {
                         textSpan.innerText = originalText;
