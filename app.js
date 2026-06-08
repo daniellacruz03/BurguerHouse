@@ -127,7 +127,7 @@
         if (typeof firebase === 'undefined' || !firebase.apps.length) return;
         try {
             const db = firebase.database();
-            const launchDate = new Date(Date.now() - 3600000).getTime(); // -1 hora para pruebas (ya pasó)
+            const launchDate = new Date('2026-06-15T17:00:00').getTime(); // 15 de junio de 2026 a las 5pm
             const now = new Date().getTime();
             const isAfterLaunch = now >= launchDate;
 
@@ -1110,15 +1110,18 @@
 
             mensaje += '\n------------------------------\n';
 
-            // Verificar si es de las primeras 20 personas para aplicar descuento del 40%
+            // Verificar si es de las primeras 20 personas para aplicar descuento
+            // Primera persona: 40%, otras 19: 20%
             const isFirst20 = localStorage.getItem('bh_first20_registered') === 'true';
             let totalConDescuento = totalPedido;
 
             if (isFirst20 && visitorNumber) {
-                const descuento = totalPedido * 0.40;
+                const isFirstPerson = visitorNumber === '1';
+                const descuentoPorcentaje = isFirstPerson ? 0.40 : 0.20;
+                const descuento = totalPedido * descuentoPorcentaje;
                 totalConDescuento = totalPedido - descuento;
                 mensaje += `🎉 *¡Eres la persona #${visitorNumber} de las primeras 20!*\n`;
-                mensaje += `*Descuento 40%: -$${descuento.toFixed(2)} REF*\n`;
+                mensaje += `*Descuento ${descuentoPorcentaje * 100}%: -$${descuento.toFixed(2)} REF*\n`;
                 mensaje += `*TOTAL CON DESCUENTO: $${totalConDescuento.toFixed(2)} REF*\n`;
             } else {
                 mensaje += `*TOTAL DEL PEDIDO: $${totalPedido.toFixed(2)} REF*\n`;
