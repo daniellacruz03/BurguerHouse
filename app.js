@@ -103,6 +103,11 @@
         if (typeof firebase === 'undefined' || !firebase.apps.length) return;
         try {
             const db = firebase.database();
+            const launchDate = new Date("2026-06-15T17:00:00").getTime();
+            const now = new Date().getTime();
+            const isAfterLaunch = now >= launchDate;
+
+            // Contador general de visitas únicas
             const counterRef = db.ref('stats/unique_visitors_count');
             if (!localStorage.getItem('bh_visitor_registered')) {
                 counterRef.transaction((currentValue) => {
@@ -112,6 +117,27 @@
                         console.error("Error en la transacción de Firebase:", error);
                     } else if (committed) {
                         localStorage.setItem('bh_visitor_registered', 'true');
+                    }
+                });
+            }
+
+            // Contador de primeras 20 personas después del lanzamiento
+            if (isAfterLaunch && !localStorage.getItem('bh_first20_registered')) {
+                const first20Ref = db.ref('stats/first20_after_launch');
+                first20Ref.transaction((currentValue) => {
+                    const count = currentValue || 0;
+                    if (count < 20) {
+                        return count + 1;
+                    }
+                    return count;
+                }, (error, committed, snapshot) => {
+                    if (error) {
+                        console.error("Error en la transacción de primeras 20:", error);
+                    } else if (committed && snapshot && snapshot.val() <= 20) {
+                        localStorage.setItem('bh_first20_registered', 'true');
+                        console.log(`✅ Registrado como visitante #${snapshot.val()} de las primeras 20 después del lanzamiento`);
+                    } else if (committed && snapshot && snapshot.val() > 20) {
+                        console.log("ℹ️ Ya se completaron las primeras 20 visitas después del lanzamiento");
                     }
                 });
             }
