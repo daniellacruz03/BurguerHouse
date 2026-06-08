@@ -762,6 +762,9 @@
                 // Determinar si es pollo crispy o pollo normal
                 const isPolloCrispy = descLower.includes('pollo crispy');
                 const isPolloNormal = descLower.includes('pollo') && !isPolloCrispy;
+                
+                // Determinar si tiene chuleta
+                const hasChuleta = descLower.includes('chuleta');
                 const recipeKeywords = [
                     'tocineta',
                     'queso',
@@ -802,7 +805,11 @@
                             visible = true;
                             defaultValue = 'SÍ';
                             rank = 1;
-                        } else if (mainProtFound && cn.includes(mainProtFound) && !cn.includes('pollo')) {
+                        } else if (hasChuleta && cn === 'chuleta') {
+                            visible = true;
+                            defaultValue = 'SÍ';
+                            rank = 1;
+                        } else if (mainProtFound && cn.includes(mainProtFound) && !cn.includes('pollo') && !cn.includes('chuleta')) {
                             visible = true;
                             defaultValue = 'SÍ';
                             rank = 1;
