@@ -780,8 +780,8 @@
                         let rank = 1000;
                         let defaultValue = 'NO'; // Por defecto NO, solo SÍ si está en la descripción
 
-                        // Salsa de la Casa siempre SÍ para todas las hamburguesas
-                        if (cn.includes('salsa de la casa') && esHamburguesa) {
+                        // Salsa de la Casa siempre SÍ para todas las hamburguesas (no el servicio)
+                        if (cn === 'salsa de la casa' && esHamburguesa) {
                             visible = true;
                             defaultValue = 'SÍ';
                             rank = 5;
@@ -789,15 +789,15 @@
                             visible = true;
                             defaultValue = descLower.includes('pan') ? 'SÍ' : 'NO';
                             rank = 0;
-                        } else if (mainProtFound && cn.includes(mainProtFound)) {
-                            visible = true;
-                            defaultValue = 'SÍ';
-                            rank = 1;
-                        } else if (isPolloCrispy && cn.includes('pollo crispy')) {
+                        } else if (isPolloCrispy && cn === 'pollo crispy') {
                             visible = true;
                             defaultValue = 'SÍ';
                             rank = 1;
                         } else if (isPolloNormal && cn === 'pollo') {
+                            visible = true;
+                            defaultValue = 'SÍ';
+                            rank = 1;
+                        } else if (mainProtFound && cn.includes(mainProtFound) && !cn.includes('pollo')) {
                             visible = true;
                             defaultValue = 'SÍ';
                             rank = 1;
