@@ -64,6 +64,47 @@
         }, 3000);
     };
 
+    const showDiscountToast = (visitorNumber) => {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            background: linear-gradient(135deg, #e60000 0%, #cc0000 100%);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(230, 0, 0, 0.4);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: toastSlideIn 0.5s ease-out forwards;
+            max-width: 400px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        `;
+
+        toast.innerHTML = `
+            <div style="font-size: 2.5rem; line-height: 1;">🎉</div>
+            <div style="flex: 1;">
+                <div style="font-weight: 800; font-size: 1.1rem; margin-bottom: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                    ¡Eres la persona #${visitorNumber}!
+                </div>
+                <div style="font-weight: 500; font-size: 0.9rem; opacity: 0.95;">
+                    Disfruta del 40% de descuento en tu compra
+                </div>
+            </div>
+        `;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.animation = 'toastSlideOut 0.5s ease-out forwards';
+            setTimeout(() => toast.remove(), 500);
+        }, 5000);
+    };
+
     /**
      * Crea un efecto visual de una imagen "volando" hacia el carrito.
      */
@@ -103,7 +144,7 @@
         if (typeof firebase === 'undefined' || !firebase.apps.length) return;
         try {
             const db = firebase.database();
-            const launchDate = new Date("2026-06-15T17:00:00").getTime();
+            const launchDate = new Date(Date.now() - 3600000).getTime(); // -1 hora para pruebas locales (ya pasó)
             const now = new Date().getTime();
             const isAfterLaunch = now >= launchDate;
 
@@ -138,8 +179,8 @@
                         localStorage.setItem('bh_first20_registered', 'true');
                         localStorage.setItem('bh_first20_number', visitorNumber.toString());
                         console.log(`✅ Registrado como visitante #${visitorNumber} de las primeras 20 después del lanzamiento`);
-                        // Mostrar aviso visual al usuario
-                        showToast(`🎉 ¡Eres la persona #${visitorNumber}! Disfruta del 40% de descuento en tu compra`, 'success');
+                        // Mostrar aviso visual al usuario con estética Burger House
+                        showDiscountToast(visitorNumber);
                     } else if (committed && snapshot && snapshot.val() > 20) {
                         console.log("ℹ️ Ya se completaron las primeras 20 visitas después del lanzamiento");
                     }
