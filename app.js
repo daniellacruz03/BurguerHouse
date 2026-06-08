@@ -1078,7 +1078,15 @@
             }
 
             let mensaje = '🍔 *NUEVO PEDIDO - BURGER HOUSE* 🍔\n\n';
-            mensaje += `👤 *Cliente:* ${nombre}\n\n`;
+            mensaje += `👤 *Cliente:* ${nombre}\n`;
+            
+            // Agregar número de cliente siempre
+            const visitorNumber = localStorage.getItem('bh_first20_number');
+            if (visitorNumber) {
+                mensaje += `🔢 *Cliente #:* ${visitorNumber}\n`;
+            }
+            mensaje += '\n';
+            
             mensaje += '📝 *DETALLE DEL PEDIDO:*\n';
 
             let totalPedido = 0;
@@ -1104,7 +1112,6 @@
 
             // Verificar si es de las primeras 20 personas para aplicar descuento del 40%
             const isFirst20 = localStorage.getItem('bh_first20_registered') === 'true';
-            const visitorNumber = localStorage.getItem('bh_first20_number');
             let totalConDescuento = totalPedido;
 
             if (isFirst20 && visitorNumber) {
@@ -1138,7 +1145,7 @@
 
             if (isPreOrder) mensaje += '\n\nPROCESAR AL ABRIR';
 
-            const url = `https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURI(mensaje)}`;
+            const url = `https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
 
             // --- REGISTRO DE PEDIDO (FIREBASE + SHEETDB) ---
             const registrarOrden = async () => {
