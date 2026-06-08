@@ -785,6 +785,11 @@
                             visible = true;
                             defaultValue = 'SÍ';
                             rank = 5;
+                        } else if (cn.includes('salsa de la casa') && !cn.includes('servicio') && !cn.includes('extra') && esHamburguesa) {
+                            // Fallback por si el nombre tiene espacios o variaciones
+                            visible = true;
+                            defaultValue = 'SÍ';
+                            rank = 5;
                         } else if (cn.includes('pan') && (esHamburguesa || esKids)) {
                             visible = true;
                             defaultValue = descLower.includes('pan') ? 'SÍ' : 'NO';
