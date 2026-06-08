@@ -960,6 +960,19 @@
             const notas = document.getElementById('additional-notes')?.value.trim() ?? '';
             const mapsLink = document.getElementById('maps')?.value.trim() ?? '';
 
+            // Validación de carrito vacío
+            if (!carrito || carrito.length === 0) {
+                showToast('El carrito está vacío. Agrega productos antes de confirmar el pedido.', 'error');
+                return;
+            }
+
+            // Validación de total $0.00
+            const totalCarrito = carrito.reduce((sum, item) => sum + (item.subtotal || 0), 0);
+            if (totalCarrito <= 0) {
+                showToast('El total del pedido es $0.00. Agrega productos antes de confirmar.', 'error');
+                return;
+            }
+
             if (!nombre) {
                 showToast('Por favor, ingresa tu nombre.', 'error');
                 return;
