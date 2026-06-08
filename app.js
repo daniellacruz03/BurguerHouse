@@ -1133,12 +1133,12 @@
             mensaje += `*Método:* ${currentDeliveryMethod === 'delivery' ? 'DELIVERY 🛵' : 'PICK UP (Retiro en sede) 🏠'}\n`;
 
             if (currentDeliveryMethod === 'delivery') {
-                if (!mapsLink) {
-                    showToast('Por favor, obtén tu ubicación haciendo clic en el botón "Enviar dirección" para poder procesar tu delivery.', 'error');
-                    return;
-                }
                 if (notas) mensaje += `*Notas/Referencia:* ${notas}\n`;
-                if (mapsLink) mensaje += `*Ubicación Maps:* ${mapsLink}\n`;
+                if (mapsLink) {
+                    mensaje += `*Ubicación Maps:* ${mapsLink}\n`;
+                } else {
+                    mensaje += `*Ubicación:* No proporcionada\n`;
+                }
             } else {
                 if (notas) mensaje += `*Notas adicionales:* ${notas}\n`;
             }
