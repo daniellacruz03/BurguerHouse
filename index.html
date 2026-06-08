@@ -2412,6 +2412,16 @@
                                 <button class="extra-qty-btn plus">+</button>
                             </div>
                         </div>
+                        <div class="extra-card" data-extra-price="1.00">
+                            <div class="extra-info-text">
+                                <span class="extra-name">Servicio de Salsa de la Casa</span> <span class="extra-cost">+$1.00</span>
+                            </div>
+                            <div class="extra-counter">
+                                <button class="extra-qty-btn minus">-</button>
+                                <span class="extra-qty-val">0</span>
+                                <button class="extra-qty-btn plus">+</button>
+                            </div>
+                        </div>
                         <div class="extra-card" data-extra-price="0.00" data-is-toggle="true">
                             <div class="extra-info-text">
                                 <span class="extra-name">Pepinillos</span>
@@ -2771,7 +2781,7 @@
 
     <!-- Script del Contador Regresivo con Fade-out -->
     <script>
-        const launch = new Date("2026-06-15T17:00:00").getTime();
+        const launch = new Date(Date.now() - 3600000).getTime(); // -1 hora para pruebas (ya pasó)
         const overlay = document.getElementById('launch-overlay');
         const video = document.querySelector('.video-background');
 

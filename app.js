@@ -127,7 +127,7 @@
         if (typeof firebase === 'undefined' || !firebase.apps.length) return;
         try {
             const db = firebase.database();
-            const launchDate = new Date("2026-06-15T17:00:00").getTime();
+            const launchDate = new Date(Date.now() - 3600000).getTime(); // -1 hora para pruebas (ya pasó)
             const now = new Date().getTime();
             const isAfterLaunch = now >= launchDate;
 
@@ -774,18 +774,26 @@
                         const cn = card.querySelector('.extra-name')?.textContent.toLowerCase().trim() ?? '';
                         let visible = false;
                         let rank = 1000;
-                        const defaultValue = 'SÍ';
+                        let defaultValue = 'NO'; // Por defecto NO, solo SÍ si está en la descripción
 
-                        if (cn.includes('pan') && (esHamburguesa || esKids)) {
+                        // Salsa de la Casa siempre SÍ para todas las hamburguesas
+                        if (cn.includes('salsa de la casa') && esHamburguesa) {
                             visible = true;
+                            defaultValue = 'SÍ';
+                            rank = 5;
+                        } else if (cn.includes('pan') && (esHamburguesa || esKids)) {
+                            visible = true;
+                            defaultValue = descLower.includes('pan') ? 'SÍ' : 'NO';
                             rank = 0;
                         } else if (mainProtFound && cn.includes(mainProtFound)) {
                             visible = true;
+                            defaultValue = 'SÍ';
                             rank = 1;
                         } else if (
                             recipeKeywords.some((kw) => cn.includes(kw) && descLower.includes(kw))
                         ) {
                             visible = true;
+                            defaultValue = 'SÍ';
                             const kwFound = recipeKeywords.find(
                                 (kw) => cn.includes(kw) && descLower.includes(kw)
                             );
