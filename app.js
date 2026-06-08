@@ -129,7 +129,7 @@
             const db = firebase.database();
             const launchDate = new Date('2026-06-15T17:00:00').getTime(); // 15 de junio de 2026 a las 5pm
             const now = new Date().getTime();
-            const isAfterLaunch = now >= launchDate;
+            const isBeforeLaunch = now < launchDate; // Mostrar contador antes del lanzamiento
 
             // Contador general de visitas únicas
             const counterRef = db.ref('stats/unique_visitors_count');
@@ -145,8 +145,8 @@
                 });
             }
 
-            // Contador de primeras 20 personas después del lanzamiento
-            if (isAfterLaunch && !localStorage.getItem('bh_first20_registered')) {
+            // Contador de primeras 20 personas antes del lanzamiento
+            if (isBeforeLaunch && !localStorage.getItem('bh_first20_registered')) {
                 const first20Ref = db.ref('stats/first20_after_launch');
                 first20Ref.transaction((currentValue) => {
                     const count = currentValue || 0;
@@ -161,11 +161,11 @@
                         const visitorNumber = snapshot.val();
                         localStorage.setItem('bh_first20_registered', 'true');
                         localStorage.setItem('bh_first20_number', visitorNumber.toString());
-                        console.log(`✅ Registrado como visitante #${visitorNumber} de las primeras 20 después del lanzamiento`);
+                        console.log(`✅ Registrado como visitante #${visitorNumber} de las primeras 20 antes del lanzamiento`);
                         // Mostrar modal de descuento después del preloader
                         setTimeout(() => showDiscountModal(visitorNumber), 500);
                     } else if (committed && snapshot && snapshot.val() > 20) {
-                        console.log("ℹ️ Ya se completaron las primeras 20 visitas después del lanzamiento");
+                        console.log("ℹ️ Ya se completaron las primeras 20 visitas antes del lanzamiento");
                     }
                 });
             }
