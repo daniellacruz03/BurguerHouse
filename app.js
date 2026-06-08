@@ -765,6 +765,10 @@
                 
                 // Determinar si tiene chuleta
                 const hasChuleta = descLower.includes('chuleta');
+                
+                // Determinar si es Crispy Bowl y tiene barbecue
+                const isCrispyBowl = nameLower.includes('crispy bowl');
+                const hasBarbecue = descLower.includes('barbecue');
                 const recipeKeywords = [
                     'tocineta',
                     'queso',
@@ -806,6 +810,10 @@
                             defaultValue = 'SÍ';
                             rank = 1;
                         } else if (hasChuleta && cn === 'chuleta') {
+                            visible = true;
+                            defaultValue = 'SÍ';
+                            rank = 1;
+                        } else if (isCrispyBowl && hasBarbecue && cn === 'salsa bbq') {
                             visible = true;
                             defaultValue = 'SÍ';
                             rank = 1;
