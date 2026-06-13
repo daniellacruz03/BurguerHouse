@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -11,11 +11,11 @@
     
     <!-- Meta Tags para Redes Sociales (Open Graph) -->
     <meta property="og:title" content="Burger House | Menú Digital">
-    <meta property="og:description" content="Explora nuestras hamburguesas artesanales y haz tu pedido directamente por WhatsApp.">
+    <meta property="og:description" content="Explora nuestras hamburguesas y haz tu pedido directamente por WhatsApp.">
     <meta property="og:image" content="logobh.webp">
     <meta property="og:type" content="website">
     <meta name="theme-color" content="#080808">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style-tailwind.css">
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-YBR4MCPDXQ"></script>
@@ -336,7 +336,6 @@
                 radial-gradient(circle at 0% 100%, rgba(255, 0, 0, 0.1) 0%, transparent 40%),
                 radial-gradient(circle at 100% 100%, rgba(255, 0, 0, 0.1) 0%, transparent 40%),
                 rgba(10, 10, 10, 0.98);
-            padding: 0 15px 0 !important;
             border-radius: 50px 50px 0 0 !important;
             backdrop-filter: blur(8px);
             margin: 0 auto;
@@ -559,19 +558,127 @@
 
         /* Grid para PC */
         @media (min-width: 769px) {
-            .menu-container {
-                height: 90vh; /* El contenedor ocupa casi toda la pantalla */
-                overflow-y: auto; /* Permite el scroll solo dentro del menú */
-                position: sticky; /* Se queda pegado a la pantalla */
-                top: 5vh; /* Se separa un poco del borde superior */
-                padding-bottom: 0 !important; 
+            body {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
             }
+
+            .sticky-nav {
+                max-width: 1000px;
+                margin: 0 auto;
+                left: 50% !important;
+                transform: translateX(-50%);
+                border-radius: 0 0 20px 20px !important;
+            }
+
+            /* Asegurar que las historias de videos se muestren en PC */
+            .bh-video-feed-scroll {
+                display: flex !important;
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+
+            .banner-card {
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+
             section:not(#bebidas) {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 20px;
             }
             .seccion-titulo { grid-column: span 2; }
+
+            /* Grid de bebidas en desktop con columnas más anchas */
+            #bebidas {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 20px;
+            }
+
+            /* Ajustar modales para desktop */
+            .modal-content {
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            /* Ajustar carrito sidebar para desktop - Comportarse como modal */
+            #cart-sidebar {
+                background: rgba(15, 15, 15, 0.95) !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                max-width: 500px;
+                width: 100% !important;
+                left: 0 !important;
+                right: 0 !important;
+                top: 0 !important;
+                bottom: 0 !important;
+                margin: auto !important;
+                height: auto !important;
+                max-height: 90vh !important;
+                border-radius: 30px !important;
+                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                transform: scale(0.9) !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                transition: all 0.4s ease !important;
+                inset: auto !important;
+                pointer-events: none !important;
+                z-index: var(--layer-c3) !important;
+            }
+
+            #cart-sidebar:not(.cart-closed) {
+                transform: scale(1) !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                pointer-events: auto !important;
+            }
+
+            /* Backdrop para desenfocar contenido detrás */
+            .cart-backdrop {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                background: rgba(0, 0, 0, 0.8) !important;
+                backdrop-filter: blur(10px) !important;
+                -webkit-backdrop-filter: blur(10px) !important;
+                z-index: calc(var(--layer-c3) - 1) !important;
+                opacity: 0 !important;
+                transition: opacity 0.4s ease !important;
+                pointer-events: none !important;
+            }
+
+            .cart-backdrop.active {
+                opacity: 1 !important;
+                pointer-events: auto !important;
+            }
+
+            .cart-header {
+                padding: 20px 30px !important;
+            }
+
+            .cart-item-row {
+                padding: 16px 30px !important;
+            }
+
+            #cart-grand-total {
+                font-size: 2rem !important;
+            }
+
+            /* Ajustar botón del carrito flotante para desktop */
+            #cart-floating-btn {
+                width: 60px !important;
+                height: 60px !important;
+            }
+
+            /* Ajustar checkout para desktop */
+            #checkout-view {
+                padding: 20px 30px !important;
+            }
         }
 
         .item-price {
@@ -1535,7 +1642,7 @@
     <!-- Overlay de Lanzamiento (Coming Soon) -->
     <div id="launch-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; background-color: var(--bg-color); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.5s ease;">
         <!-- Video de fondo optimizado -->
-        <video autoplay muted loop playsinline preload="auto" webkit-playsinline inline class="video-background" poster="assets/videos/comingsoon.jpg" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(6px) brightness(0.6); z-index: -2;">
+        <video autoplay muted loop playsinline preload="metadata" webkit-playsinline inline class="video-background" poster="assets/videos/comingsoon.jpg" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(6px) brightness(0.6); z-index: -2;">
             <source src="assets/videos/comingsoon.mp4" type="video/mp4">
         </video>
 
@@ -1621,12 +1728,12 @@
         </div>
     </div>
 
-    <main id="main-menu" class="menu-container">
+    <main id="main-menu" class="menu-container lg:max-w-6xl lg:mx-auto">
         <!-- Carrusel de Historias Minimalista -->
-        <div id="bh-video-feed-scroll" class="bh-video-feed-scroll"></div>
+        <div id="bh-video-feed-scroll" class="bh-video-feed-scroll lg:max-w-6xl lg:mx-auto"></div>
 
         <!-- Texto de instrucción para clientes -->
-        <div class="start-order-text">
+        <div class="start-order-text lg:max-w-6xl lg:mx-auto lg:mt-12">
             <span>Empieza a Pedir</span>
             <button class="help-btn" id="help-btn" data-tooltip="¿Cómo pedir?">
                 <span>!</span>
@@ -1637,7 +1744,7 @@
             </div>
         </div>
 
-        <section id="hamburguesas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <section id="hamburguesas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:max-w-6xl lg:mx-auto">
             
             <div class="menu-item">
                 <img src="bowl.webp" class="item-img-bg ajuste-subir" alt="Crispy Bowl" loading="lazy" width="900" height="500">
@@ -1854,7 +1961,7 @@
             </div>
         </section>
 
-        <section id="ensaladas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <section id="ensaladas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:max-w-6xl lg:mx-auto">
             <div class="menu-item">
                 <img src="ensalada.webp" class="item-img-bg" alt="House Salad" loading="lazy" width="400" height="220">
                 <div class="item-info-split">
@@ -1870,7 +1977,7 @@
             </div>
         </section>
 
-        <section id="kids" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <section id="kids" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:max-w-6xl lg:mx-auto">
             <div class="menu-item">
                 <img src="kids house.webp" class="item-img-bg ajuste-subir" alt="Kids House" loading="lazy" width="400" height="220">
                 <div class="item-info-split">
@@ -1886,7 +1993,7 @@
             </div>
         </section>
 
-        <section id="servicios" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <section id="servicios" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:max-w-6xl lg:mx-auto">
             <div class="menu-item">
                 <img src="bowl.webp" class="item-img-bg" alt="Crispy Bowl" loading="lazy" width="400" height="220">
                 <div class="item-info-split">
@@ -1968,7 +2075,7 @@
             </div>
         </section>
 
-        <section id="bebidas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <section id="bebidas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:max-w-6xl lg:mx-auto">
             <div class="menu-item">
                 <div class="item-info"><span class="item-name">Coca-Cola Bombita 355 ML</span></div>
                 <div class="item-price-wrapper" data-img-src="cocacolabombita.webp">
@@ -1985,7 +2092,7 @@
             </div>
             <div class="menu-item">
                 <div class="item-info"><span class="item-name">Coca-Cola Bombita Zero 355 ML</span></div>
-                <div class="item-price-wrapper" data-img-src="cocacolalatazero.webp">
+                <div class="item-price-wrapper" data-img-src="gaseosa.webp">
                     <span class="item-price">$1</span>
                     <span class="item-ref">REF</span>
                 </div>
@@ -1993,6 +2100,13 @@
             <div class="menu-item">
                 <div class="item-info"><span class="item-name">Coca-Cola Lata 350 ML</span></div>
                 <div class="item-price-wrapper" data-img-src="cocacolalataclasica.webp">
+                    <span class="item-price">$1,5</span>
+                    <span class="item-ref">REF</span>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info"><span class="item-name">Coca-Cola Lata Zero 350ML</span></div>
+                <div class="item-price-wrapper" data-img-src="cocacolalatazero.webp">
                     <span class="item-price">$1,5</span>
                     <span class="item-ref">REF</span>
                 </div>
@@ -2053,6 +2167,13 @@
                     <span class="item-ref">REF</span>
                 </div>
             </div>
+            <div class="menu-item">
+                <div class="item-info"><span class="item-name">Agua Mineral 600ml</span></div>
+                <div class="item-price-wrapper" data-img-src="gaseosa.webp">
+                    <span class="item-price">$1</span>
+                    <span class="item-ref">REF</span>
+                </div>
+            </div>
         </section>
 
         <!-- --- FOOTER (REDES Y PAGOS) --- -->
@@ -2088,11 +2209,14 @@
                 <p>&copy; 2026<b>Burger House</b>. Todos los derechos reservados.</p>
                 <p>Las mejores hamburguesas de la ciudad.</p>
                 <div style="margin-top: 20px; opacity: 0.4; font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase;">
-                    <p>Digital Experience by <b>lacrush</b></p>
+                    <p>Digital Experience by <a href="mailto:tu-correo@example.com?subject=Consulta%20sobre%20Servicios%20Web&body=Hola%20lacrush,%0A%0AQuisiera%20contratar%20tus%20servicios%20web.%20Vi%20tu%20trabajo%20en%20la%20página%20de%20Burger%20House%20y%20me%20gustaría%20saber%20más.%0A%0ASaludos." target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none; cursor: pointer;"><b>lacrush</b></a></p>
                 </div>
             </div>
         </footer>
     </main>
+
+    <!-- Backdrop para carrito en desktop -->
+    <div class="cart-backdrop" id="cart-backdrop"></div>
 
     <div id="cart-sidebar" class="cart-closed">
         <div class="cart-header">
@@ -2111,7 +2235,12 @@
                         <span>Total:</span>
                         <span id="cart-grand-total">$0.00</span>
                     </div>
-                    <button id="btn-go-checkout">Confirmar Pedido</button>
+                    <button id="btn-go-checkout" class="btn-with-spinner">
+                        <svg class="btn-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                        </svg>
+                        <span class="btn-text">Confirmar Pedido</span>
+                    </button>
                     <div class="sugerencia-bebida">
                         <span>¿Deseas añadir una bebida?</span>
                         <button id="btn-ver-bebidas" class="btn-sugerencia-outline">Ver Bebidas</button>
@@ -2156,13 +2285,16 @@
                     </div>
 
                     <div class="checkout-grid" id="delivery-tools">
-                        <button type="button" id="btn-get-location" title="Obtener ubicación" style="width: 100%; margin: 0;">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <button type="button" id="btn-get-location" title="Obtener ubicación" style="width: 100%; margin: 0;" class="btn-with-spinner">
+                            <svg class="location-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.6-1.8A2 2 0 0 1 22 5.541V17.5a2 2 0 0 1-1.106 1.789l-3.6 1.8a2 2 0 0 1-1.788 0l-7.2-3.6a2 2 0 0 0-1.788 0l-3.6 1.8A2 2 0 0 1 2 17.5V5.5a2 2 0 0 1 1.106-1.789l3.6-1.8a2 2 0 0 1 1.788 0z"></path>
                                 <path d="M15 18.677V5.823"></path>
                                 <path d="M9 18.177V5.323"></path>
                             </svg>
-                            <span>Enviar dirección</span>
+                            <svg class="btn-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                            </svg>
+                            <span class="btn-text">Enviar dirección</span>
                         </button>
                     </div>
 
@@ -2506,7 +2638,12 @@
                 </div>
 
                 <span class="modal-price">$0.00</span>
-                <button class="btn-add-order">Añadir al pedido</button>
+                <button class="btn-add-order btn-with-spinner">
+                    <svg class="btn-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                    </svg>
+                    <span class="btn-text">Añadir al pedido</span>
+                </button>
             </div>
         </div>
     </div>
@@ -2576,7 +2713,12 @@
                 </div>
 
                 <span class="modal-price" id="promo-selection-price">$6.50 <span class="modal-ref">REF</span></span>
-                <button class="btn-add-order" id="btn-add-promo-to-cart">Añadir al pedido</button>
+                <button class="btn-add-order flex w-full justify-center items-center gap-2 duration-150 rounded-xl font-sans bg-[#ffbb33] text-black hover:bg-[#e6a82e] font-bold py-4 text-xl uppercase shadow-[0_10px_20px_rgba(255,187,51,0.3)] btn-with-spinner" id="btn-add-promo-to-cart">
+                    <svg class="btn-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                    </svg>
+                    <span class="btn-text">Añadir al pedido</span>
+                </button>
             </div>
         </div>
     </div>
@@ -2596,8 +2738,18 @@
                 <h2 class="modal-title">¡Pedido en proceso!</h2>
                 <p class="modal-description">¡Tu pedido está en camino! Recuerda completar el proceso en WhatsApp para que podamos procesarlo correctamente.</p>
                 <div class="upsell-buttons">
-                    <button id="btn-new-order" class="btn-add-order">Hacer otro pedido</button>
-                    <button id="btn-reminder-ok" class="btn-back-to-cart btn-large-cancel" style="margin-top: 10px; width: 100%;">Entendido</button>
+                    <button id="btn-new-order" class="btn-add-order flex w-full justify-center items-center gap-2 duration-150 rounded-xl font-sans bg-[#ffbb33] text-black hover:bg-[#e6a82e] font-bold py-4 text-xl uppercase shadow-[0_10px_20px_rgba(255,187,51,0.3)] btn-with-spinner">
+                        <svg class="btn-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                        </svg>
+                        <span class="btn-text">Hacer otro pedido</span>
+                    </button>
+                    <button id="btn-reminder-ok" class="btn-back-to-cart btn-large-cancel btn-with-spinner" style="margin-top: 10px; width: 100%;">
+                        <svg class="btn-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                        </svg>
+                        <span class="btn-text">Entendido</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -2615,31 +2767,361 @@
                 <p class="modal-description" style="margin-top: 15px; font-weight: bold; color: #ff0000; text-shadow: 0.5px 0.5px 0px rgba(255, 255, 255, 0.3);">Estamos cerrados por ahora, pero puedes pre-ordenar tu pedido.</p>
                 <p class="modal-description" style="margin-top: 10px; font-size: 0.85rem; color: #aaa;">Tu pre-orden se enviará por WhatsApp y será procesada cuando abramos.</p>
                 <div class="upsell-buttons" style="margin-top: 20px;">
-                    <button id="btn-pre-order" class="btn-add-order">Pre-ordenar</button>
+                    <button id="btn-pre-order" class="btn-add-order btn-with-spinner">
+                        <svg class="btn-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                        </svg>
+                        <span class="btn-text">Pre-ordenar</span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal de Descuento Primeras 20 Personas -->
-    <div id="modal-discount" class="modal" style="z-index: 10001;">
-        <div class="modal-content upsell-content" style="background: linear-gradient(135deg, #e60000 0%, #cc0000 100%); border: 2px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);">
-            <button class="close-modal" id="close-discount-modal" style="color: white; opacity: 0.8;">&times;</button>
-            <div class="modal-details" style="text-align: center;">
-                <div style="font-size: 4rem; margin-bottom: 15px;">🎉</div>
-                <h2 class="modal-title" style="color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">¡FELICIDADES!</h2>
-                <p class="modal-description" style="color: white; font-size: 1.2rem; font-weight: 600; margin-bottom: 10px;">
-                    Eres la persona #<span id="discount-visitor-number">X</span> de las primeras 20
+    <!-- Modal de Descuento Premium -->
+    <div id="modal-discount" class="modal" style="z-index: 10002;">
+        <div class="modal-content discount-modal-content">
+            <button class="close-modal" id="close-discount-modal">&times;</button>
+            
+            <!-- Partículas de celebración -->
+            <div class="celebration-particles">
+                <div class="particle particle-1"></div>
+                <div class="particle particle-2"></div>
+                <div class="particle particle-3"></div>
+                <div class="particle particle-4"></div>
+                <div class="particle particle-5"></div>
+            </div>
+            
+            <div class="modal-details">
+                <div class="logo-container">
+                    <img src="logobh.webp" alt="Burger House" class="discount-logo">
+                </div>
+                
+                <h2 class="modal-title discount-title">¡FELICIDADES!</h2>
+                
+                <p class="modal-description discount-description">
+                    Eres el cliente número <span class="visitor-number">1</span> en entrar a la página
                 </p>
-                <p class="modal-description" style="color: rgba(255,255,255,0.95); font-size: 1.1rem; margin-bottom: 20px;">
-                    Disfruta del <span style="font-weight: 800; font-size: 1.3rem;">40% de descuento</span> en tu compra
+                
+                <p class="modal-description discount-highlight">
+                    Disfruta del <span class="discount-percentage">40% de descuento</span> en tu compra
                 </p>
-                <div class="upsell-buttons" style="margin-top: 20px;">
-                    <button id="btn-close-discount" class="btn-add-order" style="background: white; color: #e60000; border: none;">¡GENIAL!</button>
+                
+                <div class="upsell-buttons">
+                    <button id="btn-close-discount" class="btn-discount-premium btn-with-spinner">
+                        <svg class="btn-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                        </svg>
+                        <span class="btn-text">¡GENIAL!</span>
+                        <span class="shimmer-effect"></span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+
+    <style>
+        /* Modal de Descuento Premium */
+        .discount-modal-content {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 24px;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.8),
+                0 0 100px rgba(230, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            max-width: 90vw;
+            width: 400px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            animation: modalSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .discount-modal-content .close-modal {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 20;
+        }
+
+        .discount-modal-content .close-modal:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        /* Partículas de celebración */
+        .celebration-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        .particle-1 {
+            background: linear-gradient(135deg, #e60000, #ff3366);
+            top: 20%;
+            left: 10%;
+            animation: particleFloat 3s ease-in-out infinite;
+            animation-delay: 0s;
+        }
+
+        .particle-2 {
+            background: linear-gradient(135deg, #ffffff, #f0f0f0);
+            top: 30%;
+            right: 15%;
+            animation: particleFloat 3s ease-in-out infinite;
+            animation-delay: 0.5s;
+        }
+
+        .particle-3 {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            top: 50%;
+            left: 20%;
+            animation: particleFloat 3s ease-in-out infinite;
+            animation-delay: 1s;
+        }
+
+        .particle-4 {
+            background: linear-gradient(135deg, #e60000, #ff6b6b);
+            bottom: 30%;
+            right: 10%;
+            animation: particleFloat 3s ease-in-out infinite;
+            animation-delay: 1.5s;
+        }
+
+        .particle-5 {
+            background: linear-gradient(135deg, #ffffff, #e0e0e0);
+            bottom: 20%;
+            left: 30%;
+            animation: particleFloat 3s ease-in-out infinite;
+            animation-delay: 2s;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% {
+                opacity: 0;
+                transform: translateY(0) scale(0);
+            }
+            50% {
+                opacity: 0.8;
+                transform: translateY(-20px) scale(1);
+            }
+        }
+
+        /* Logo */
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .discount-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: logoPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes logoPulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 8px 32px rgba(230, 0, 0, 0.4);
+            }
+        }
+
+        /* Título con gradiente */
+        .discount-title {
+            font-size: 2rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 50%, #ffffff 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShine 3s linear infinite;
+        }
+
+        @keyframes gradientShine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        /* Descripción */
+        .discount-description {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            text-align: center;
+            margin-bottom: 0.75rem;
+            line-height: 1.6;
+        }
+
+        .visitor-number {
+            color: #e60000;
+            font-weight: 800;
+            font-size: 1.3rem;
+            text-shadow: 0 0 20px rgba(230, 0, 0, 0.5);
+        }
+
+        /* Highlight del descuento */
+        .discount-highlight {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .discount-percentage {
+            color: #e60000;
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #e60000, #ff3366);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: none;
+            filter: drop-shadow(0 0 10px rgba(230, 0, 0, 0.5));
+        }
+
+        /* Botón Premium */
+        .btn-discount-premium {
+            position: relative;
+            background: linear-gradient(135deg, #e60000 0%, #cc0000 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 
+                0 4px 15px rgba(230, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            width: 100%;
+            max-width: 280px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .btn-discount-premium:hover {
+            transform: scale(1.03);
+            box-shadow: 
+                0 6px 20px rgba(230, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-discount-premium:active {
+            transform: scale(0.98);
+        }
+
+        /* Shimmer effect */
+        .shimmer-effect {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+            50%, 100% {
+                left: 100%;
+            }
+        }
+
+        /* Responsividad */
+        @media (max-width: 480px) {
+            .discount-modal-content {
+                padding: 1.5rem;
+                max-width: 95vw;
+            }
+
+            .discount-title {
+                font-size: 1.6rem;
+            }
+
+            .discount-description {
+                font-size: 1rem;
+            }
+
+            .discount-highlight {
+                font-size: 1.1rem;
+            }
+
+            .discount-percentage {
+                font-size: 1.3rem;
+            }
+
+            .btn-discount-premium {
+                padding: 0.9rem 2rem;
+                font-size: 1rem;
+                max-width: 100%;
+            }
+
+            .discount-logo {
+                width: 70px;
+                height: 70px;
+            }
+        }
+    </style>
 
     <!-- Modal de Ayuda -->
     <div id="modal-help" class="modal" aria-hidden="true">
@@ -2719,6 +3201,7 @@
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
 
@@ -2726,10 +3209,10 @@
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCOIK3Xc_IzKvDc1hmO5aAdLST0KE8f9P8",
-            authDomain: "burguer-house-17e76.firebaseapp.com",
-            databaseURL: "https://burguer-house-17e76-default-rtdb.firebaseio.com",
-            projectId: "burguer-house-17e76",
-            storageBucket: "burguer-house-17e76.firebasestorage.app",
+            authDomain: "burguer-house-17e76.firebaseapp.com", // <--- Corregido (burguer)
+            databaseURL: "https://burguer-house-17e76-default-rtdb.firebaseio.com/", // <--- Corregido (burguer)
+            projectId: "burguer-house-17e76", // <--- Corregido (burguer)
+            storageBucket: "burguer-house-17e76.firebasestorage.app", // <--- Corregido (burguer)
             messagingSenderId: "641974770181",
             appId: "1:641974770181:web:5e348815b735d26cb7da6c",
             measurementId: "G-YBR4MCPDXQ"
@@ -2739,6 +3222,38 @@
         if (typeof firebase !== 'undefined' && !firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
             console.log("✅ Firebase inicializado globalmente en index.html");
+
+            // GESTOR DE AUTENTICACIÓN ANÓNIMA
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    // Usuario ya está autenticado anónimamente.
+                    console.log("👤 Usuario anónimo autenticado. UID:", user.uid);                    
+                    
+                    // VERIFICACIÓN ANTI-TRAMPA: Chequear si el UID ya está en la lista de ganadores.
+                    firebase.database().ref('usuarios_descuento/' + user.uid).once('value').then(snapshot => {
+                        if (snapshot.exists()) {
+                            console.log("🚫 Este usuario ya reclamó un descuento. Bloqueando futuros intentos.");
+                            // Marcamos en localStorage para que app.js no intente registrarlo de nuevo.
+                            localStorage.setItem('bh_discount_claimed_db', 'true');
+                        } else {
+                            console.log("✅ Usuario limpio, puede participar en dinámicas.");
+                        }
+                    });
+                    // Disparar evento para que app.js sepa que puede continuar, independientemente del resultado.
+                    document.dispatchEvent(new CustomEvent('firebase-auth-ready', { detail: { user: user } }));
+                } else {
+                    // Usuario no está autenticado, intentar iniciar sesión anónima.
+                    console.log("⏳ Intentando inicio de sesión anónimo...");
+                    firebase.auth().signInAnonymously().catch(function(error) {
+                        // Este es el error 400 que estás viendo.
+                        console.error("❌ ERROR FATAL: No se pudo iniciar sesión anónima.", {
+                            code: error.code,
+                            message: error.message,
+                            details: "Esto usualmente significa que el 'Inicio de sesión anónimo' no está HABILITADO en tu consola de Firebase -> Authentication -> Sign-in method."
+                        });
+                    });
+                }
+            });
         } else if (firebase.apps.length > 0) {
             console.log("ℹ️ Firebase ya estaba inicializado, usando instancia existente");
         }
@@ -2747,95 +3262,40 @@
     <!-- Firebase Analytics Initialization -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("🔍 Iniciando validación de Firebase Analytics...");
-            
-            // Verificar si Firebase está cargado
-            if (typeof firebase === 'undefined') {
-                console.error("❌ Firebase SDK no está cargado. Verifica que los scripts se cargaron correctamente.");
-                return;
-            }
-            console.log("✅ Firebase SDK cargado correctamente.");
-
-            // Verificar si Analytics está disponible
-            if (typeof firebase.analytics === 'undefined') {
-                console.warn("⚠️ Firebase Analytics no está disponible en el SDK cargado.");
-                return;
-            }
-            console.log("✅ Firebase Analytics SDK disponible.");
-
-            try {
-                // Inicializar Analytics
-                const analytics = firebase.analytics();
-                console.log("✅ Firebase Analytics inicializado correctamente.");
-                
-                // Enviar evento de prueba para verificar que funciona
-                analytics.logEvent('page_view', {
-                    page_title: document.title,
-                    page_location: window.location.href,
-                    page_path: window.location.pathname
-                });
-                console.log("✅ Evento de prueba 'page_view' enviado a Firebase Analytics.");
-                
-                // Verificar si gtag está disponible (para Firebase Analytics v8+)
-                if (typeof gtag !== 'undefined') {
-                    console.log("✅ gtag disponible para eventos avanzados.");
-                } else {
-                    console.warn("⚠️ gtag no disponible (normal para Firebase SDK v8).");
+            if (typeof firebase !== 'undefined' && typeof firebase.analytics !== 'undefined') {
+                try {
+                    const analytics = firebase.analytics();
+                    analytics.logEvent('page_view');
+                    console.log("✅ Firebase Analytics inicializado correctamente.");
+                } catch (e) {
+                    console.error("❌ Error en Analytics", e);
                 }
-                
-            } catch (error) {
-                console.error("❌ Error al inicializar Firebase Analytics:", error);
             }
         });
     </script>
 
-    <!-- Script del Contador Regresivo con Fade-out -->
+    <!-- Contador Launch -->
     <script>
-        const launch = new Date(Date.now() - 3600000).getTime(); // -1 hora para pruebas (ya pasó)
+        // localStorage.clear(); // <-- LINEA COMENTADA: Ya no borraremos la memoria en cada recarga
+        const launch = new Date('2026-06-15T17:00:00-04:00').getTime(); // <-- 15 junio 2026 5:00 PM GMT-4
+        window.launchDate = launch; // <-- Hacer disponible globalmente para app.js
         const overlay = document.getElementById('launch-overlay');
-        const video = document.querySelector('.video-background');
 
-        // Forzar autoplay del video en cualquier dispositivo
-        function forceVideoAutoplay() {
-            if (video) {
-                video.play().catch(error => {
-                    console.log('Autoplay falló, intentando con muted:', error);
-                    video.muted = true;
-                    video.play().catch(e => console.log('Autoplay completamente bloqueado:', e));
-                });
-            }
-        }
-
-        // Verificar si el contador ya pasó
-        const now = new Date().getTime();
-        const diff = launch - now;
-
-        // Si la fecha es futura, limpiar localStorage para asegurar que el overlay se muestre
-        if (diff > 0) {
-            localStorage.removeItem('bh_launch_overlay_shown');
-        } else if (diff < 0) {
-            // Si ya pasó, ocultar overlay y guardar estado
-            if (overlay) {
-                overlay.style.display = 'none';
-            }
-            localStorage.setItem('bh_launch_overlay_shown', 'true');
-        }
-
-        // Calcular valores iniciales del contador
         function updateCounter() {
             const now = new Date().getTime();
             const diff = launch - now;
             if (diff < 0) {
-                // Fade-out del overlay y mostrar el menú principal
-                if (overlay) {
+                if (overlay && overlay.style.display !== 'none') {
                     overlay.style.transition = 'opacity 1s ease';
                     overlay.style.opacity = '0';
                     setTimeout(() => {
                         overlay.style.display = 'none';
+                        // ¡Fuegos artificiales! Dispara la verificación de ganadores justo al quitar la cortina
+                        if (typeof window.registrarVisitaFirebase === 'function') {
+                            window.registrarVisitaFirebase();
+                        }
                     }, 1000);
                 }
-                // Guardar estado para que no reaparezca
-                localStorage.setItem('bh_launch_overlay_shown', 'true');
                 return;
             }
             document.getElementById("d").innerText = Math.floor(diff / (864e5)).toString().padStart(2, '0');
@@ -2843,25 +3303,16 @@
             document.getElementById("m").innerText = Math.floor((diff % 36e5) / 6e4).toString().padStart(2, '0');
             document.getElementById("s").innerText = Math.floor((diff % 6e4) / 1e3).toString().padStart(2, '0');
         }
-
-        // Calcular contador inicialmente antes de mostrar el overlay
-        updateCounter();
-
-        // Mostrar overlay solo cuando el contador esté cargado
-        if (overlay && diff > 0) {
-            setTimeout(() => {
-                overlay.style.opacity = '1';
-                forceVideoAutoplay();
-            }, 100);
-        } else if (overlay && diff <= 0) {
+        setInterval(updateCounter, 1000);
+        
+        if (overlay && (launch - new Date().getTime()) > 0) {
+            overlay.style.opacity = '1';
+        } else if (overlay) {
             overlay.style.display = 'none';
         }
-
-        // Iniciar intervalo del contador
-        setInterval(updateCounter, 1000);
     </script>
 
-    <!-- Carga de lógica de historias -->
+    <!-- Carga de lógica -->
     <script src="app.js"></script>
     <script src="stories.js"></script>
 </body>
