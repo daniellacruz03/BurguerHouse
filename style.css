@@ -1201,13 +1201,13 @@ p, .item-desc {
 }
 
 .btn-sugerencia-outline {
-    background: transparent;
+    background: white;
     border: 1px solid var(--primary-color);
     color: var(--primary-color);
-    padding: 8px 20px;
+    padding: 12px 24px;
     border-radius: 20px;
     font-family: var(--font-heading);
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     font-weight: 700;
     text-transform: uppercase;
     cursor: pointer;

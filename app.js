@@ -1176,11 +1176,11 @@
                 if (span) span.innerText = 'Generando comanda...';
 
                 // 1. GENERACIÓN DE COMANDA ESTRICTA
-                let mensaje = `\u{1F354} *NUEVO PEDIDO - BURGER HOUSE* \u{1F354}\n\n\u{1F464} *Cliente:* ${nombre}\n`;
+                let mensaje = `*NUEVO PEDIDO - BURGER HOUSE*\n\n*Cliente:* ${nombre}\n`;
                 const visitorNumber = localStorage.getItem('bh_first20_number');
-                if (visitorNumber && visitorNumber !== 'tarde') mensaje += `\u{1F522} *Cliente #:* ${visitorNumber}\n`;
+                if (visitorNumber && visitorNumber !== 'tarde') mensaje += `*Cliente #:* ${visitorNumber}\n`;
                 
-                mensaje += '\n\u{1F4DD} *DETALLE DEL PEDIDO:*\n';
+                mensaje += '\n*DETALLE DEL PEDIDO:*\n';
                 carrito.forEach((item) => {
                     const isNuggetsItem = item.nombre.toLowerCase().includes('nuggets');
 
@@ -1221,7 +1221,7 @@
                         totalConDescuento = totalPedido - montoDescontado;
                         
                         mensaje += `*SUBTOTAL:* $${totalPedido.toFixed(2)} REF\n`;
-                        mensaje += `\u{1F389} *¡PREMIO CLIENTE #${visitorNum}! (${descPrc * 100}% OFF)*\n`;
+                        mensaje += `*¡PREMIO CLIENTE #${visitorNum}! (${descPrc * 100}% OFF)*\n`;
                         mensaje += `*DESCUENTO:* -$${montoDescontado.toFixed(2)} REF\n`;
                         mensaje += `------------------------------\n`;
                         mensaje += `*TOTAL A PAGAR: $${totalConDescuento.toFixed(2)} REF*\n`;
@@ -1235,7 +1235,7 @@
 
                 if (currentDeliveryMethod === 'delivery') mensaje += '_(El costo del delivery se calcula al recibir la ubicación)_\n';
                 mensaje += '------------------------------\n\n*DATOS DE ENTREGA:*\n';
-                mensaje += `*Método:* ${currentDeliveryMethod === 'delivery' ? 'DELIVERY \u{1F6B5}' : 'PICK UP \u{1F3E0}'}\n`;
+                mensaje += `*Método:* ${currentDeliveryMethod === 'delivery' ? 'DELIVERY' : 'PICK UP'}\n`;
 
                 if (currentDeliveryMethod === 'delivery') {
                     if (notas) mensaje += `*Notas:* ${notas}\n`;
