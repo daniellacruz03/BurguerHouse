@@ -1133,9 +1133,16 @@
                         if (svgIcon) svgIcon.style.display = 'block';
                         
                         let errorMsg = 'Error al obtener ubicación. Permite el acceso GPS.';
-                        if (error.code === 1) errorMsg = 'Permiso de ubicación denegado por el usuario.';
-                        if (error.code === 2) errorMsg = 'Información de ubicación no disponible (señal débil).';
-                        if (error.code === 3) errorMsg = 'Tiempo de espera agotado al buscar el GPS.';
+                        if (error.code === 1) {
+                            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                            if (isIOS) {
+                                errorMsg = 'iPhone: Ve a Ajustes > Safari > Ubicación > Permitir. O pega tu enlace de Maps manualmente.';
+                            } else {
+                                errorMsg = 'Permiso de ubicación denegado. Permite el acceso GPS o pega tu enlace de Maps manualmente.';
+                            }
+                        }
+                        if (error.code === 2) errorMsg = 'Información de ubicación no disponible (señal débil). Pega tu enlace de Maps manualmente.';
+                        if (error.code === 3) errorMsg = 'Tiempo de espera agotado. Pega tu enlace de Maps manualmente.';
                         
                         showToast(errorMsg, 'error');
                     },
