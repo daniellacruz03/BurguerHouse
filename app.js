@@ -331,12 +331,8 @@
                 const visitorNumber = localStorage.getItem('bh_first20_number');
                 const isTop5 = visitorNumber && parseInt(visitorNumber) <= 5;
 
-                // TEMPORAL: Mostrar modal de promos para pruebas
-                // Si es cliente de los primeros 5: el modal de descuento se encarga de mostrar promos al cerrar
-                // Si NO es cliente de los primeros 5: mostrar promos después de 3s
-                if (!isFirst20 && !isTop5) {
-                    setTimeout(verificarYMostrarPromo, 3000);
-                }
+                // Mostrar modal de promos después de 3s para todos los usuarios
+                setTimeout(verificarYMostrarPromo, 3000);
             }, 200);
         };
 
