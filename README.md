@@ -1,8 +1,8 @@
-# 🍔 Burger House - Menú Digital Pro
+#  Burger House - Menú Digital 
 
 Este proyecto es un sistema de menú digital optimizado para conversión, integrado con persistencia de datos y automatización de reportes.
 
-## 🚀 Funciones y Lógicas de Pedido (Especificaciones)
+## Funciones y Lógicas de Pedido (Especificaciones)
 
 ### 1. Gestión del Carrito de Compras
 - **Persistencia:** El carrito se sincroniza automáticamente con el `localStorage` (`bh_cart`). Si el usuario recarga la página, sus productos permanecen allí.
@@ -38,6 +38,35 @@ Al presionar "Confirmar Pedido", el sistema ejecuta tres acciones en paralelo de
 - **Contador de Visitas:** Nodo `/stats/unique_visitors_count`. Registra usuarios únicos mediante `localStorage` para evitar duplicados.
 - **Registro de Pedidos:** Nodo `/pedidos`. Guarda el objeto completo del pedido (cliente, productos, extras detallados, total y timestamp) justo antes del envío a WhatsApp.
 - **Nota Técnica:** No remover el uso de `transaction()` en el contador para evitar colisiones de datos.
+
+### 2.1 Sistema de Lanzamiento y Premios (Primeros 5 Clientes)
+
+Este es el corazón de la dinámica de lanzamiento, diseñado para ser 100% justo y a prueba de trampas.
+
+1.  **El Momento Cero:**
+    -   Un contador regresivo se muestra a todos los usuarios antes de la fecha de lanzamiento (`launchDate`).
+    -   En el milisegundo exacto en que el contador llega a cero, el overlay desaparece y se invoca la función `window.registrarVisitaFirebase()`.
+
+2.  **La "Fila India" (Transacción Atómica):**
+    -   Múltiples usuarios harán clic simultáneamente, enviando peticiones al servidor. Firebase las encola y las procesa **una por una, en estricto orden de llegada**.
+    -   La lógica se ejecuta en una transacción sobre el nodo `stats/first5_after_launch`.
+    -   El servidor verifica si hay menos de 5 ganadores (`winnerCount < 5`).
+        -   **Si es verdadero:** Asigna el puesto correspondiente al `user.uid` del cliente y guarda el cambio.
+        -   **Si es falso:** La transacción se aborta. El usuario llegó tarde.
+
+3.  **Asignación de Premios:**
+    -   **Cliente #1:** Recibe un **40% de descuento** en toda su compra.
+    -   **Clientes #2 al #5:** Reciben un **20% de descuento** cada uno.
+    -   **Cliente #6 en adelante:** No reciben descuento, pero el sistema les informa que llegaron tarde para evitar confusiones.
+
+4.  **Sistema Anti-Trampas (Inquebrantable):**
+    -   **Identidad Única (Auth Anónima):** Cada usuario tiene un `user.uid` único e inviolable. Nadie puede registrarse dos veces.
+    -   **Validación en Servidor:** La transacción de Firebase es el juez. Verifica si un `user.uid` ya está en la lista de ganadores y, de ser así, aborta la operación. Borrar el `localStorage` no sirve de nada, ya que la validación principal ocurre en la base de datos.
+    -   **Optimización Inteligente:** El `localStorage` (`bh_first20_registered`, `bh_first20_number`) se usa para darle una respuesta instantánea al usuario en recargas posteriores (ganó, perdió o llegó tarde), evitando consultas innecesarias a Firebase y mejorando la experiencia.
+
+5.  **Reclamar y Aplicar el Descuento:**
+    -   Al ganar, el usuario ve un modal de felicitación. Al cerrarlo, se guarda una marca de seguridad final en el nodo `usuarios_descuento/[user.uid]`.
+    -   Al momento de finalizar la compra, el sistema revisa el `localStorage` para ver el puesto del ganador, calcula el descuento correspondiente (40% o 20%) y lo aplica al total en el mensaje de WhatsApp que se genera.
 
 ### 3. SheetDB (Google Sheets API)
 - **Endpoint:** `https://sheetdb.io/api/v1/qyjuou0mbnjhc`

@@ -1,0 +1,26 @@
+{
+  "name": "burguerhouse",
+  "version": "1.0.0",
+  "description": "Este proyecto es un sistema de menú digital optimizado para conversión, integrado con persistencia de datos y automatización de reportes.",
+  "main": "app.js",
+"scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "npx @tailwindcss/cli -i ./input.css -o ./style-tailwind.css",
+    "watch:css": "npx @tailwindcss/cli -i ./input.css -o ./style-tailwind.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daniellacruz03/BurguerHouse.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/daniellacruz03/BurguerHouse/issues"
+  },
+  "homepage": "https://github.com/daniellacruz03/BurguerHouse#readme",
+  "devDependencies": {
+    "tailwindcss": "^4.3.0"
+  }
+}

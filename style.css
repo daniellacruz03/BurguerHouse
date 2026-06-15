@@ -70,6 +70,11 @@
     object-fit: contain !important;
 }
 
+/* Asegura respuesta táctil instantánea en móviles (elimina delay de 300ms) */
+button, a, input, select, textarea {
+    touch-action: manipulation;
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html {
@@ -461,6 +466,9 @@ h1, h2, h3, h4, h5, h6 {
     cursor: pointer;
     z-index: 5;
     touch-action: manipulation;
+    /* Optimización Extrema Móvil: Solo renderiza lo que está en pantalla */
+    content-visibility: auto;
+    contain-intrinsic-size: 140px; /* Tamaño estimado de la tarjeta para que el scroll no salte */
 }
 
 /* Eliminar margin-bottom en pantallas con grid responsivo */
@@ -479,8 +487,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .menu-item:active {
-    transform: scale(0.98);
-    background: rgba(255, 255, 255, 0.12);
+    transform: scale(0.94) !important;
+    background: rgba(255, 255, 255, 0.15) !important;
 }
 
 .badge-new {
@@ -649,7 +657,7 @@ p, .item-desc {
     position: relative;
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-    animation: zoomIn 0.3s ease-out;
+    /* animation: zoomIn 0.3s ease-out; (Movida a las clases dinámicas de Framer) */
 }
 
 .clock-container {
@@ -897,7 +905,50 @@ p, .item-desc {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative; /* Asegura que los elementos hijos con position: absolute se posicionen correctamente */
     border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* --- Estilos para Interruptores (Toggles) en Extras --- */
+.extra-card[data-is-toggle="true"] {
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.extra-card[data-is-toggle="true"]:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.toggle-switch {
+    width: 44px;
+    height: 24px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+}
+
+.toggle-indicator {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    background: #aaa;
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Estado Activo (SÍ) para Toggles */
+.extra-card.selected .toggle-switch {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.extra-card.selected .toggle-indicator {
+    background: #ffffff;
+    transform: translateX(20px);
 }
 
  .extra-info-text { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
@@ -967,7 +1018,7 @@ p, .item-desc {
 #cart-badge {
     position: absolute;
     top: -5px; right: -5px;
-    background: var(--primary-color);
+    background: #666;
     color: white;
     border: 2px solid white;
     width: 22px; height: 22px;
@@ -1548,6 +1599,16 @@ p, .item-desc {
     scroll-margin-top: 180px; /* Compensar altura del header fijo para scrollIntoView */
 }
 
+/* --- ESTILOS ESPECÍFICOS PARA DESKTOP --- */
+@media (min-width: 1024px) {
+    .menu-container {
+        padding-top: 205px !important; /* Aumenta el espacio superior en PC para dar más aire bajo el header fijo */
+    }
+    .grid-cols-1 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
 /* --- TARJETAS DE VIDEO --- */
 .video-story-card {
     flex: 0 0 115px !important;
@@ -1932,4 +1993,73 @@ p, .item-desc {
     transition: transform 0.7s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.6s ease-out;
     filter: drop-shadow(0 0 20px rgba(230, 0, 0, 0.4));
     will-change: transform, opacity;
+}
+
+/* --- ANIMACIÓN DE CARGA PARA BOTONES (LOADING STATE) --- */
+.btn-with-spinner {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    transition: all 0.3s ease;
+}
+
+.btn-spinner {
+    display: none;
+    width: 22px;
+    height: 22px;
+    animation: spin-loader 1s linear infinite;
+}
+
+.btn-spinner.active {
+    display: block;
+}
+
+@keyframes spin-loader {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* --- ANIMACIONES TIPO FRAMER MOTION (SPRING & STAGGER) --- */
+/* Simulación de la física 'type: spring' de Framer Motion */
+@keyframes framerSpring {
+    0% { opacity: 0; transform: scale(0.92); }
+    60% { transform: scale(1.02); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+/* Simulación del 'y: 20 -> y: 0' de Framer Motion */
+@keyframes framerSlideUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* 1. Modal contenedor (Escala elástica) */
+.modal.active .modal-content:not(.discount-modal-content):not(.promo-modal-content) {
+    animation: framerSpring 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* 2. Hijos en Cascada (StaggerChildren) */
+.modal.active .modal-image-container {
+    opacity: 0;
+    animation: framerSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.05s forwards;
+}
+
+.modal.active .modal-details > .modal-title,
+.modal.active .modal-details > .modal-description {
+    opacity: 0;
+    animation: framerSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s forwards;
+}
+
+.modal.active .modal-main-qty,
+.modal.active .modal-extras-container,
+.modal.active .upsell-buttons {
+    opacity: 0;
+    animation: framerSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.15s forwards;
+}
+
+.modal.active .modal-price,
+.modal.active .btn-add-order {
+    opacity: 0;
+    animation: framerSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s forwards;
 }

@@ -6,7 +6,9 @@
     <title>Admin Panel | Burger House</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
         
@@ -49,19 +51,56 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        /* Animación suave para la entrada de nuevas tarjetas */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-enter {
+            animation: slideUpFade 0.4s ease-out forwards;
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
-    <div class="max-w-4xl mx-auto">
+    <!-- Contenedor del fondo animado (Shader) -->
+    <div id="shader-background" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -3; pointer-events: none; opacity: 0.35;"></div>
+
+    <!-- Sistema de Login Seguro -->
+    <div id="login-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md transition-opacity duration-500">
+        <div class="bg-white/10 p-8 rounded-3xl border border-white/10 text-center max-w-sm w-full mx-4 shadow-2xl">
+            <img src="logobh.webp" alt="Logo" class="w-24 h-24 mx-auto mb-6 rounded-full shadow-[0_0_20px_rgba(230,0,0,0.4)]">
+            <h2 class="text-2xl font-bold text-white mb-6 uppercase tracking-wider">Acceso Restringido</h2>
+            <input type="email" id="admin-email" placeholder="Correo de administrador" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-4 text-white mb-4 focus:outline-none focus:border-red-500 transition-colors text-center text-lg" value="admin@burgerhouse.com">
+            <input type="password" id="admin-password" placeholder="Ingresa la contraseña" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-4 text-white mb-4 focus:outline-none focus:border-red-500 transition-colors text-center text-lg" onkeypress="if(event.key === 'Enter') checkPassword()">
+            <button onclick="checkPassword()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-4 rounded-xl transition-all shadow-lg hover:shadow-red-500/50 uppercase tracking-widest">Entrar al Panel</button>
+            <p id="login-error" class="text-red-400 text-sm mt-4 hidden font-medium">Credenciales incorrectas. Intenta de nuevo.</p>
+        </div>
+    </div>
+
+    <div id="admin-content" class="max-w-4xl mx-auto hidden">
         <!-- Header -->
         <div class="flex justify-between items-center mb-8">
             <div>
-                <h1 class="text-3xl font-bold text-white mb-2">Admin Panel</h1>
+                <div class="flex items-center gap-3 mb-2">
+                    <h1 class="text-3xl font-bold text-white">Admin Panel</h1>
+                    <img src="logobh.webp" alt="Logo Burger House" class="h-8 w-8 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-red-600 animate-[spin_4s_linear_infinite]">
+                        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </div>
                 <p class="text-gray-400 text-sm">Gestion de pedidos pendientes</p>
             </div>
-            <div class="text-right">
-                <div class="text-gray-400 text-xs">Ultima actualizacion</div>
-                <div id="last-update" class="text-white font-semibold">--:--:--</div>
+            <div class="flex items-center gap-4 text-right">
+                <button id="btn-sound-toggle" class="p-3 bg-white/10 rounded-full text-gray-400 hover:text-white hover:bg-white/20 transition-all" title="Activar notificaciones de sonido">
+                    <svg id="icon-sound-off" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+                    <svg id="icon-sound-on" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+                </button>
+                <div>
+                    <div class="text-gray-400 text-xs">Ultima actualizacion</div>
+                    <div id="last-update" class="text-white font-semibold">--:--:--</div>
+                </div>
             </div>
         </div>
 
@@ -72,7 +111,13 @@
                     <p class="text-gray-400 text-sm">Pedidos pendientes</p>
                     <p id="pending-count" class="text-4xl font-bold text-red-500">0</p>
                 </div>
-                <div id="loading" class="loader"></div>
+                <div class="flex items-center gap-4">
+                    <button id="btn-delete-all" onclick="eliminarTodosPedidos()" class="hidden px-4 py-2 bg-red-600/10 text-red-500 border border-red-500/30 hover:bg-red-600 hover:text-white rounded-xl transition-all text-sm font-semibold tracking-wide flex items-center gap-2" title="Eliminar todas las comandas">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                        Borrar Todos
+                    </button>
+                    <div id="loading" class="loader"></div>
+                </div>
             </div>
         </div>
 
@@ -86,13 +131,13 @@
     </div>
 
     <script>
-        // Configuracion de Firebase
+        // ✅ CORREGIDO: Se añadió la "u" en "burguer" en authDomain, databaseURL, projectId y storageBucket.
         const FIREBASE_CONFIG = {
-            apiKey: "AIzaSyCOIK3Xc_IzKvDc1hm05aAdLSt0KE8f9P8",
-            authDomain: "burger-house-17e76.firebaseapp.com",
-            databaseURL: "https://burger-house-17e76-default-rtdb.firebaseio.com",
-            projectId: "burger-house-17e76",
-            storageBucket: "burger-house-17e76.firebasestorage.app",
+            apiKey: "AIzaSyCOIK3Xc_IzKvDc1hmO5aAdLST0KE8f9P8",
+            authDomain: "burguer-house-17e76.firebaseapp.com",
+            databaseURL: "https://burguer-house-17e76-default-rtdb.firebaseio.com/",
+            projectId: "burguer-house-17e76",
+            storageBucket: "burguer-house-17e76.firebasestorage.app",
             messagingSenderId: "641974770181",
             appId: "1:641974770181:web:5e348815b735d26cb7da6c"
         };
@@ -110,8 +155,87 @@
         const lastUpdateElement = document.getElementById('last-update');
         const emptyStateElement = document.getElementById('empty-state');
 
+        // --- SISTEMA DE LOGIN ---
+        window.checkPassword = function() {
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+            const error = document.getElementById('login-error');
+
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // El listener onAuthStateChanged se encargará de mostrar el contenido
+                })
+                .catch((authError) => {
+                    console.error("Error de autenticación completo:", authError);
+                    error.classList.remove('hidden');
+                    
+                    // Mostrar mensaje específico para depurar
+                    let msg = "Credenciales incorrectas.";
+                    if (authError.code === 'auth/user-not-found') msg = "El correo no existe en Firebase.";
+                    else if (authError.code === 'auth/wrong-password') msg = "Contraseña incorrecta.";
+                    else if (authError.code === 'auth/invalid-credential') msg = "Usuario o contraseña inválidos.";
+                    else if (authError.code === 'auth/network-request-failed') msg = "Error de conexión/red.";
+                    
+                    error.textContent = msg + " (" + authError.code + ")";
+                    setTimeout(() => error.classList.add('hidden'), 5000);
+                });
+        };
+
+        // Escucha cambios en el estado de autenticación
+        let pedidosListener = null; // Guardar referencia al listener
+        firebase.auth().onAuthStateChanged(function(user) {
+            const loginOverlay = document.getElementById('login-overlay');
+            const adminContent = document.getElementById('admin-content');
+
+            if (user) {
+                // Usuario está autenticado
+                loginOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    loginOverlay.style.display = 'none';
+                    adminContent.classList.remove('hidden');
+                }, 300);
+                
+                // INICIAR ESCUCHA DE PEDIDOS AHORA QUE HAY PERMISOS
+                iniciarEscuchaPedidos();
+            } else {
+                // Usuario no está autenticado
+                loginOverlay.style.display = 'flex';
+                adminContent.classList.add('hidden');
+                if (pedidosListener) {
+                    pedidosRef.off('value', pedidosListener);
+                    pedidosListener = null;
+                }
+            }
+        });
+
+        // Lógica de Notificaciones y Sonido
+        const btnSoundToggle = document.getElementById('btn-sound-toggle');
+        const iconSoundOff = document.getElementById('icon-sound-off');
+        const iconSoundOn = document.getElementById('icon-sound-on');
+        const notificationSound = new Audio('assets/sounds/ding.mp3'); // CORREGIDO: Usar audio local para evitar errores de navegador
+        let soundEnabled = false;
+        let knownOrders = new Set();
+        let isInitialLoad = true;
+
+        btnSoundToggle.addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            if (soundEnabled) {
+                iconSoundOff.classList.add('hidden');
+                iconSoundOn.classList.remove('hidden');
+                btnSoundToggle.classList.add('text-green-400', 'bg-green-500/20');
+                notificationSound.play().catch(e => console.log(e)); // Desbloquear audio con el clic
+            } else {
+                iconSoundOff.classList.remove('hidden');
+                iconSoundOn.classList.add('hidden');
+                btnSoundToggle.classList.remove('text-green-400', 'bg-green-500/20');
+            }
+        });
+
         // Funcion para renderizar tarjeta de pedido
         function renderOrderCard(orderId, orderData) {
+            // Manejo defensivo: si por alguna razón no hay productos, retorna un string vacío
+            if (!orderData.productos) return '';
+
             const productosHTML = orderData.productos.map(prod => {
                 let detallesStr = '';
                 if (prod.detalles_personalizacion && prod.detalles_personalizacion.length > 0) {
@@ -128,49 +252,60 @@
                         }
                     });
                     
-                    const partes = [];
+                    let extrasHtml = '';
                     if (extrasAgregados.length > 0) {
-                        partes.push(`Extras: ${extrasAgregados.join(', ')}`);
-                    }
-                    if (ingredientesEliminados.length > 0) {
-                        partes.push(`Sin: ${ingredientesEliminados.join(', ')}`);
+                        extrasHtml = `<div class="flex flex-wrap gap-1.5 mt-1.5">` + 
+                            extrasAgregados.map(ex => `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-green-500/10 border border-green-500/20 text-green-400 text-[11px] font-medium tracking-wide"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>${ex}</span>`).join('') +
+                            `</div>`;
                     }
                     
-                    if (partes.length > 0) {
-                        detallesStr = ` (${partes.join(' | ')})`;
+                    let sinHtml = '';
+                    if (ingredientesEliminados.length > 0) {
+                        sinHtml = `<div class="flex flex-wrap gap-1.5 mt-1.5">` + 
+                            ingredientesEliminados.map(sin => `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-red-500/10 border border-red-500/20 text-red-400 text-[11px] font-medium tracking-wide"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>Sin ${sin}</span>`).join('') +
+                            `</div>`;
                     }
+                    
+                    detallesStr = extrasHtml + sinHtml;
                 }
                 
-                return `<div class="text-sm text-gray-300">${prod.cantidad}x ${prod.nombre}${detallesStr}</div>`;
+                return `<div class="mb-3 last:mb-0"><div class="text-sm font-semibold text-gray-200">${prod.cantidad}x ${prod.nombre}</div>${detallesStr}</div>`;
             }).join('');
 
+            // Fallbacks de seguridad en caso de que alguna data falte
+            const nombreCliente = orderData.cliente?.nombre || 'Cliente sin nombre';
+            const metodo = orderData.cliente?.metodo || 'No especificado';
+            const notas = orderData.cliente?.notas_referencia || '';
+            const ubicacion = orderData.cliente?.ubicacion_maps || '';
+            const total = typeof orderData.total_usd === 'number' ? orderData.total_usd.toFixed(2) : '0.00';
+
             return `
-                <div class="bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10 card-glow">
+                <div class="card-enter bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10 card-glow">
                     <div class="flex justify-between items-start mb-4">
                         <div>
-                            <p class="text-white font-semibold text-lg">${orderData.cliente}</p>
-                            <p class="text-gray-400 text-sm">${orderData.metodo}</p>
-                            <p class="text-gray-500 text-xs mt-1">${orderData.fecha}</p>
+                            <p class="text-white font-semibold text-lg">${nombreCliente}</p>
+                            <p class="text-gray-400 text-sm uppercase tracking-wider">${metodo === 'delivery' ? '🛵 Delivery' : '🏠 Pick Up'}</p>
+                            <p class="text-gray-500 text-xs mt-1">${orderData.fecha || 'Fecha no registrada'}</p>
                         </div>
                         <div class="text-right">
                             <p class="text-xs text-gray-500">Total</p>
-                            <p class="text-2xl font-bold text-red-500">$${orderData.total.toFixed(2)}</p>
+                            <p class="text-2xl font-bold text-red-500">$${total}</p>
                         </div>
                     </div>
                     
-                    <div class="mb-4">
-                        <p class="text-gray-400 text-xs mb-2">Productos:</p>
-                        <div class="space-y-1">${productosHTML}</div>
+                    <div class="mb-4 bg-black/20 rounded-lg p-3">
+                        <p class="text-gray-400 text-xs mb-3 font-semibold tracking-wider">RESUMEN DEL PEDIDO:</p>
+                        <div>${productosHTML}</div>
                     </div>
                     
-                    ${orderData.notas ? `<p class="text-gray-400 text-sm mb-4"><strong>Notas:</strong> ${orderData.notas}</p>` : ''}
-                    ${orderData.ubicacion ? `<p class="text-gray-400 text-sm mb-4"><strong>Ubicacion:</strong> ${orderData.ubicacion}</p>` : ''}
+                    ${notas ? `<p class="text-gray-300 text-sm mb-2"><strong class="text-gray-500">Notas:</strong> ${notas}</p>` : ''}
+                    ${ubicacion ? `<p class="text-gray-300 text-sm mb-4"><strong class="text-gray-500">Ubicacion:</strong> <a href="${ubicacion}" target="_blank" class="text-blue-400 hover:underline">Ver en Maps 🗺️</a></p>` : ''}
                     
-                    <div class="flex gap-3">
+                    <div class="flex gap-3 mt-4">
                         <button onclick="aprobarPedido('${orderId}')" class="btn-approve flex-1 px-4 py-3 rounded-xl font-semibold text-white shadow-lg">
-                            Aprobar
+                            Marcar como Aprobado
                         </button>
-                        <button onclick="eliminarPedido('${orderId}')" class="flex-1 px-4 py-3 rounded-xl font-semibold text-white shadow-lg bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 transition-all">
+                        <button onclick="eliminarPedido('${orderId}')" class="px-4 py-3 rounded-xl font-semibold text-white shadow-lg bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 transition-all">
                             Eliminar
                         </button>
                     </div>
@@ -181,140 +316,257 @@
         // Funcion para aprobar pedido
         async function aprobarPedido(orderId) {
             try {
+                // Obtener datos del pedido antes de aprobar
                 const snapshot = await db.ref('pedidos/' + orderId).once('value');
                 const orderData = snapshot.val();
 
                 if (!orderData) {
-                    alert('Pedido no encontrado');
+                    alert('No se encontraron datos del pedido');
                     return;
                 }
 
-                const productosResumen = orderData.productos.map(prod => {
-                    let detallesStr = '';
-
-                    if (prod.detalles_personalizacion && prod.detalles_personalizacion.length > 0) {
-                        const extrasAgregados = [];
-                        const ingredientesEliminados = [];
-
-                        prod.detalles_personalizacion.forEach(detalle => {
-                            if (detalle.opcion === 'NO' || detalle.opcion === 'no') {
-                                ingredientesEliminados.push(detalle.nombre);
-                            } else if (detalle.cantidad > 0) {
-                                extrasAgregados.push(`${detalle.nombre} (${detalle.cantidad})`);
-                            } else if (detalle.opcion === 'SI' || detalle.opcion === 'si') {
-                                extrasAgregados.push(detalle.nombre);
-                            }
-                        });
-
-                        const partes = [];
-                        if (extrasAgregados.length > 0) {
-                            partes.push(`Extras: ${extrasAgregados.join(', ')}`);
-                        }
-                        if (ingredientesEliminados.length > 0) {
-                            partes.push(`Sin: ${ingredientesEliminados.join(', ')}`);
-                        }
-
-                        if (partes.length > 0) {
-                            detallesStr = ` (${partes.join(' | ')})`;
-                        }
-                    }
-
-                    return `${prod.cantidad}x ${prod.nombre}${detallesStr}`;
-                }).join(', ');
-
-                const sheetDBData = {
-                    data: [{
-                        fecha: orderData.fecha,
-                        cliente: orderData.cliente,
-                        metodo: orderData.metodo,
-                        productos: productosResumen,
-                        total: orderData.total.toFixed(2),
-                        notas: orderData.notas || "Sin notas adicionales",
-                        ubicacion: orderData.ubicacion || "N/A"
-                    }]
-                };
-
-                const response = await fetch('https://sheetdb.io/api/v1/qyjuou0mbnjhc', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(sheetDBData)
-                });
-
-                if (!response.ok) {
-                    throw new Error('Error en la respuesta de SheetDB');
-                }
-
+                // Actualizar estado en Firebase
                 await db.ref('pedidos/' + orderId).update({
                     estado: 'aprobado'
                 });
 
+                // Enviar a SheetDB
+                try {
+                    const productosResumen = orderData.productos.map(p => `${p.cantidad}x ${p.nombre}`).join(', ');
+                    await fetch('https://sheetdb.io/api/v1/qyjuou0mbnjhc', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            data: [{
+                                fecha: orderData.fecha,
+                                cliente: orderData.cliente?.nombre || 'Cliente sin nombre',
+                                metodo: orderData.cliente?.metodo || 'No especificado',
+                                productos: productosResumen,
+                                total: orderData.total_usd?.toFixed(2) || '0.00',
+                                notas: orderData.cliente?.notas_referencia || "Sin notas adicionales",
+                                ubicacion: orderData.cliente?.ubicacion_maps || "N/A"
+                            }]
+                        })
+                    });
+                    console.log('Pedido enviado a SheetDB exitosamente');
+                } catch (err) {
+                    console.error('Error al enviar a SheetDB:', err);
+                    // No bloqueamos el proceso si SheetDB falla
+                }
+
                 console.log('Pedido aprobado exitosamente:', orderId);
+                // El listener on('value') actualizará la UI automáticamente
 
             } catch (error) {
                 console.error('Error al aprobar pedido:', error);
-                alert('Error al conectar con Google Sheets. El pedido sigue pendiente');
+                alert('Hubo un error al intentar aprobar el pedido. Revisa tu conexión.');
             }
         }
 
         // Funcion para eliminar pedido
         async function eliminarPedido(orderId) {
-            if (!confirm('Estas seguro de que deseas eliminar este pedido? Esta accion no se puede deshacer.')) {
+            if (!confirm('¿Estás seguro de que deseas eliminar este pedido? Esta acción no se puede deshacer.')) {
                 return;
             }
 
             try {
                 await db.ref('pedidos/' + orderId).remove();
                 console.log('Pedido eliminado exitosamente:', orderId);
-                alert('Pedido eliminado correctamente');
             } catch (error) {
                 console.error('Error al eliminar pedido:', error);
                 alert('Error al eliminar el pedido. Por favor, intenta nuevamente.');
             }
         }
 
-        // Escuchar cambios en tiempo real
-        pedidosRef.on('value', (snapshot) => {
-            console.log('Firebase: Snapshot recibido', snapshot.val());
-            loadingElement.classList.add('hidden');
-
-            const orders = snapshot.val();
-            const pendingOrders = [];
-
-            if (orders) {
-                Object.keys(orders).forEach(orderId => {
-                    const order = orders[orderId];
-                    if (order.estado === 'pendiente') {
-                        pendingOrders.push({ id: orderId, ...order });
+        // Funcion para eliminar TODOS los pedidos de golpe
+        async function eliminarTodosPedidos() {
+            const passcode = prompt('⚠️ PELIGRO: Vas a eliminar TODAS las comandas PENDIENTES.\n\nEscribe "333000" para confirmar:');
+            
+            if (passcode === '333000') {
+                try {
+                    // CORRECCIÓN: No se puede borrar el nodo padre directamente por las reglas.
+                    // Se deben obtener los IDs de los pedidos pendientes y borrarlos con un update masivo.
+                    const snapshot = await db.ref('pedidos').orderByChild('estado').equalTo('pendiente').once('value');
+                    if (!snapshot.exists()) {
+                        alert('No hay pedidos pendientes para borrar.');
+                        return;
                     }
-                });
+                    const updates = {};
+                    snapshot.forEach(child => {
+                        updates[child.key] = null;
+                    });
+                    await db.ref('pedidos').update(updates);
+                    console.log('Todos los pedidos pendientes han sido eliminados.');
+                } catch (error) {
+                    console.error('Error al eliminar todos los pedidos:', error);
+                    alert('❌ Error al vaciar la base de datos. Revisa tu conexión.');
+                }
+            } else if (passcode !== null) {
+                alert('❌ Operación cancelada. Palabra de seguridad incorrecta.');
             }
+        }
 
-            pendingCountElement.textContent = pendingOrders.length;
+        // Función para empezar a escuchar pedidos (se llama tras el login exitoso)
+        function iniciarEscuchaPedidos() {
+            if (pedidosListener) return;
+            
+            // Escuchar cambios en tiempo real
+            pedidosListener = pedidosRef.on('value', (snapshot) => {
+                console.log('Firebase: Snapshot recibido (datos actualizados)');
+                loadingElement.classList.add('hidden');
 
-            const now = new Date();
-            lastUpdateElement.textContent = now.toLocaleTimeString();
+                const orders = snapshot.val();
+                const pendingOrders = [];
 
-            if (pendingOrders.length === 0) {
-                emptyStateElement.classList.remove('hidden');
-                ordersContainer.innerHTML = '';
-                return;
-            }
+                if (orders) {
+                    Object.keys(orders).forEach(orderId => {
+                        const order = orders[orderId];
+                        // La app cliente ahora guarda 'pendiente' (minúscula)
+                        if (order.estado === 'pendiente') {
+                            pendingOrders.push({ id: orderId, ...order });
+                        }
+                    });
+                }
 
-            emptyStateElement.classList.add('hidden');
+                // Detectar nuevos pedidos para reproducir el sonido
+                const currentPendingIds = new Set(pendingOrders.map(o => o.id));
+                if (!isInitialLoad && soundEnabled) {
+                    const hasNewOrders = pendingOrders.some(o => !knownOrders.has(o.id));
+                    if (hasNewOrders) {
+                        notificationSound.play().catch(err => console.log('Autoplay bloqueado', err));
+                    }
+                }
+                knownOrders = currentPendingIds;
+                isInitialLoad = false;
 
-            pendingOrders.sort((a, b) => b.timestamp - a.timestamp);
+                pendingCountElement.textContent = pendingOrders.length;
 
-            ordersContainer.innerHTML = pendingOrders.map(order =>
-                renderOrderCard(order.id, order)
-            ).join('');
-        }, (error) => {
-            console.error('Error al escuchar pedidos:', error);
-            loadingElement.innerHTML = `
-                <div class="text-red-500">
-                    <p class="text-lg font-semibold">Error al cargar pedidos</p>
-                    <p class="text-sm text-gray-400 mt-2">${error.message}</p>
-                </div>
-            `;
+                const now = new Date();
+                lastUpdateElement.textContent = now.toLocaleTimeString();
+                const btnDeleteAll = document.getElementById('btn-delete-all');
+
+                if (pendingOrders.length === 0) {
+                    emptyStateElement.classList.remove('hidden');
+                    ordersContainer.innerHTML = '';
+                    if (btnDeleteAll) btnDeleteAll.classList.add('hidden');
+                    return;
+                }
+
+                emptyStateElement.classList.add('hidden');
+                if (btnDeleteAll) btnDeleteAll.classList.remove('hidden');
+
+                // Ordenar los más recientes primero
+                pendingOrders.sort((a, b) => b.timestamp - a.timestamp);
+
+                ordersContainer.innerHTML = pendingOrders.map(order =>
+                    renderOrderCard(order.id, order)
+                ).join('');
+            }, (error) => {
+                console.error('Error al escuchar pedidos:', error);
+                loadingElement.innerHTML = `
+                    <div class="text-red-500">
+                        <p class="text-lg font-semibold">Error al conectar con Firebase</p>
+                        <p class="text-sm text-gray-400 mt-2">Revisa tu conexión o las reglas de la base de datos.</p>
+                    </div>
+                `;
+            });
+        }
+
+        /* --- FONDO ANIMADO SHADER (LAVA / BURGER HOUSE) --- */
+        function initShaderBackground() {
+            const container = document.getElementById('shader-background');
+            if (!container) return;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+
+            const material = new THREE.ShaderMaterial({
+                transparent: true,
+                uniforms: {
+                    iTime: { value: 0 },
+                    iResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+                },
+                vertexShader: `
+                    void main() { gl_Position = vec4(position, 1.0); }
+                `,
+                fragmentShader: `
+                    uniform float iTime;
+                    uniform vec2 iResolution;
+                    #define NUM_OCTAVES 3
+
+                    float rand(vec2 n) { return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453); }
+                    float noise(vec2 p) {
+                        vec2 ip = floor(p);
+                        vec2 u = fract(p);
+                        u = u*u*(3.0-2.0*u);
+                        float res = mix(
+                            mix(rand(ip), rand(ip + vec2(1.0, 0.0)), u.x),
+                            mix(rand(ip + vec2(0.0, 1.0)), rand(ip + vec2(1.0, 1.0)), u.x), u.y);
+                        return res * res;
+                    }
+                    float fbm(vec2 x) {
+                        float v = 0.0; float a = 0.3; vec2 shift = vec2(100.0);
+                        mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.5));
+                        for (int i = 0; i < NUM_OCTAVES; ++i) {
+                            v += a * noise(x); x = rot * x * 2.0 + shift; a *= 0.4;
+                        }
+                        return v;
+                    }
+                    void main() {
+                        vec2 shake = vec2(sin(iTime * 1.2) * 0.005, cos(iTime * 2.1) * 0.005);
+                        vec2 p = ((gl_FragCoord.xy + shake * iResolution.xy) - iResolution.xy * 0.5) / iResolution.y * mat2(6.0, -4.0, 4.0, 6.0);
+                        vec2 v; vec4 o = vec4(0.0);
+                        float f = 2.0 + fbm(p + vec2(iTime * 5.0, 0.0)) * 0.5;
+                        for (float i = 0.0; i < 35.0; i++) {
+                            v = p + cos(i * i + (iTime + p.x * 0.08) * 0.025 + i * vec2(13.0, 11.0)) * 3.5 + vec2(sin(iTime * 3.0 + i) * 0.003, cos(iTime * 3.5 - i) * 0.003);
+                            float tailNoise = fbm(v + vec2(iTime * 0.5, i)) * 0.3 * (1.0 - (i / 35.0));
+                            
+                            // COLORES BURGER HOUSE (Lava / Energía Roja)
+                            vec4 auroraColors = vec4(
+                                0.8 + 0.2 * sin(i * 0.2 + iTime * 0.4),
+                                0.05 + 0.15 * cos(i * 0.3 + iTime * 0.5),
+                                0.0,
+                                1.0
+                            );
+                            
+                            vec4 currentContribution = auroraColors * exp(sin(i * i + iTime * 0.8)) / length(max(v, vec2(v.x * f * 0.015, v.y * 1.5)));
+                            float thinnessFactor = smoothstep(0.0, 1.0, i / 35.0) * 0.6;
+                            o += currentContribution * (1.0 + tailNoise * 0.8) * thinnessFactor;
+                        }
+                        o = tanh(pow(o / 100.0, vec4(1.6)));
+                        gl_FragColor = o * 1.5;
+                    }
+                `
+            });
+
+            const geometry = new THREE.PlaneGeometry(2, 2);
+            const mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+
+            const animate = () => {
+                material.uniforms.iTime.value += 0.016;
+                renderer.render(scene, camera);
+                requestAnimationFrame(animate);
+            };
+            animate();
+
+            window.addEventListener('resize', () => {
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                material.uniforms.iResolution.value.set(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        // Iniciar de forma segura cuando la librería esté lista
+        window.addEventListener('load', () => {
+            const checkThree = setInterval(() => {
+                if (typeof THREE !== 'undefined') {
+                    clearInterval(checkThree);
+                    initShaderBackground();
+                }
+            }, 200);
         });
     </script>
 </body>
