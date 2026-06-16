@@ -370,7 +370,7 @@
             lockBodyScroll(true);
             isPreOrder = true;
         };
-        // verificarHorario(); // Desactivado temporalmente para el lanzamiento
+        verificarHorario();
 
         /* ——— Búsqueda y categorías ——— */
         const searchInput = document.getElementById('menu-search');
