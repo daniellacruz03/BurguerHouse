@@ -298,12 +298,10 @@
     };
 
     function verificarYMostrarPromo() {
-        if (localStorage.getItem('bh_promo_shown') === 'true') return; // Evita spamear al usuario en cada recarga
         const promoModal = document.getElementById('modal-promo-lunes-miercoles');
         if (!promoModal || !isPromoWindowActive()) return;
         promoModal.classList.add('active');
         lockBodyScroll(true);
-        localStorage.setItem('bh_promo_shown', 'true'); // Marca que ya se le mostró hoy/en esta sesión
     }
 
     document.addEventListener('DOMContentLoaded', () => {
