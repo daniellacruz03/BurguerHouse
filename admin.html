@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel | Burger House</title>
     <link rel="icon" href="admin.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js" defer></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
         
@@ -70,7 +71,7 @@
     <!-- Sistema de Login Seguro -->
     <div id="login-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md transition-opacity duration-500">
         <div class="bg-white/10 p-8 rounded-3xl border border-white/10 text-center max-w-sm w-full mx-4 shadow-2xl">
-            <img src="logobh.webp" alt="Logo" class="w-24 h-24 mx-auto mb-6 rounded-full shadow-[0_0_20px_rgba(230,0,0,0.4)]">
+            <img src="logobh.webp" alt="Logo" class="w-24 h-24 mx-auto mb-6 rounded-full shadow-[0_0_20px_rgba(230,0,0,0.4)] loading="lazy">
             <h2 class="text-2xl font-bold text-white mb-6 uppercase tracking-wider">Acceso Restringido</h2>
             <input type="email" id="admin-email" placeholder="Correo de administrador" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-4 text-white mb-4 focus:outline-none focus:border-red-500 transition-colors text-center text-lg" value="admin@burgerhouse.com">
             <input type="password" id="admin-password" placeholder="Ingresa la contraseña" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-4 text-white mb-4 focus:outline-none focus:border-red-500 transition-colors text-center text-lg" onkeypress="if(event.key === 'Enter') checkPassword()">
@@ -106,7 +107,7 @@
             <div>
                 <div class="flex items-center gap-3 mb-2">
                     <h1 class="text-3xl font-bold text-white">Admin Panel</h1>
-                    <img src="logobh.webp" alt="Logo Burger House" class="h-8 w-8 rounded-full">
+                    <img src="logobh.webp" alt="Logo Burger House" class="h-8 w-8 rounded-full" loading="lazy">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-red-600 animate-[spin_4s_linear_infinite]">
                         <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
                         <circle cx="12" cy="12" r="3"/>
@@ -584,14 +585,17 @@
             });
         }
 
-        // Iniciar de forma segura cuando la librería esté lista
-        window.addEventListener('load', () => {
-            const checkThree = setInterval(() => {
+        // Iniciar de forma segura cuando la librería esté ready
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cargar Three.js solo cuando sea necesario (lazy load)
+            const threeScript = document.createElement('script');
+            threeScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+            threeScript.onload = () => {
                 if (typeof THREE !== 'undefined') {
-                    clearInterval(checkThree);
                     initShaderBackground();
                 }
-            }, 200);
+            };
+            document.head.appendChild(threeScript);
         });
     </script>
 </body>
