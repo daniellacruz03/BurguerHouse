@@ -31,6 +31,7 @@
         { name: 'Extra Salsa de la Casa', price: 1.20, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo },
         { name: 'Extra Lechuga', price: 1.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo },
         { name: 'Extra Pepinillos', price: 1.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo },
+        { name: 'Extra Salsa BBQ', price: 1.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo },
         
         // EXTRAS CON COSTO (Menú Kids)
         { name: 'Extra Huevito Sorpresa', price: 1.00, type: 'cost', applies: c => (c.esHamburguesa && !c.esCombo) || c.esKids },
