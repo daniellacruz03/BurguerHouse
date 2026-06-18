@@ -9,7 +9,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
@@ -109,10 +108,9 @@
         <div class="bg-white/10 p-8 rounded-3xl border border-white/10 text-center max-w-sm w-full mx-4 shadow-2xl">
             <img src="logobh.webp" alt="Logo" class="w-24 h-24 mx-auto mb-6 rounded-full shadow-[0_0_20px_rgba(230,0,0,0.4)] loading="lazy">
             <h2 class="text-2xl font-bold text-white mb-6 uppercase tracking-wider">Acceso Restringido</h2>
-            <input type="email" id="admin-email" placeholder="Correo de administrador" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-4 text-white mb-4 focus:outline-none focus:border-red-500 transition-colors text-center text-lg" value="admin@burgerhouse.com">
             <input type="password" id="admin-password" placeholder="Ingresa la contraseña" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-4 text-white mb-4 focus:outline-none focus:border-red-500 transition-colors text-center text-lg" onkeypress="if(event.key === 'Enter') checkPassword()">
             <button onclick="checkPassword()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-4 rounded-xl transition-all shadow-lg hover:shadow-red-500/50 uppercase tracking-widest">Entrar al Panel</button>
-            <p id="login-error" class="text-red-400 text-sm mt-4 hidden font-medium">Credenciales incorrectas. Intenta de nuevo.</p>
+            <p id="login-error" class="text-red-400 text-sm mt-4 hidden font-medium">Contraseña incorrecta. Intenta de nuevo.</p>
         </div>
     </div>
 
@@ -210,58 +208,94 @@
         const lastUpdateElement = document.getElementById('last-update');
         const emptyStateElement = document.getElementById('empty-state');
 
-        // --- SISTEMA DE LOGIN ---
-        window.checkPassword = function() {
-            const email = document.getElementById('admin-email').value;
+        // --- SISTEMA DE LOGIN CON HASHING SHA-256 ---
+        const ADMIN_HASH = '4ec29ece242f2b3ec3829038d1720fc669466548773950f757f493bd19842f4c';
+        const SESSION_KEY = 'admin_session_active';
+
+        // Función para generar hash SHA-256 usando Web Crypto API
+        async function generateSHA256Hash(text) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(text);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+
+        window.checkPassword = async function() {
             const password = document.getElementById('admin-password').value;
             const error = document.getElementById('login-error');
 
-            firebase.auth().signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // El listener onAuthStateChanged se encargará de mostrar el contenido
-                })
-                .catch((authError) => {
-                    console.error("Error de autenticación completo:", authError);
+            if (!password) {
+                error.classList.remove('hidden');
+                error.textContent = 'Por favor, ingresa la contraseña.';
+                setTimeout(() => error.classList.add('hidden'), 3000);
+                return;
+            }
+
+            try {
+                const passwordHash = await generateSHA256Hash(password);
+                
+                if (passwordHash === ADMIN_HASH) {
+                    // Guardar sesión en sessionStorage
+                    sessionStorage.setItem(SESSION_KEY, 'true');
+                    showAdminPanel();
+                } else {
                     error.classList.remove('hidden');
-                    
-                    // Mostrar mensaje específico para depurar
-                    let msg = "Credenciales incorrectas.";
-                    if (authError.code === 'auth/user-not-found') msg = "El correo no existe en Firebase.";
-                    else if (authError.code === 'auth/wrong-password') msg = "Contraseña incorrecta.";
-                    else if (authError.code === 'auth/invalid-credential') msg = "Usuario o contraseña inválidos.";
-                    else if (authError.code === 'auth/network-request-failed') msg = "Error de conexión/red.";
-                    
-                    error.textContent = msg + " (" + authError.code + ")";
-                    setTimeout(() => error.classList.add('hidden'), 5000);
-                });
+                    error.textContent = 'Contraseña incorrecta.';
+                    setTimeout(() => error.classList.add('hidden'), 3000);
+                }
+            } catch (err) {
+                console.error('Error al generar hash:', err);
+                error.classList.remove('hidden');
+                error.textContent = 'Error al procesar la contraseña.';
+                setTimeout(() => error.classList.add('hidden'), 3000);
+            }
         };
 
-        // Escucha cambios en el estado de autenticación
-        let pedidosListener = null; // Guardar referencia al listener
-        firebase.auth().onAuthStateChanged(function(user) {
+        function showAdminPanel() {
             const loginOverlay = document.getElementById('login-overlay');
             const adminContent = document.getElementById('admin-content');
 
-            if (user) {
-                // Usuario está autenticado
-                loginOverlay.style.opacity = '0';
-                setTimeout(() => {
-                    loginOverlay.style.display = 'none';
-                    adminContent.classList.remove('hidden');
-                }, 300);
-                
-                // INICIAR ESCUCHA DE PEDIDOS AHORA QUE HAY PERMISOS
-                iniciarEscuchaPedidos();
-            } else {
-                // Usuario no está autenticado
-                loginOverlay.style.display = 'flex';
-                adminContent.classList.add('hidden');
-                if (pedidosListener) {
-                    pedidosRef.off('value', pedidosListener);
-                    pedidosListener = null;
-                }
+            loginOverlay.style.opacity = '0';
+            setTimeout(() => {
+                loginOverlay.style.display = 'none';
+                adminContent.classList.remove('hidden');
+            }, 300);
+
+            // INICIAR ESCUCHA DE PEDIDOS
+            iniciarEscuchaPedidos();
+        }
+
+        function hideAdminPanel() {
+            const loginOverlay = document.getElementById('login-overlay');
+            const adminContent = document.getElementById('admin-content');
+
+            loginOverlay.style.display = 'flex';
+            loginOverlay.style.opacity = '1';
+            adminContent.classList.add('hidden');
+            
+            if (pedidosListener) {
+                pedidosRef.off('value', pedidosListener);
+                pedidosListener = null;
             }
-        });
+        }
+
+        // Verificar sesión al cargar la página
+        function checkSession() {
+            const hasSession = sessionStorage.getItem(SESSION_KEY) === 'true';
+            
+            if (hasSession) {
+                showAdminPanel();
+            } else {
+                hideAdminPanel();
+                // Redirigir a index.html si no hay sesión
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Verificar sesión al cargar
+        checkSession();
 
         // Lógica de Notificaciones y Sonido
         const notificationSound = new Audio('assets/sounds/ding.mp3'); // CORREGIDO: Usar audio local para evitar errores de navegador
@@ -439,30 +473,48 @@
             const errorText = document.getElementById('delete-error');
             const passcode = passcodeInput.value;
             
-            if (passcode === '333000') {
-                try {
-                    // CORRECCIÓN: No se puede borrar el nodo padre directamente por las reglas.
-                    // Se deben obtener los IDs de los pedidos pendientes y borrarlos con un update masivo.
-                    const snapshot = await db.ref('pedidos').orderByChild('estado').equalTo('pendiente').once('value');
-                    if (!snapshot.exists()) {
-                        alert('No hay pedidos pendientes para borrar.');
-                        cancelarEliminarTodos();
-                        return;
-                    }
-                    const updates = {};
-                    snapshot.forEach(child => {
-                        updates[child.key] = null;
-                    });
-                    await db.ref('pedidos').update(updates);
-                    console.log('Todos los pedidos pendientes han sido eliminados.');
-                    cancelarEliminarTodos();
-                } catch (error) {
-                    console.error('Error al eliminar todos los pedidos:', error);
-                    alert('❌ Error al vaciar la base de datos. Revisa tu conexión.');
-                    cancelarEliminarTodos();
-                }
-            } else {
+            if (!passcode) {
                 errorText.classList.remove('hidden');
+                errorText.textContent = 'Por favor, ingresa la contraseña.';
+                passcodeInput.focus();
+                return;
+            }
+
+            try {
+                const passcodeHash = await generateSHA256Hash(passcode);
+                
+                if (passcodeHash === ADMIN_HASH) {
+                    try {
+                        // CORRECCIÓN: No se puede borrar el nodo padre directamente por las reglas.
+                        // Se deben obtener los IDs de los pedidos pendientes y borrarlos con un update masivo.
+                        const snapshot = await db.ref('pedidos').orderByChild('estado').equalTo('pendiente').once('value');
+                        if (!snapshot.exists()) {
+                            alert('No hay pedidos pendientes para borrar.');
+                            cancelarEliminarTodos();
+                            return;
+                        }
+                        const updates = {};
+                        snapshot.forEach(child => {
+                            updates[child.key] = null;
+                        });
+                        await db.ref('pedidos').update(updates);
+                        console.log('Todos los pedidos pendientes han sido eliminados.');
+                        cancelarEliminarTodos();
+                    } catch (error) {
+                        console.error('Error al eliminar todos los pedidos:', error);
+                        alert('❌ Error al vaciar la base de datos. Revisa tu conexión.');
+                        cancelarEliminarTodos();
+                    }
+                } else {
+                    errorText.classList.remove('hidden');
+                    errorText.textContent = 'Contraseña incorrecta.';
+                    passcodeInput.value = '';
+                    passcodeInput.focus();
+                }
+            } catch (err) {
+                console.error('Error al generar hash:', err);
+                errorText.classList.remove('hidden');
+                errorText.textContent = 'Error al procesar la contraseña.';
                 passcodeInput.value = '';
                 passcodeInput.focus();
             }
