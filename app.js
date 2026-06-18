@@ -1294,7 +1294,14 @@
 
                 pedidoConfirmado = true;
                 history.pushState({ orderSent: true }, '');
-                window.open(url, '_blank');
+                
+                // Asegurar redirección a WhatsApp siempre
+                try {
+                    window.location.href = url;
+                } catch (e) {
+                    // Fallback si window.location.href falla
+                    window.open(url, '_self');
+                }
                 
                 // Actualizar Interfaz
                 cartSidebar?.classList.add('cart-closed');
