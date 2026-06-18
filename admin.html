@@ -100,8 +100,8 @@
     </style>
 </head>
 <body class="p-4 md:p-8">
-    <!-- Contenedor del fondo animado (Shader) -->
-    <div id="shader-background" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -3; pointer-events: none; opacity: 0.35;"></div>
+    <!-- Contenedor del fondo animado (Shader) - DESACTIVADO PARA MEJORAR RENDIMIENTO -->
+    <!-- <div id="shader-background" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -3; pointer-events: none; opacity: 0.35;"></div> -->
 
     <!-- Sistema de Login Seguro -->
     <div id="login-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md transition-opacity duration-500">
@@ -675,17 +675,17 @@
         }
 
         // Iniciar de forma segura cuando la librería esté ready
-        document.addEventListener('DOMContentLoaded', () => {
-            // Cargar Three.js solo cuando sea necesario (lazy load)
-            const threeScript = document.createElement('script');
-            threeScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-            threeScript.onload = () => {
-                if (typeof THREE !== 'undefined') {
-                    initShaderBackground();
-                }
-            };
-            document.head.appendChild(threeScript);
-        });
+        // DESACTIVADO: Shader Three.js para mejorar rendimiento
+        // document.addEventListener('DOMContentLoaded', () => {
+        //     const threeScript = document.createElement('script');
+        //     threeScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+        //     threeScript.onload = () => {
+        //         if (typeof THREE !== 'undefined') {
+        //             initShaderBackground();
+        //         }
+        //     };
+        //     document.head.appendChild(threeScript);
+        // });
     </script>
 </body>
 </html>
