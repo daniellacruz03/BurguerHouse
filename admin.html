@@ -18,11 +18,14 @@
             font-family: 'Montserrat', sans-serif;
             background: linear-gradient(135deg, #0a0a0a 0%, #1a0000 100%);
             min-height: 100vh;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: none;
         }
         
         .card-glow {
             box-shadow: 0 4px 20px rgba(230, 0, 0, 0.15);
-            transition: all 0.3s ease;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+            will-change: transform, box-shadow;
         }
         
         .card-glow:hover {
@@ -32,7 +35,8 @@
         
         .btn-approve {
             background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-            transition: all 0.3s ease;
+            transition: background 0.3s ease, transform 0.3s ease;
+            will-change: transform;
         }
         
         .btn-approve:hover {
@@ -61,6 +65,38 @@
         }
         .card-enter {
             animation: slideUpFade 0.4s ease-out forwards;
+            will-change: opacity, transform;
+        }
+        
+        /* Optimizaciones para móviles */
+        @media (max-width: 768px) {
+            #shader-background {
+                display: none;
+            }
+            
+            body {
+                background: #0a0a0a;
+            }
+            
+            .card-glow {
+                transition: none;
+            }
+            
+            .card-glow:hover {
+                transform: none;
+            }
+            
+            .btn-approve {
+                transition: none;
+            }
+            
+            .btn-approve:hover {
+                transform: none;
+            }
+            
+            .card-enter {
+                animation: none;
+            }
         }
     </style>
 </head>
