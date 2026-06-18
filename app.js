@@ -1354,6 +1354,6 @@
             } else syncUIWithState();
         });
 
-        window.addEventListener('beforeunload', (e) => { if (pedidoConfirmado) e.preventDefault(); });
+        window.addEventListener('beforeunload', (e) => { if (!pedidoConfirmado) e.preventDefault(); });
     });
 })();
