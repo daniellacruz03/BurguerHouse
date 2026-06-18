@@ -1295,11 +1295,15 @@
                 pedidoConfirmado = true;
                 history.pushState({ orderSent: true }, '');
                 
-                // Asegurar redirección a WhatsApp siempre
+                // Limpiar formulario para evitar mensaje de "desea salir de la página"
+                const form = document.getElementById('form-delivery');
+                if (form) form.reset();
+                
+                // Asegurar redirección a WhatsApp siempre sin mensaje de advertencia
                 try {
-                    window.location.href = url;
+                    window.location.replace(url);
                 } catch (e) {
-                    // Fallback si window.location.href falla
+                    // Fallback si window.location.replace falla
                     window.open(url, '_self');
                 }
                 
