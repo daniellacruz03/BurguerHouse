@@ -48,7 +48,7 @@
         { name: 'Pollo a la plancha', type: 'toggle', applies: c => c.descLower.includes('pollo') && !c.descLower.includes('pollo crispy') && !c.descLower.includes('pechuga crispy') && !c.isNuggets && !c.esCombo, default: () => 'SÍ' },
         { name: 'Chuleta', type: 'toggle', applies: c => c.descLower.includes('chuleta') && !c.esCombo, default: () => 'SÍ' },
         { name: 'Tocineta', type: 'toggle', applies: c => c.descLower.includes('tocineta') && !c.esCombo, default: () => 'SÍ' },
-        { name: 'Queso', type: 'toggle', applies: c => c.descLower.includes('queso') && !c.esCombo, default: () => 'SÍ' },
+        { name: 'Queso Fundido', type: 'toggle', applies: c => c.descLower.includes('queso') && !c.esCombo, default: () => 'SÍ' },
         { name: 'Pepinillos', type: 'toggle', applies: c => c.descLower.includes('pepinillo') && !c.esCombo, default: () => 'SÍ' },
         { name: 'Lechuga', type: 'toggle', applies: c => c.descLower.includes('lechuga') && !c.esCombo, default: () => 'SÍ' },
         { name: 'Salsa de la Casa', type: 'toggle', applies: c => c.descLower.includes('salsa de la casa') && !c.esCombo, default: () => 'SÍ' },
@@ -1250,6 +1250,11 @@
                 // 2. GUARDADO EN BASES DE DATOS (Manejo de Errores Aislado)
                 // Usamos un bloque interno para que si Firebase falla, NO se bloquee el WhatsApp
                 const registrarEnBasesDeDatos = async () => {
+                    if (typeof firebase === 'undefined') {
+                        console.warn("Firebase no está disponible. Saltando registro en DB para no bloquear WhatsApp.");
+                        return Promise.resolve(); // Permite que el flujo siga hacia WhatsApp sin romperse
+                    }
+                    
                     const fechaActual = new Date().toLocaleString();
                     const productosResumen = carrito.map(item => `${item.cantidad}x ${item.nombre}`).join(', ');
 

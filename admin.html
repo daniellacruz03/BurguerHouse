@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
@@ -195,13 +196,9 @@
             appId: "1:641974770181:web:5e348815b735d26cb7da6c"
         };
 
-        // Inicializar Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(FIREBASE_CONFIG);
-        }
-
-        const db = firebase.database();
-        const pedidosRef = db.ref('pedidos');
+        // Declarar variables globales para que sean accesibles por todas las funciones
+        let db = null;
+        let pedidosRef = null;
         const ordersContainer = document.getElementById('orders-container');
         const loadingElement = document.getElementById('loading');
         const pendingCountElement = document.getElementById('pending-count');
@@ -209,48 +206,38 @@
         const emptyStateElement = document.getElementById('empty-state');
         let pedidosListener = null;
 
-        // --- SISTEMA DE LOGIN CON HASHING SHA-256 ---
-        // Hash SHA-256 de "333000"
-        const ADMIN_HASH = '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92';
-        const SESSION_KEY = 'admin_session_active';
-
-        // Función para generar hash SHA-256 usando Web Crypto API
-        async function generateSHA256Hash(text) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(text);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            return hashHex;
-        }
-
-        window.checkPassword = async function() {
-            const password = document.getElementById('admin-password').value;
-            const error = document.getElementById('login-error');
-
-            if (!password) {
-                error.classList.remove('hidden');
-                error.textContent = 'Por favor, ingresa la contraseña.';
-                setTimeout(() => error.classList.add('hidden'), 3000);
-                return;
-            }
-
-            try {
-                const passwordHash = await generateSHA256Hash(password);
-                
-                if (passwordHash === ADMIN_HASH) {
-                    // Guardar sesión en sessionStorage
-                    sessionStorage.setItem(SESSION_KEY, 'true');
-                    showAdminPanel();
-                } else {
-                    error.classList.remove('hidden');
-                    error.textContent = 'Contraseña incorrecta.';
-                    setTimeout(() => error.classList.add('hidden'), 3000);
+        // Inicializar Firebase de forma segura al cargar la ventana
+        window.addEventListener('load', () => {
+            if (typeof firebase !== 'undefined') {
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(FIREBASE_CONFIG);
                 }
-            } catch (err) {
-                console.error('Error al generar hash:', err);
+                // Inicializa las variables globales db, pedidosRef
+                db = firebase.database();
+                pedidosRef = db.ref('pedidos');
+                
+                // Autenticar con Firebase antes de acceder a la base de datos
+                firebase.auth().signInAnonymously().then(() => {
+                    console.log('Admin panel autenticado con Firebase');
+                }).catch((error) => {
+                    console.error('Error al autenticar con Firebase:', error);
+                });
+            } else {
+                console.error("Firebase SDK no cargó a tiempo o fue bloqueado.");
+            }
+        });
+
+        // --- SISTEMA DE LOGIN SIMPLE ---
+        window.checkPassword = function() {
+            const password = document.getElementById('admin-password').value.trim();
+            const error = document.getElementById('login-error');
+            if (!password) return;
+            
+            if (password === "333000") {
+                showAdminPanel();
+            } else {
                 error.classList.remove('hidden');
-                error.textContent = 'Error al procesar la contraseña.';
+                error.textContent = 'Contraseña incorrecta.';
                 setTimeout(() => error.classList.add('hidden'), 3000);
             }
         };
@@ -285,15 +272,9 @@
 
         // Verificar sesión al cargar la página
         function checkSession() {
-            const hasSession = sessionStorage.getItem(SESSION_KEY) === 'true';
-            
-            if (hasSession) {
-                showAdminPanel();
-            } else {
-                hideAdminPanel();
-                // Redirigir a index.html si no hay sesión
-                window.location.href = 'index.html';
-            }
+            // Sesión desactivada por seguridad - siempre requiere login
+            hideAdminPanel();
+            document.getElementById('login-overlay').style.display = 'flex';
         }
 
         // Verificar sesión al cargar
@@ -482,41 +463,31 @@
                 return;
             }
 
-            try {
-                const passcodeHash = await generateSHA256Hash(passcode);
-                
-                if (passcodeHash === ADMIN_HASH) {
-                    try {
-                        // CORRECCIÓN: No se puede borrar el nodo padre directamente por las reglas.
-                        // Se deben obtener los IDs de los pedidos pendientes y borrarlos con un update masivo.
-                        const snapshot = await db.ref('pedidos').orderByChild('estado').equalTo('pendiente').once('value');
-                        if (!snapshot.exists()) {
-                            alert('No hay pedidos pendientes para borrar.');
-                            cancelarEliminarTodos();
-                            return;
-                        }
-                        const updates = {};
-                        snapshot.forEach(child => {
-                            updates[child.key] = null;
-                        });
-                        await db.ref('pedidos').update(updates);
-                        console.log('Todos los pedidos pendientes han sido eliminados.');
+            if (passcode === "333000") {
+                try {
+                    // CORRECCIÓN: No se puede borrar el nodo padre directamente por las reglas.
+                    // Se deben obtener los IDs de los pedidos pendientes y borrarlos con un update masivo.
+                    const snapshot = await db.ref('pedidos').orderByChild('estado').equalTo('pendiente').once('value');
+                    if (!snapshot.exists()) {
+                        alert('No hay pedidos pendientes para borrar.');
                         cancelarEliminarTodos();
-                    } catch (error) {
-                        console.error('Error al eliminar todos los pedidos:', error);
-                        alert('❌ Error al vaciar la base de datos. Revisa tu conexión.');
-                        cancelarEliminarTodos();
+                        return;
                     }
-                } else {
-                    errorText.classList.remove('hidden');
-                    errorText.textContent = 'Contraseña incorrecta.';
-                    passcodeInput.value = '';
-                    passcodeInput.focus();
+                    const updates = {};
+                    snapshot.forEach(child => {
+                        updates[child.key] = null;
+                    });
+                    await db.ref('pedidos').update(updates);
+                    console.log('Todos los pedidos pendientes han sido eliminados.');
+                    cancelarEliminarTodos();
+                } catch (error) {
+                    console.error('Error al eliminar todos los pedidos:', error);
+                    alert('❌ Error al vaciar la base de datos. Revisa tu conexión.');
+                    cancelarEliminarTodos();
                 }
-            } catch (err) {
-                console.error('Error al generar hash:', err);
+            } else {
                 errorText.classList.remove('hidden');
-                errorText.textContent = 'Error al procesar la contraseña.';
+                errorText.textContent = 'Contraseña incorrecta.';
                 passcodeInput.value = '';
                 passcodeInput.focus();
             }
