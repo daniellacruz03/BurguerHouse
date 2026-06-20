@@ -110,7 +110,7 @@
             <img src="logobh.webp" alt="Logo" class="w-24 h-24 mx-auto mb-6 rounded-full shadow-[0_0_20px_rgba(230,0,0,0.4)] loading="lazy">
             <h2 class="text-2xl font-bold text-white mb-6 uppercase tracking-wider">Acceso Restringido</h2>
             <input type="password" id="admin-password" placeholder="Ingresa la contraseña" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-4 text-white mb-4 focus:outline-none focus:border-red-500 transition-colors text-center text-lg" onkeypress="if(event.key === 'Enter') checkPassword()">
-            <button onclick="checkPassword()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-4 rounded-xl transition-all shadow-lg hover:shadow-red-500/50 uppercase tracking-widest">Entrar al Panel</button>
+            <button id="btn-login" onclick="checkPassword()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-4 rounded-xl transition-all shadow-lg hover:shadow-red-500/50 uppercase tracking-widest">Entrar al Panel</button>
             <p id="login-error" class="text-red-400 text-sm mt-4 hidden font-medium">Contraseña incorrecta. Intenta de nuevo.</p>
         </div>
     </div>
@@ -215,31 +215,36 @@
                 // Inicializa las variables globales db, pedidosRef
                 db = firebase.database();
                 pedidosRef = db.ref('pedidos');
-                
-                // Autenticar con Firebase antes de acceder a la base de datos
-                firebase.auth().signInAnonymously().then(() => {
-                    console.log('Admin panel autenticado con Firebase');
-                }).catch((error) => {
-                    console.error('Error al autenticar con Firebase:', error);
-                });
             } else {
                 console.error("Firebase SDK no cargó a tiempo o fue bloqueado.");
             }
         });
 
-        // --- SISTEMA DE LOGIN SIMPLE ---
+        // --- SISTEMA DE LOGIN SEGURO CON FIREBASE AUTH ---
         window.checkPassword = function() {
             const password = document.getElementById('admin-password').value.trim();
             const error = document.getElementById('login-error');
+            const btn = document.getElementById('btn-login');
             if (!password) return;
-            
-            if (password === "333000") {
-                showAdminPanel();
-            } else {
-                error.classList.remove('hidden');
-                error.textContent = 'Contraseña incorrecta.';
-                setTimeout(() => error.classList.add('hidden'), 3000);
-            }
+
+            const email = 'admin@burgerhouse.com';
+
+            btn.textContent = 'Verificando...';
+            btn.disabled = true;
+
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    btn.textContent = 'Entrar al Panel';
+                    btn.disabled = false;
+                    showAdminPanel();
+                })
+                .catch((err) => {
+                    btn.textContent = 'Entrar al Panel';
+                    btn.disabled = false;
+                    error.classList.remove('hidden');
+                    error.textContent = 'Contraseña incorrecta.';
+                    setTimeout(() => error.classList.add('hidden'), 3000);
+                });
         };
 
         function showAdminPanel() {
@@ -455,7 +460,7 @@
             const passcodeInput = document.getElementById('delete-passcode');
             const errorText = document.getElementById('delete-error');
             const passcode = passcodeInput.value;
-            
+
             if (!passcode) {
                 errorText.classList.remove('hidden');
                 errorText.textContent = 'Por favor, ingresa la contraseña.';
@@ -463,29 +468,23 @@
                 return;
             }
 
-            if (passcode === "333000") {
-                try {
-                    // CORRECCIÓN: No se puede borrar el nodo padre directamente por las reglas.
-                    // Se deben obtener los IDs de los pedidos pendientes y borrarlos con un update masivo.
-                    const snapshot = await db.ref('pedidos').orderByChild('estado').equalTo('pendiente').once('value');
-                    if (!snapshot.exists()) {
-                        alert('No hay pedidos pendientes para borrar.');
-                        cancelarEliminarTodos();
-                        return;
-                    }
-                    const updates = {};
-                    snapshot.forEach(child => {
-                        updates[child.key] = null;
-                    });
-                    await db.ref('pedidos').update(updates);
-                    console.log('Todos los pedidos pendientes han sido eliminados.');
+            try {
+                await firebase.auth().signInWithEmailAndPassword('admin@burgerhouse.com', passcode);
+
+                const snapshot = await db.ref('pedidos').orderByChild('estado').equalTo('pendiente').once('value');
+                if (!snapshot.exists()) {
+                    alert('No hay pedidos pendientes para borrar.');
                     cancelarEliminarTodos();
-                } catch (error) {
-                    console.error('Error al eliminar todos los pedidos:', error);
-                    alert('❌ Error al vaciar la base de datos. Revisa tu conexión.');
-                    cancelarEliminarTodos();
+                    return;
                 }
-            } else {
+                const updates = {};
+                snapshot.forEach(child => {
+                    updates[child.key] = null;
+                });
+                await db.ref('pedidos').update(updates);
+                console.log('Todos los pedidos pendientes han sido eliminados.');
+                cancelarEliminarTodos();
+            } catch (error) {
                 errorText.classList.remove('hidden');
                 errorText.textContent = 'Contraseña incorrecta.';
                 passcodeInput.value = '';
