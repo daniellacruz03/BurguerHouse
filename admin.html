@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel | Burger House</title>
-    <link rel="icon" href="admin.png" type="image/png">
+    <link rel="icon" href="admin.webp" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -338,13 +338,51 @@
             const ubicacion = orderData.cliente?.ubicacion_maps || '';
             const total = typeof orderData.total_usd === 'number' ? orderData.total_usd.toFixed(2) : '0.00';
 
+            // Formatear fecha para mejor visibilidad
+            let fechaFormateada = 'Fecha no registrada';
+            if (orderData.fecha) {
+                try {
+                    // Usar timestamp de Firebase si está disponible, sino usar fecha string
+                    let fecha;
+                    if (orderData.timestamp) {
+                        fecha = new Date(orderData.timestamp);
+                    } else {
+                        // El formato guardado es local (ej: "20/06/2026, 12:14:30")
+                        const fechaStr = orderData.fecha;
+                        const partes = fechaStr.split(', ');
+                        if (partes.length >= 2) {
+                            const fechaPart = partes[0]; // "20/06/2026"
+                            const horaPart = partes[1]; // "12:14:30"
+                            
+                            const [dia, mes, anio] = fechaPart.split('/');
+                            const [hora, minutos] = horaPart.split(':');
+                            
+                            fecha = new Date(anio, mes - 1, dia, hora, minutos);
+                        } else {
+                            fecha = new Date(fechaStr);
+                        }
+                    }
+                    
+                    const opciones = { 
+                        weekday: 'short', 
+                        day: 'numeric', 
+                        month: 'short', 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    };
+                    fechaFormateada = fecha.toLocaleDateString('es-VE', opciones).toUpperCase();
+                } catch (e) {
+                    fechaFormateada = orderData.fecha.toUpperCase();
+                }
+            }
+
             return `
                 <div class="card-enter bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10 card-glow">
                     <div class="flex justify-between items-start mb-4">
                         <div>
                             <p class="text-white font-semibold text-lg">${nombreCliente}</p>
                             <p class="text-gray-400 text-sm uppercase tracking-wider">${metodo === 'delivery' ? '🛵 Delivery' : '🏠 Pick Up'}</p>
-                            <p class="text-gray-500 text-xs mt-1">${orderData.fecha || 'Fecha no registrada'}</p>
+                            <p class="text-red-400 text-sm font-semibold mt-1 bg-red-500/10 px-2 py-1 rounded inline-block">🕐 ${fechaFormateada}</p>
                         </div>
                         <div class="text-right">
                             <p class="text-xs text-gray-500">Total</p>
