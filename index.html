@@ -1642,7 +1642,7 @@
     <!-- Overlay de Lanzamiento (Coming Soon) -->
     <div id="launch-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; background-color: var(--bg-color); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.5s ease;">
         <!-- Video de fondo optimizado -->
-        <video autoplay muted loop playsinline preload="metadata" webkit-playsinline inline class="video-background" poster="assets/videos/comingsoon.jpg" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(6px) brightness(0.6); z-index: -2;">
+        <video autoplay muted loop playsinline preload="metadata" webkit-playsinline inline class="video-background" poster="assets/videos/comingsoon.webp" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(6px) brightness(0.6); z-index: -2;">
             <source src="assets/videos/comingsoon.mp4" type="video/mp4">
         </video>
 
@@ -1747,15 +1747,15 @@
         <section id="hamburguesas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:max-w-6xl lg:mx-auto">
             
             <div class="menu-item">
-                <img src="bowl.webp" class="item-img-bg ajuste-subir" alt="Crispy Bowl" loading="lazy" width="900" height="500">
+                <img src="crispy deluxe.webp" class="item-img-bg ajuste-subir" alt="Crispy Deluxe" loading="lazy" width="900" height="500">
                 <div class="item-info-split">
                     <div class="item-info">
-                        <span class="badge-new">NUEVO</span>
-                        <span class="item-name">Crispy Bowl</span>
-                        <p class="item-desc">150grs de pechuga crispy, 250grs de papas fritas, barbecue, queso fundido y salsa de la casa.</p>
+                        <span class="badge-new">NUEVA</span>
+                        <span class="item-name">Crispy Deluxe</span>
+                        <p class="item-desc">Pan, pollo crispy, lechuga, mayonesa, pepinillos, queso americano y salsa de la casa.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="bowl.webp">
-                        <span class="item-price">$8,49</span>
+                    <div class="item-price-wrapper" data-img-src="crispy deluxe.webp">
+                        <span class="item-price">$12,99</span>
                         <span class="item-ref">REF</span>
                     </div>
                 </div>
@@ -1995,7 +1995,7 @@
 
         <section id="servicios" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:max-w-6xl lg:mx-auto">
             <div class="menu-item">
-                <img src="bowl.webp" class="item-img-bg" alt="Crispy Bowl" loading="lazy" width="400" height="220">
+                <img src="bowl.webp" class="item-img-bg ajuste-subir" alt="Crispy Bowl" loading="lazy" width="900" height="500">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="badge-new">NUEVO</span>
@@ -2708,6 +2708,19 @@
             <div class="promo-img-container">
                 <img src="promolunesmiercoles.webp" alt="Promoción Especial">
                 <button id="btn-promo-ordenar" class="btn-promo-premium">
+                    ¡ORDENAR AHORA!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Promo Papa -->
+    <div id="modal-promo-papa" class="modal">
+        <div class="modal-content promo-modal-content">
+            <button class="close-promo" id="btn-close-promo-papa">&times;</button>
+            <div class="promo-img-container">
+                <img src="promopapa.webp" alt="Promoción Papa">
+                <button id="btn-promo-papa-ordenar" class="btn-promo-premium">
                     ¡ORDENAR AHORA!
                 </button>
             </div>

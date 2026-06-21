@@ -158,6 +158,20 @@
         lockBodyScroll(true);
     }
 
+    function verificarYMostrarPromoPapa() {
+        const promoPapaModal = document.getElementById('modal-promo-papa');
+        if (!promoPapaModal) return;
+        
+        // Solo mostrar hoy (21 de junio de 2026)
+        const hoy = new Date();
+        const fechaPromo = new Date(2026, 5, 21); // Mes 5 = junio (0-indexed)
+        
+        if (hoy.toDateString() === fechaPromo.toDateString()) {
+            promoPapaModal.classList.add('active');
+            lockBodyScroll(true);
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         /* ——— Preloader ——— */
         const preloaderProgress = document.getElementById('preloader-progress');
@@ -181,6 +195,7 @@
 
                 // Mostrar modal de promos después de 3s para todos los usuarios
                 setTimeout(verificarYMostrarPromo, 3000);
+                setTimeout(verificarYMostrarPromoPapa, 3000);
             }, 200);
         };
 
@@ -307,10 +322,28 @@
             lockBodyScroll(false);
         });
 
+        document.getElementById('btn-close-promo-papa')?.addEventListener('click', () => {
+            document.getElementById('modal-promo-papa')?.classList.remove('active');
+            lockBodyScroll(false);
+        });
+
         document.getElementById('btn-promo-ordenar')?.addEventListener('click', () => {
             document.getElementById('modal-promo-lunes-miercoles')?.classList.remove('active');
             document.getElementById('modal-promo-selection')?.classList.add('active');
             lockBodyScroll(true);
+        });
+
+        document.getElementById('btn-promo-papa-ordenar')?.addEventListener('click', () => {
+            document.getElementById('modal-promo-papa')?.classList.remove('active');
+            lockBodyScroll(false);
+            
+            // Buscar el Crispy Deluxe y simular click
+            const crispyDeluxeItem = Array.from(document.querySelectorAll('.menu-item')).find(item => 
+                item.querySelector('.item-name')?.textContent.trim() === 'Crispy Deluxe'
+            );
+            if (crispyDeluxeItem) {
+                crispyDeluxeItem.click();
+            }
         });
 
         // Interruptores de selección de burger en promos
@@ -480,6 +513,7 @@
             }
 
             // Verificar si ya hay un cupón activo
+            console.log('cuponActivo actual:', cuponActivo);
             if (cuponActivo) {
                 showToast('⚠️ Ya tienes un cupón aplicado. Elimínalo primero.', 'error');
                 return;
@@ -494,12 +528,12 @@
             try {
                 const db = firebase.database();
                 
-                // Verificar si el usuario ya canjeó este cupón
-                const cuponUsadoRef = db.ref('cupones_usados/' + codigo + '/' + user.uid);
+                // Verificar si el cupón ya fue usado globalmente
+                const cuponUsadoRef = db.ref('cupones_usados/' + codigo);
                 const cuponUsadoSnap = await cuponUsadoRef.once('value');
                 
                 if (cuponUsadoSnap.exists()) {
-                    showToast('⚠️ Ya canjeaste este código', 'error');
+                    showToast('❌ Este cupón ya fue canjeado por alguien más', 'error');
                     return;
                 }
 
@@ -514,8 +548,11 @@
 
                 const porcentaje = cuponSnap.val().descuento;
                 
-                // Registrar el uso INMEDIATAMENTE
-                await cuponUsadoRef.set(true);
+                // Registrar el uso INMEDIATAMENTE con UID y timestamp
+                await db.ref('cupones_usados/' + codigo).set({ 
+                    usadoPor: user.uid, 
+                    timestamp: firebase.database.ServerValue.TIMESTAMP 
+                });
                 
                 // Calcular monto a descontar
                 const subtotal = carrito.reduce((sum, item) => sum + item.subtotal, 0);
@@ -525,6 +562,8 @@
                 
                 // Guardar en localStorage
                 localStorage.setItem('bh_cupon_activo', JSON.stringify(cuponActivo));
+                
+                console.log('Cupón aplicado:', cuponActivo);
                 
                 // Actualizar UI del carrito
                 actualizarInterfazCarrito();
