@@ -22,7 +22,7 @@
     const EXTRAS_DB = [
         // EXTRAS CON COSTO (Hamburguesas)
         { name: 'Extra Pollo', price: 2.50, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo },
-        { name: 'Extra Carne', price: 2.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo },
+        { name: 'Extra Carne', price: 2.50, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo },
         { name: 'Extra Pollo Crispy', price: 3.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo },
         { name: 'Extra Chuleta', price: 3.50, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo },
         { name: 'Huevo (proteína)', price: 1.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo },
@@ -30,7 +30,7 @@
         { name: 'Extra Tocineta', price: 2.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo },
         { name: 'Extra Salsa de la Casa', price: 1.20, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo },
         { name: 'Extra Lechuga', price: 1.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo },
-        { name: 'Extra Pepinillos', price: 1.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo },
+        { name: 'Extra Pepinillos', price: 1.20, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo },
         { name: 'Extra Salsa BBQ', price: 1.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo },
         
         // EXTRAS CON COSTO (Menú Kids)
@@ -48,7 +48,8 @@
         { name: 'Pollo a la plancha', type: 'toggle', applies: c => c.descLower.includes('pollo') && !c.descLower.includes('pollo crispy') && !c.descLower.includes('pechuga crispy') && !c.isNuggets && !c.esCombo, default: () => 'SÍ' },
         { name: 'Chuleta', type: 'toggle', applies: c => c.descLower.includes('chuleta') && !c.esCombo, default: () => 'SÍ' },
         { name: 'Tocineta', type: 'toggle', applies: c => c.descLower.includes('tocineta') && !c.esCombo, default: () => 'SÍ' },
-        { name: 'Queso Fundido', type: 'toggle', applies: c => c.descLower.includes('queso') && !c.esCombo, default: () => 'SÍ' },
+        { name: 'Queso Americano', type: 'toggle', applies: c => c.descLower.includes('queso') && !c.esCombo && !c.isCrispyBowl, default: () => 'SÍ' },
+        { name: 'Queso Fundido', type: 'toggle', applies: c => c.descLower.includes('queso') && !c.esCombo && c.isCrispyBowl, default: () => 'SÍ' },
         { name: 'Pepinillos', type: 'toggle', applies: c => c.descLower.includes('pepinillo') && !c.esCombo, default: () => 'SÍ' },
         { name: 'Lechuga', type: 'toggle', applies: c => c.descLower.includes('lechuga') && !c.esCombo, default: () => 'SÍ' },
         { name: 'Salsa de la Casa', type: 'toggle', applies: c => c.descLower.includes('salsa de la casa') && !c.esCombo, default: () => 'SÍ' },
@@ -91,84 +92,6 @@
         }, 3000);
     };
 
-    const showDiscountModal = (visitorNumber) => {
-        const modal = document.getElementById('modal-discount');
-        if (!modal) return;
-
-        // Solo mostrar modal para los primeros 5 clientes
-        if (visitorNumber > 5) return;
-
-        // Actualizar el mensaje según el número de cliente
-        const visitorNumberElement = modal.querySelector('.visitor-number');
-        const discountPercentageElement = modal.querySelector('.discount-percentage');
-
-        if (!visitorNumberElement || !discountPercentageElement) {
-            console.error('Error: Elementos del modal no encontrados');
-            return;
-        }
-
-        visitorNumberElement.textContent = visitorNumber;
-
-        if (visitorNumber === '1' || visitorNumber === 1) {
-            discountPercentageElement.textContent = '40% de descuento';
-        } else {
-            discountPercentageElement.textContent = '20% de descuento';
-        }
-
-        modal.classList.add('active');
-        lockBodyScroll(true);
-
-        // Esta es la función que el usuario llama "claimDiscount"
-        const claimDiscount = (e) => {
-            const btn = e?.currentTarget;
-            
-            // Obtener el UID de forma segura para evitar errores de variable no definida
-            const user = firebase?.auth?.().currentUser;
-            if (!user) {
-                console.error("Error crítico: No se pudo obtener el usuario para reclamar el descuento.");
-                showToast('Error al reclamar. Intenta de nuevo.', 'error');
-                return;
-            }
-            const userUID = user.uid;
-
-            // Guardar la marca en la base de datos para evitar trampas
-            try {
-                const db = firebase.database();
-                db.ref('usuarios_descuento/' + userUID).set(true);
-                localStorage.setItem('bh_discount_claimed_db', 'true');
-                console.log(`✅ Descuento reclamado y marcado en DB para UID: ${userUID}`);
-            } catch (error) {
-                console.error("Error al guardar la marca del descuento en Firebase:", error);
-            }
-
-            // Lógica para cerrar el modal con animación
-            const closeAndContinue = () => {
-                modal.classList.remove('active');
-                lockBodyScroll(false);
-                setTimeout(verificarYMostrarPromo, 300);
-            };
-
-            if (btn && btn.id === 'btn-close-discount') {
-                const spinner = btn.querySelector('.btn-spinner');
-                const textSpan = btn.querySelector('.btn-text');
-                btn.style.pointerEvents = 'none';
-                if (spinner) spinner.classList.add('active');
-                if (textSpan) textSpan.innerText = 'Cargando...';
-                
-                setTimeout(() => {
-                    closeAndContinue();
-                    btn.style.pointerEvents = 'auto';
-                    if (spinner) spinner.classList.remove('active');
-                    if (textSpan) textSpan.innerText = '¡GENIAL!';
-                }, 350);
-            } else {
-                closeAndContinue();
-            }
-        };
-
-        document.getElementById('close-discount-modal')?.addEventListener('click', claimDiscount);
-        document.getElementById('btn-close-discount')?.addEventListener('click', claimDiscount);
-    };
 
     const triggerFlyToCart = (sourceImgId) => {
         const sourceImg = document.getElementById(sourceImgId);
@@ -223,76 +146,6 @@
                 });
             }
     
-            // --- 2. LÓGICA DEL LANZAMIENTO (REFORZADA CON AUTH ANÓNIMA) ---
-            const launchDate = window.launchDate || 0;
-            const now = new Date().getTime();
-            const isAfterLaunch = now >= launchDate;
-    
-            // VERIFICACIÓN ANTI-TRAMPA 1: Si la DB ya nos dijo que este usuario reclamó, no hacer nada.
-            if (localStorage.getItem('bh_discount_claimed_db') === 'true') {
-                console.log('🚫 Descuento ya reclamado (verificado desde DB). Se omite la lógica de lanzamiento.');
-                return;
-            }
-
-            // El localStorage es solo una optimización para no consultar la DB innecesariamente.
-            // La verdadera seguridad está en la transacción que valida el userUID.
-            if (isAfterLaunch && !localStorage.getItem('bh_first20_registered')) { // VERIFICACIÓN ANTI-TRAMPA 2 (local)
-    
-                const firstWinnersRef = db.ref('stats/first5_after_launch');
-    
-                firstWinnersRef.transaction((currentData) => {
-                    if (currentData === null) {
-                        currentData = {}; // Inicializa la estructura si no existe
-                    }
-                    // Si el UID del usuario ya existe, aborta la transacción. ¡Anti-trampa!
-                    if (currentData[userUID]) {
-                        return; 
-                    }
-                    const winnerCount = Object.keys(currentData).length;
-                    if (winnerCount < 5) {
-                        currentData[userUID] = winnerCount + 1; // Asigna el número al UID del ganador
-                        return currentData;
-                    }
-                    return; // Aborta si los 5 cupos ya están llenos
-                }, (error, committed, snapshot) => {
-                    if (error) {
-                        console.error("Transaction failed, activando función de repuesto local: ", error);
-                        
-                        // FALLBACK LOCAL: Si el servidor falla por completo, asumimos localmente que llegó 'tarde'
-                        // para que la interfaz no se congele, el overlay desaparezca y el usuario pueda navegar,
-                        // armar su pedido y enviar su comanda por WhatsApp normalmente sin descuentos falsos.
-                        localStorage.setItem('bh_first20_registered', 'true');
-                        localStorage.setItem('bh_first20_number', 'tarde'); 
-                        
-                        if (typeof showToast === 'function') {
-                            showToast('Conexión saturada. Puedes proceder con tu pedido normalmente.', 'info');
-                        }
-                        return;
-                    }
-    
-                    if (committed && snapshot.exists()) {
-                        const winnerData = snapshot.val();
-                        const visitorNumber = winnerData[userUID];
-
-                        localStorage.setItem('bh_first20_registered', 'true');
-                        localStorage.setItem('bh_first20_number', visitorNumber.toString());
-                        setTimeout(() => showDiscountModal(visitorNumber), 500);
-                    } else {
-                        // Transacción abortada (llegó tarde o ya había participado).
-                        localStorage.setItem('bh_first20_registered', 'true');
-                        localStorage.setItem('bh_first20_number', 'tarde');
-
-                        // Recuperación: Si el usuario borró localStorage pero ya había ganado, se lo recordamos.
-                        db.ref('stats/first5_after_launch/' + userUID).once('value').then(snap => {
-                            if (snap.exists()) {
-                                const existingNumber = snap.val();
-                                localStorage.setItem('bh_first20_number', existingNumber.toString());
-                                setTimeout(() => showDiscountModal(existingNumber), 500);
-                            }
-                        });
-                    }
-                });
-            }
         } catch (err) {
             console.error("Error Firebase contador:", err);
         }
@@ -325,10 +178,6 @@
 
                 stickyNav?.classList.add('mostrar-menu');
                 document.getElementById('cart-floating-btn')?.classList.remove('cart-btn-hidden');
-
-                const isFirst20 = localStorage.getItem('bh_first20_registered') === 'true';
-                const visitorNumber = localStorage.getItem('bh_first20_number');
-                const isTop5 = visitorNumber && parseInt(visitorNumber) <= 5;
 
                 // Mostrar modal de promos después de 3s para todos los usuarios
                 setTimeout(verificarYMostrarPromo, 3000);
@@ -617,7 +466,88 @@
         document.getElementById('btn-mode-pickup')?.addEventListener('click', () => setDeliveryMethod('pickup'));
 
         let carrito = JSON.parse(localStorage.getItem('bh_cart') || '[]');
+        let cuponActivo = JSON.parse(localStorage.getItem('bh_cupon_activo') || 'null');
         if (carrito.length > 0) actualizarInterfazCarrito();
+
+        // --- SISTEMA DE CUPONES ---
+        const aplicarCupon = async () => {
+            const input = document.getElementById('coupon-input');
+            const codigo = input.value.toUpperCase().trim();
+            
+            if (!codigo) {
+                showToast('❌ Ingresa un código', 'error');
+                return;
+            }
+
+            // Verificar si ya hay un cupón activo
+            if (cuponActivo) {
+                showToast('⚠️ Ya tienes un cupón aplicado. Elimínalo primero.', 'error');
+                return;
+            }
+
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                showToast('❌ Debes iniciar sesión para usar cupones', 'error');
+                return;
+            }
+
+            try {
+                const db = firebase.database();
+                
+                // Verificar si el usuario ya canjeó este cupón
+                const cuponUsadoRef = db.ref('cupones_usados/' + codigo + '/' + user.uid);
+                const cuponUsadoSnap = await cuponUsadoRef.once('value');
+                
+                if (cuponUsadoSnap.exists()) {
+                    showToast('⚠️ Ya canjeaste este código', 'error');
+                    return;
+                }
+
+                // Verificar si el cupón existe
+                const cuponRef = db.ref('cupones/' + codigo);
+                const cuponSnap = await cuponRef.once('value');
+                
+                if (!cuponSnap.exists()) {
+                    showToast('❌ Código inválido', 'error');
+                    return;
+                }
+
+                const porcentaje = cuponSnap.val().descuento;
+                
+                // Registrar el uso INMEDIATAMENTE
+                await cuponUsadoRef.set(true);
+                
+                // Calcular monto a descontar
+                const subtotal = carrito.reduce((sum, item) => sum + item.subtotal, 0);
+                const montoDescontado = subtotal * (porcentaje / 100);
+                
+                cuponActivo = { codigo, porcentaje, monto: montoDescontado };
+                
+                // Guardar en localStorage
+                localStorage.setItem('bh_cupon_activo', JSON.stringify(cuponActivo));
+                
+                // Actualizar UI del carrito
+                actualizarInterfazCarrito();
+                
+                showToast('🎉 Cupón aplicado', 'success');
+                input.value = '';
+            } catch (error) {
+                console.error('Error al aplicar cupón:', error);
+                showToast('❌ Error al aplicar cupón', 'error');
+            }
+        };
+
+        document.getElementById('btn-apply-coupon')?.addEventListener('click', aplicarCupon);
+
+        // Función para eliminar cupón activo
+        const eliminarCupon = () => {
+            cuponActivo = null;
+            localStorage.removeItem('bh_cupon_activo');
+            actualizarInterfazCarrito();
+            showToast('🗑️ Cupón eliminado', 'info');
+        };
+
+        document.getElementById('btn-remove-coupon')?.addEventListener('click', eliminarCupon);
 
         const cerrarFunc = () => {
             const activeModal = document.querySelector('.modal.active');
@@ -748,10 +678,42 @@
             cartItemsContainer?.querySelectorAll('.remove-item').forEach((btn) => {
                 btn.onclick = () => {
                     carrito = carrito.filter((item) => item.id !== btn.getAttribute('data-id'));
+                    
+                    // Si el carrito queda vacío, limpiar cupón activo
+                    if (carrito.length === 0 && cuponActivo) {
+                        cuponActivo = null;
+                        localStorage.removeItem('bh_cupon_activo');
+                    }
+                    
                     actualizarInterfazCarrito();
                 };
             });
-            if(cartGrandTotal) cartGrandTotal.innerHTML = `$${total.toFixed(2)} <span class="cart-ref-total">REF</span>`;
+
+            // Recalcular descuento si hay cupón activo
+            let totalConDescuento = total;
+            if (cuponActivo) {
+                const nuevoMontoDescontado = total * (cuponActivo.porcentaje / 100);
+                cuponActivo.monto = nuevoMontoDescontado;
+                totalConDescuento = total - nuevoMontoDescontado;
+
+                // Mostrar resumen del descuento
+                const discountSummary = document.getElementById('discount-summary');
+                const discountAmount = document.getElementById('discount-amount');
+                const discountPercentage = document.getElementById('discount-percentage');
+                const couponCodeDisplay = document.getElementById('coupon-code-display');
+                
+                if (discountSummary && discountAmount && discountPercentage && couponCodeDisplay) {
+                    discountSummary.classList.remove('hidden');
+                    discountAmount.textContent = `-$${nuevoMontoDescontado.toFixed(2)}`;
+                    discountPercentage.textContent = `-${cuponActivo.porcentaje}%`;
+                    couponCodeDisplay.textContent = cuponActivo.codigo;
+                }
+            } else {
+                // Ocultar resumen del descuento si no hay cupón
+                document.getElementById('discount-summary')?.classList.add('hidden');
+            }
+
+            if(cartGrandTotal) cartGrandTotal.innerHTML = `$${totalConDescuento.toFixed(2)} <span class="cart-ref-total">REF</span>`;
         }
 
         cartBtn?.addEventListener('click', () => {
@@ -1176,9 +1138,6 @@
 
                 // 1. GENERACIÓN DE COMANDA ESTRICTA
                 let mensaje = `*NUEVO PEDIDO - BURGER HOUSE*\n\n*Cliente:* ${nombre}\n`;
-                const visitorNumber = localStorage.getItem('bh_first20_number');
-                if (visitorNumber && visitorNumber !== 'tarde') mensaje += `*Cliente #:* ${visitorNumber}\n`;
-                
                 mensaje += '\n*DETALLE DEL PEDIDO:*\n';
                 carrito.forEach((item) => {
                     const isNuggetsItem = item.nombre.toLowerCase().includes('nuggets');
@@ -1205,29 +1164,14 @@
                 mensaje += '\n------------------------------\n';
                 let totalConDescuento = totalPedido;
 
-                if (localStorage.getItem('bh_first20_registered') === 'true' && visitorNumber && visitorNumber !== 'tarde') {
-                    const visitorNum = parseInt(visitorNumber);
-                    let descPrc = 0;
-
-                    if (visitorNum === 1) {
-                        descPrc = 0.40; // 40% para el primero
-                    } else if (visitorNum >= 2 && visitorNum <= 5) {
-                        descPrc = 0.20; // 20% para los siguientes 4
-                    }
-
-                    if (descPrc > 0) {
-                        const montoDescontado = totalPedido * descPrc;
-                        totalConDescuento = totalPedido - montoDescontado;
-                        
-                        mensaje += `*SUBTOTAL:* $${totalPedido.toFixed(2)} REF\n`;
-                        mensaje += `*¡PREMIO CLIENTE #${visitorNum}! (${descPrc * 100}% OFF)*\n`;
-                        mensaje += `*DESCUENTO:* -$${montoDescontado.toFixed(2)} REF\n`;
-                        mensaje += `------------------------------\n`;
-                        mensaje += `*TOTAL A PAGAR: $${totalConDescuento.toFixed(2)} REF*\n`;
-                        mensaje += `_(Te ahorraste: $${montoDescontado.toFixed(2)} REF)_\n`;
-                    } else {
-                        mensaje += `*TOTAL DEL PEDIDO: $${totalPedido.toFixed(2)} REF*\n`;
-                    }
+                if (cuponActivo) {
+                    const montoDescontado = totalPedido * (cuponActivo.porcentaje / 100);
+                    totalConDescuento = totalPedido - montoDescontado;
+                    
+                    mensaje += `*SUBTOTAL:* $${totalPedido.toFixed(2)} REF\n`;
+                    mensaje += `*CUPÓN MUNDIAL (${cuponActivo.codigo}):* -${cuponActivo.porcentaje}% (-$${montoDescontado.toFixed(2)} REF)\n`;
+                    mensaje += `------------------------------\n`;
+                    mensaje += `*TOTAL A PAGAR:* $${totalConDescuento.toFixed(2)} REF*\n`;
                 } else {
                     mensaje += `*TOTAL DEL PEDIDO: $${totalPedido.toFixed(2)} REF*\n`;
                 }
@@ -1262,7 +1206,7 @@
                     if (typeof firebase !== 'undefined' && firebase.apps.length) {
                         try {
                             const db = firebase.database();
-                            await db.ref('pedidos').push({
+                            const pedidoData = {
                                 cliente: { nombre, metodo: currentDeliveryMethod, notas_referencia: notas, ubicacion_maps: mapsLink },
                                 productos: carrito.map(item => ({
                                     nombre: item.nombre,
@@ -1275,8 +1219,20 @@
                                 fecha: fechaActual,
                                 timestamp: firebase.database.ServerValue.TIMESTAMP,
                                 estado: "pendiente"
-                            });
+                            };
+                            
+                            if (cuponActivo) {
+                                pedidoData.cupon_usado = cuponActivo.codigo;
+                            }
+                            
+                            await db.ref('pedidos').push(pedidoData);
                         } catch (err) { console.error("Fallo menor: Firebase no respondió a tiempo", err); }
+                    }
+
+                    // Limpiar cupón activo después de enviar pedido
+                    if (cuponActivo) {
+                        cuponActivo = null;
+                        localStorage.removeItem('bh_cupon_activo');
                     }
 
                     // SheetDB - Comentado para que solo se envíe cuando se aprueba en admin
