@@ -41,13 +41,16 @@
         { name: 'Servicio de Ketchup', type: 'toggle', applies: c => c.isNuggets, default: () => 'NO' }, // Por defecto NO
         { name: 'Servicio de Salsa de la Casa', type: 'toggle', applies: c => c.isNuggets, default: () => 'SÍ' }, // Por defecto SÍ
 
+        // COMBO PROMO (Bombita + Papitas) - Solo para tarjetas de promo
+        { name: 'Papitas + Bombita', price: CONFIG.PROMO_COMBO_EXTRA, type: 'cost', applies: c => c.nameLower.includes('promo') && !c.esCombo },
+
         // INGREDIENTES BASE (Interruptores SÍ/NO) -> APLICAN ESTRICTAMENTE LEYENDO LA DESCRIPCIÓN
         { name: 'Pan', type: 'toggle', applies: c => c.descLower.includes('pan') && !c.esCombo, default: () => 'SÍ' },
         { name: 'Carne', type: 'toggle', applies: c => c.descLower.includes('carne') && !c.esCombo, default: () => 'SÍ' },
         { name: 'Pollo Crispy', type: 'toggle', applies: c => (c.descLower.includes('pollo crispy') || c.descLower.includes('pechuga crispy')) && !c.isNuggets && !c.esCombo, default: () => 'SÍ' },
         { name: 'Pollo a la plancha', type: 'toggle', applies: c => c.descLower.includes('pollo') && !c.descLower.includes('pollo crispy') && !c.descLower.includes('pechuga crispy') && !c.isNuggets && !c.esCombo, default: () => 'SÍ' },
         { name: 'Chuleta', type: 'toggle', applies: c => c.descLower.includes('chuleta') && !c.esCombo, default: () => 'SÍ' },
-        { name: 'Tocineta', type: 'toggle', applies: c => c.descLower.includes('tocineta') && !c.esCombo, default: () => 'SÍ' },
+        { name: 'Tocineta', type: 'toggle', applies: c => c.descLower.includes('tocineta') && !c.esCombo && !c.nameLower.includes('promo'), default: () => 'SÍ' },
         { name: 'Queso Americano', type: 'toggle', applies: c => c.descLower.includes('queso') && !c.esCombo && !c.isCrispyBowl, default: () => 'SÍ' },
         { name: 'Queso Fundido', type: 'toggle', applies: c => c.descLower.includes('queso') && !c.esCombo && c.isCrispyBowl, default: () => 'SÍ' },
         { name: 'Pepinillos', type: 'toggle', applies: c => c.descLower.includes('pepinillo') && !c.esCombo, default: () => 'SÍ' },
@@ -159,6 +162,19 @@
         lockBodyScroll(true);
     }
 
+    function mostrarTarjetasPromo() {
+        const promoItems = document.querySelectorAll('.promo-item');
+        const isPromoDay = isPromoWindowActive();
+        
+        promoItems.forEach(item => {
+            if (isPromoDay) {
+                item.classList.add('visible');
+            } else {
+                item.classList.remove('visible');
+            }
+        });
+    }
+
     function verificarYMostrarPromoPapa() {
         const promoPapaModal = document.getElementById('modal-promo-papa');
         if (!promoPapaModal) return;
@@ -197,6 +213,9 @@
                 // Mostrar modal de promos después de 3s para todos los usuarios
                 setTimeout(verificarYMostrarPromo, 3000);
                 setTimeout(verificarYMostrarPromoPapa, 3000);
+                
+                // Mostrar tarjetas de promo según día
+                mostrarTarjetasPromo();
             }, 200);
         };
 
@@ -330,8 +349,13 @@
 
         document.getElementById('btn-promo-ordenar')?.addEventListener('click', () => {
             document.getElementById('modal-promo-lunes-miercoles')?.classList.remove('active');
-            document.getElementById('modal-promo-selection')?.classList.add('active');
-            lockBodyScroll(true);
+            lockBodyScroll(false);
+            
+            // Ir al menú de hamburguesas
+            const hamburguesasBtn = document.querySelector('.category-btn[data-category="hamburguesas"]');
+            if (hamburguesasBtn) {
+                hamburguesasBtn.click();
+            }
         });
 
         document.getElementById('btn-promo-papa-ordenar')?.addEventListener('click', () => {
@@ -841,7 +865,16 @@
                     const applicableExtras = EXTRAS_DB.filter(ex => ex.applies(ctx)); // Filtra todos los extras que aplican
                     const toggleExtras = applicableExtras.filter(ex => ex.type === 'toggle'); // Separa los toggles
                     const costExtras = applicableExtras.filter(ex => ex.type === 'cost'); // Separa los extras con costo
-                    const orderedExtras = [...toggleExtras, ...costExtras]; // Une, poniendo los toggles primero
+                    
+                    // Para promos, poner "Papitas + Bombita" primero
+                    let orderedExtras;
+                    if (ctx.nameLower.includes('promo')) {
+                        const promoCombo = costExtras.find(ex => ex.name === 'Papitas + Bombita');
+                        const otherCostExtras = costExtras.filter(ex => ex.name !== 'Papitas + Bombita');
+                        orderedExtras = promoCombo ? [promoCombo, ...toggleExtras, ...otherCostExtras] : [...toggleExtras, ...costExtras];
+                    } else {
+                        orderedExtras = [...toggleExtras, ...costExtras]; // Une, poniendo los toggles primero
+                    }
                     
                     extrasGrid.innerHTML = orderedExtras.map(ex => {
                         const isToggle = ex.type === 'toggle';

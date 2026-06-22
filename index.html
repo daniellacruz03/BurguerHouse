@@ -496,7 +496,8 @@
         }
 
         .badge-best,
-        .badge-new {
+        .badge-new,
+        .badge-promo {
             color: #ffffff !important;
             border: none !important;
             border-radius: 999px !important;
@@ -514,6 +515,19 @@
 
         .badge-new {
             background: #ff0000 !important;
+        }
+
+        .badge-promo {
+            background: #ffbb33 !important;
+            color: #000000 !important;
+        }
+
+        .promo-item {
+            display: none !important;
+        }
+
+        .promo-item.visible {
+            display: block !important;
         }
 
         /* Posicionamiento de Info y Precio en Tarjeta */
@@ -1769,6 +1783,54 @@
 
         <section id="hamburguesas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:max-w-6xl lg:mx-auto">
             
+            <!-- PROMO CHEESE HOUSE -->
+            <div class="menu-item promo-item">
+                <img src="cheese house.webp" class="item-img-bg ajuste-subir" alt="PROMO Cheese House" loading="lazy" width="900" height="500">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="badge-promo">PROMO</span>
+                        <span class="item-name">PROMO Cheese House</span>
+                        <p class="item-desc">Pan de papa, carne, triple queso americano, salsa de la casa, papas fritas. (Sin tocineta)</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="cheese house.webp">
+                        <span class="item-price">$6,50</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROMO HOUSE CLASSICS -->
+            <div class="menu-item promo-item">
+                <img src="houseclasic.webp" class="item-img-bg ajuste-subir" alt="PROMO House Classics" loading="lazy" width="900" height="500">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="badge-promo">PROMO</span>
+                        <span class="item-name">PROMO House Classics</span>
+                        <p class="item-desc">Pan de papa, carne, pepinillo, queso americano, lechuga, salsa de la casa, papas fritas. (Sin tocineta)</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="houseclasic.webp">
+                        <span class="item-price">$6,50</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROMO BABY CRISPY -->
+            <div class="menu-item promo-item">
+                <img src="baby crispy.webp" class="item-img-bg ajuste-baby" alt="PROMO Baby Crispy" loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="badge-promo">PROMO</span>
+                        <span class="item-name">PROMO Baby Crispy</span>
+                        <p class="item-desc">Pan de papa, pollo crispy, salsa de la casa, servicio de papas fritas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="baby crispy.webp">
+                        <span class="item-price">$6,50</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
             <div class="menu-item">
                 <img src="crispydeluxe.webp" class="item-img-bg ajuste-subir" alt="Crispy Deluxe" loading="lazy" width="900" height="500">
                 <div class="item-info-split">
