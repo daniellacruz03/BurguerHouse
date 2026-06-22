@@ -52,6 +52,7 @@
         { name: 'Queso Fundido', type: 'toggle', applies: c => c.descLower.includes('queso') && !c.esCombo && c.isCrispyBowl, default: () => 'SÍ' },
         { name: 'Pepinillos', type: 'toggle', applies: c => c.descLower.includes('pepinillo') && !c.esCombo, default: () => 'SÍ' },
         { name: 'Lechuga', type: 'toggle', applies: c => c.descLower.includes('lechuga') && !c.esCombo, default: () => 'SÍ' },
+        { name: 'Mayonesa', type: 'toggle', applies: c => c.descLower.includes('mayonesa') && !c.esCombo, default: () => 'SÍ' },
         { name: 'Salsa de la Casa', type: 'toggle', applies: c => c.descLower.includes('salsa de la casa') && !c.esCombo, default: () => 'SÍ' },
         { name: 'Salsa BBQ', type: 'toggle', applies: c => c.descLower.includes('barbecue') && !c.esCombo, default: () => 'SÍ' },
         { name: 'Huevito Sorpresa', type: 'toggle', applies: c => c.descLower.includes('huevito sorpresa') && !c.esCombo, default: () => 'SÍ' }
@@ -346,6 +347,15 @@
             }
         });
 
+        // Botón volver al menú
+        document.getElementById('btn-volver-menu')?.addEventListener('click', () => {
+            if (window.history.state?.ui === 'checkout') history.go(-2);
+            else if (window.history.state?.ui === 'cart') history.back();
+            else cartSidebar?.classList.add('cart-closed');
+            lockBodyScroll(false);
+            if (stickyNav) stickyNav.style.display = 'block';
+        });
+
         // Interruptores de selección de burger en promos
         document.querySelectorAll('.promo-burger-card:not(#promo-combo-option)').forEach(card => {
             card.addEventListener('click', () => {
@@ -513,7 +523,6 @@
             }
 
             // Verificar si ya hay un cupón activo
-            console.log('cuponActivo actual:', cuponActivo);
             if (cuponActivo) {
                 showToast('⚠️ Ya tienes un cupón aplicado. Elimínalo primero.', 'error');
                 return;
@@ -562,8 +571,6 @@
                 
                 // Guardar en localStorage
                 localStorage.setItem('bh_cupon_activo', JSON.stringify(cuponActivo));
-                
-                console.log('Cupón aplicado:', cuponActivo);
                 
                 // Actualizar UI del carrito
                 actualizarInterfazCarrito();
