@@ -302,12 +302,33 @@
                     const ingredientesEliminados = [];
                     
                     prod.detalles_personalizacion.forEach(detalle => {
-                        if (detalle.opcion === 'NO' || detalle.opcion === 'no') {
-                            ingredientesEliminados.push(detalle.nombre);
-                        } else if (detalle.cantidad > 0) {
-                            extrasAgregados.push(`${detalle.nombre} (${detalle.cantidad})`);
-                        } else if (detalle.opcion === 'SI' || detalle.opcion === 'si') {
-                            extrasAgregados.push(detalle.nombre);
+                        // Para combo house, detectar formato "Hamburguesa X: Sin Nombre" o "Hamburguesa X: Extra Nombre"
+                        if (detalle.nombre.includes('Hamburguesa')) {
+                            const parts = detalle.nombre.split(': ');
+                            if (parts.length > 1) {
+                                const burgerPart = parts[0]; // "Hamburguesa 1"
+                                const modifications = parts[1].split(', '); // ["Sin Tocineta", "Extra Carne"]
+                                
+                                modifications.forEach(mod => {
+                                    if (mod.includes('Sin')) {
+                                        const nombre = mod.replace('Sin ', '');
+                                        ingredientesEliminados.push(`${burgerPart}: ${nombre}`);
+                                    } else if (mod.includes('Extra')) {
+                                        const nombre = mod.replace('Extra ', '');
+                                        const cantidad = detalle.cantidad > 0 ? ` (${detalle.cantidad})` : '';
+                                        extrasAgregados.push(`${burgerPart}: ${nombre}${cantidad}`);
+                                    }
+                                });
+                            }
+                        } else {
+                            // Lógica normal para otros productos
+                            if (detalle.opcion === 'NO' || detalle.opcion === 'no') {
+                                ingredientesEliminados.push(detalle.nombre);
+                            } else if (detalle.cantidad > 0) {
+                                extrasAgregados.push(`${detalle.nombre} (${detalle.cantidad})`);
+                            } else if (detalle.opcion === 'SI' || detalle.opcion === 'si') {
+                                extrasAgregados.push(detalle.nombre);
+                            }
                         }
                     });
                     

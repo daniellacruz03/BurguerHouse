@@ -1523,6 +1523,68 @@
                 margin-bottom: 10px !important;
             }
 
+            /* Combo Tabs Styles */
+            .combo-tabs {
+                margin-bottom: 15px !important;
+            }
+
+            .combo-progress {
+                text-align: center;
+                color: #ffffff !important;
+                font-size: 0.85rem !important;
+                font-weight: 600 !important;
+                margin-bottom: 10px !important;
+                background: rgba(230, 0, 0, 0.1) !important;
+                padding: 8px !important;
+                border-radius: 8px !important;
+                border: 1px solid rgba(230, 0, 0, 0.3) !important;
+            }
+
+            .combo-tabs-nav {
+                display: flex !important;
+                gap: 8px !important;
+                justify-content: center !important;
+            }
+
+            .combo-tab {
+                background: rgba(255, 255, 255, 0.1) !important;
+                border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                color: #ffffff !important;
+                padding: 8px 16px !important;
+                border-radius: 8px !important;
+                font-size: 0.8rem !important;
+                font-weight: 600 !important;
+                cursor: pointer !important;
+                transition: all 0.3s ease !important;
+            }
+
+            .combo-tab:hover {
+                background: rgba(255, 255, 255, 0.2) !important;
+                border-color: rgba(255, 255, 255, 0.4) !important;
+            }
+
+            .combo-tab.active {
+                background: var(--primary-color) !important;
+                border-color: var(--primary-color) !important;
+                box-shadow: 0 4px 15px rgba(230, 0, 0, 0.4) !important;
+            }
+
+            /* Extras Sections */
+            .extras-section {
+                margin-bottom: 15px !important;
+            }
+
+            .extras-section-title {
+                color: #ffffff !important;
+                font-size: 0.8rem !important;
+                font-weight: 700 !important;
+                margin-bottom: 8px !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.5px !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+                padding-bottom: 5px !important;
+            }
+
             .extras-grid {
                 gap: 6px !important;
             }
@@ -2463,6 +2525,17 @@
                 </div>
 
                 <div class="modal-extras-container">
+                    <!-- Sistema de pestañas para Combo House -->
+                    <div id="combo-tabs" class="combo-tabs hidden">
+                        <div class="combo-progress">Configurando Hamburguesa <span id="combo-current-burger">1</span> de 4</div>
+                        <div class="combo-tabs-nav">
+                            <button class="combo-tab active" data-burger="1">Burger 1</button>
+                            <button class="combo-tab" data-burger="2">Burger 2</button>
+                            <button class="combo-tab" data-burger="3">Burger 3</button>
+                            <button class="combo-tab" data-burger="4">Burger 4</button>
+                        </div>
+                    </div>
+                    
                     <h3 class="extras-title">Personaliza tu orden</h3>
                     <div class="extras-grid">
                         <div class="extra-card" data-extra-price="2.50">
