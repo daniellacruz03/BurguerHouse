@@ -18,6 +18,9 @@
         PROMO_COMBO_EXTRA: 2.0
     };
 
+    // Referencia mutable a updateTotal (se asigna dentro del DOMContentLoaded)
+    let _updateTotal = null;
+
     // --- ESTADO DEL COMBO HOUSE ---
     let comboHouseState = {
         activeBurgerIndex: 0, // 0-3 (Burger 1-4)
@@ -88,7 +91,7 @@
         });
         
         // Recalcular precio
-        updateTotal();
+        if (typeof _updateTotal === 'function') _updateTotal();
     }
 
     // --- BASE DE DATOS DINÁMICA DE EXTRAS ---
@@ -337,14 +340,25 @@
             const isSearching = term.length > 0;
             const videoFeed = document.getElementById('bh-video-feed-scroll');
             const startOrderText = document.querySelector('.start-order-text');
+            const footer = document.querySelector('.bh-footer');
             const activeCategory = document.querySelector('.category-btn.active')?.dataset.category || 'all';
 
             if (isSearching) {
                 videoFeed?.classList.add('hidden');
                 startOrderText?.classList.add('hidden');
+                footer?.classList.add('hidden');
+                // Scroll al top del menú para que el viewport no quede en el fondo
+                document.getElementById('main-menu')?.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
                 videoFeed?.classList.toggle('hidden', activeCategory !== 'all');
                 startOrderText?.classList.toggle('hidden', activeCategory !== 'all');
+                footer?.classList.toggle('hidden', activeCategory !== 'all');
+                // Al limpiar la búsqueda, restaurar todas las secciones e items
+                document.querySelectorAll('section').forEach((section) => {
+                    section.classList.remove('hidden-search');
+                    section.querySelectorAll('.menu-item').forEach((item) => item.classList.remove('hidden-search'));
+                });
+                return;
             }
 
             document.querySelectorAll('.menu-item').forEach((item) => {
@@ -428,19 +442,6 @@
             const hamburguesasBtn = document.querySelector('.category-btn[data-category="hamburguesas"]');
             if (hamburguesasBtn) {
                 hamburguesasBtn.click();
-            }
-        });
-
-        document.getElementById('btn-promo-papa-ordenar')?.addEventListener('click', () => {
-            document.getElementById('modal-promo-papa')?.classList.remove('active');
-            lockBodyScroll(false);
-            
-            // Buscar el Crispy Deluxe y simular click
-            const crispyDeluxeItem = Array.from(document.querySelectorAll('.menu-item')).find(item => 
-                item.querySelector('.item-name')?.textContent.trim() === 'Crispy Deluxe'
-            );
-            if (crispyDeluxeItem) {
-                crispyDeluxeItem.click();
             }
         });
 
@@ -528,13 +529,6 @@
             // Extras para el combo
             const extras = [];
             if (isCombo) {
-                extras.push({
-                    nombre: 'Papitas',
-                    qty: 1,
-                    val: '1',
-                    isToggle: false,
-                    precio: 0
-                });
                 extras.push({
                     nombre: 'Bombita',
                     qty: 1,
@@ -915,18 +909,48 @@
             const modalTitleText = document.querySelector('.modal-title')?.innerText.toLowerCase() || '';
             const isComboHouse = modalTitleText.includes('combo house');
             
-            modal.querySelectorAll('.extra-card').forEach((card) => {
-                const valText = card.querySelector('.extra-qty-val')?.innerText ?? '';
-                const qty = valText === 'SÍ' ? 1 : valText === 'NO' ? 0 : parseInt(valText, 10) || 0;
-                const extraPriceValue = parseFloat(card.dataset.extraPrice || '0');
-                // Para combo house, multiplicar extras por 4 (4 hamburguesas)
-                const multiplier = isComboHouse ? 4 : 1;
-                extraTotal += qty * extraPriceValue * multiplier;
-            });
+            if (isComboHouse) {
+                // Asegurarse de que el estado de la hamburguesa actual esté guardado antes de calcular el total
+                const currentBurger = comboHouseState.burgers[comboHouseState.activeBurgerIndex];
+                modal.querySelectorAll('.extra-card').forEach((card) => {
+                    const extraName = card.dataset.extraName;
+                    const isToggle = card.dataset.isToggle === 'true';
+                    const valText = card.querySelector('.extra-qty-val')?.innerText ?? '';
+                    const val = isToggle ? (valText === 'SÍ' ? 'SÍ' : 'NO') : parseInt(valText, 10) || 0;
+                    
+                    if (isToggle) {
+                        currentBurger.ingredientes[extraName] = val;
+                    } else {
+                        currentBurger.extras[extraName] = val;
+                    }
+                });
+
+                // Calcular el total de extras sumando los extras de todas las hamburguesas en comboHouseState
+                comboHouseState.burgers.forEach(burger => {
+                    Object.entries(burger.extras).forEach(([extraName, qty]) => {
+                        if (qty > 0) {
+                            const extraDef = EXTRAS_DB.find(ex => ex.name === extraName);
+                            if (extraDef) {
+                                extraTotal += extraDef.price * qty;
+                            }
+                        }
+                    });
+                });
+            } else {
+                // Lógica existente para ítems individuales
+                modal.querySelectorAll('.extra-card').forEach((card) => {
+                    const valText = card.querySelector('.extra-qty-val')?.innerText ?? '';
+                    const qty = valText === 'SÍ' ? 1 : valText === 'NO' ? 0 : parseInt(valText, 10) || 0;
+                    const extraPriceValue = parseFloat(card.dataset.extraPrice || '0');
+                    extraTotal += qty * extraPriceValue;
+                });
+            }
             const finalTotal = ((basePrice + extraTotal) * currentMainQty) || basePrice || 0;
             modalPrice.innerHTML = `$${finalTotal.toFixed(2)} <span class="modal-ref">REF</span>`;
             btnAddOrderMain?.classList.remove('btn-highlight');
         }
+        // Exponer al scope del IIFE para que switchComboBurger pueda invocarla
+        _updateTotal = updateTotal;
 
         /* --- APERTURA DE MODAL DATA-DRIVEN --- */
         document.querySelectorAll('.menu-item').forEach((item) => {
@@ -1013,7 +1037,7 @@
                                 <h4 class="extras-section-title">Ingredientes Base</h4>
                                 <div class="extras-grid">
                                     ${toggleExtras.map(ex => {
-                                        const defaultVal = ex.default(ctx);
+                                        const defaultVal = (ex.default && typeof ex.default === 'function') ? ex.default(ctx) : 'SÍ'; // Manejar función default
                                         const isSelected = defaultVal === 'SÍ';
                                         return `
                                         <div class="extra-card ${isSelected ? 'selected' : ''}" data-extra-price="0" data-is-toggle="true" data-extra-name="${ex.name}">
@@ -1051,11 +1075,11 @@
                         // Para productos normales, renderizado estándar
                         extrasHTML = orderedExtras.map(ex => {
                             const isToggle = ex.type === 'toggle';
-                            const defaultVal = isToggle ? ex.default(ctx) : '0';
+                            const defaultVal = isToggle ? ((ex.default && typeof ex.default === 'function') ? ex.default(ctx) : 'SÍ') : '0'; // Manejar función default
                             const isSelected = isToggle && defaultVal === 'SÍ';
                             
                             return `
-                            <div class="extra-card ${isSelected ? 'selected' : ''}" data-extra-price="${isToggle ? 0 : ex.price}" data-is-toggle="${isToggle}">
+                            <div class="extra-card ${isSelected ? 'selected' : ''}" data-extra-price="${isToggle ? 0 : ex.price}" data-is-toggle="${isToggle}" data-extra-name="${ex.name}">
                                 <div class="extra-info-text">
                                     <span class="extra-name">${ex.name}</span>
                                     ${!isToggle && ex.price > 0 ? `<span class="extra-cost">+$${ex.price.toFixed(2)}</span>` : ''}
@@ -1217,54 +1241,64 @@
                     }
                 });
                 
-                // Detectar si hubo cambios en las hamburguesas y crear extras formateados
-                // Agrupar por hamburguesa para mejor orden
+                const allBurgerModifications = []; // Recopilar todas las modificaciones para todas las hamburguesas
+                let totalExtrasCost = 0; // Para sumar el costo de todos los extras en todas las hamburguesas
+
                 for (let i = 0; i < comboHouseState.burgers.length; i++) {
                     const burger = comboHouseState.burgers[i];
-                    const modificaciones = [];
-                    let precioTotal = 0;
+                    const modificationsForThisBurger = [];
                     
-                    // Verificar ingredientes base modificados (diferentes de SÍ)
+                    // Verificar ingredientes base modificados (diferentes del valor por defecto)
                     Object.entries(burger.ingredientes).forEach(([nombre, val]) => {
-                        if (val !== 'SÍ') {
-                            modificaciones.push(`Sin ${nombre}`);
+                        // Obtener el valor por defecto de EXTRAS_DB para comparación
+                        const extraDef = EXTRAS_DB.find(ex => ex.name === nombre && ex.type === 'toggle');
+                        // Por defecto 'SÍ' si no se encuentra o no tiene función default
+                        const defaultValue = (extraDef && typeof extraDef.default === 'function') ? extraDef.default({}) : 'SÍ'; 
+                        if (val !== defaultValue) {
+                            modificationsForThisBurger.push(`Sin ${nombre}`);
                         }
                     });
                     
                     // Verificar extras con costo modificados (mayores a 0)
                     Object.entries(burger.extras).forEach(([nombre, qty]) => {
                         if (qty > 0) {
-                            const precioExtra = parseFloat(modal.querySelector(`[data-extra-name="${nombre}"]`)?.dataset.extraPrice || '0');
-                            precioTotal += precioExtra * qty;
-                            modificaciones.push(`Extra ${nombre}${qty > 1 ? ` x${qty}` : ''}`);
+                            const extraDef = EXTRAS_DB.find(ex => ex.name === nombre && ex.type === 'cost');
+                            const precioExtra = extraDef ? extraDef.price : 0;
+                            totalExtrasCost += precioExtra * qty; // Sumar el costo total de los extras
+                            // Evitar redundancia: no agregar "Extra" si el nombre ya empieza con "Extra"
+                            const prefijo = /^extra\s/i.test(nombre) ? '' : 'Extra ';
+                            modificationsForThisBurger.push(`${prefijo}${nombre}${qty > 1 ? ` x${qty}` : ''}`);
                         }
                     });
                     
-                    // Si esta hamburguesa tiene modificaciones, agregarlas en una sola línea
-                    if (modificaciones.length > 0) {
-                        const modificacionesTexto = modificaciones.join(', ');
-                        extrasSeleccionados.push({
-                            nombre: `Hamburguesa ${i + 1}: ${modificacionesTexto}`,
+                    // Si esta hamburguesa tiene modificaciones, agregarlas a la lista general
+                    if (modificationsForThisBurger.length > 0) {
+                        allBurgerModifications.push({
+                            nombre: `Hamburguesa ${i + 1}: ${modificationsForThisBurger.join(', ')}`,
                             qty: 1,
                             val: 'SÍ',
                             isToggle: false,
-                            precio: precioTotal
+                            precio: 0 // El precio ya está contabilizado en totalExtrasCost
                         });
                     }
                 }
                 
-                // Agregar Pepsi por defecto al final
+                // Solo agregar las modificaciones de las hamburguesas a extrasSeleccionados si hay alguna
+                if (allBurgerModifications.length > 0) {
+                    extrasSeleccionados.push(...allBurgerModifications);
+                }
+                
+                // Agregar Pepsi por defecto (siempre presente para Combo House)
                 extrasSeleccionados.push({
                     nombre: '(+ Pepsi 1L)',
                     qty: 1,
-                    val: 'SÍ',
-                    isToggle: true,
+                    val: '1',
+                    isToggle: false,
                     precio: 0
                 });
                 
-                // Calcular precio total de todas las modificaciones
-                const precioModificaciones = extrasSeleccionados.reduce((acc, ex) => acc + ex.precio, 0);
-                const subtotal = (basePrice + precioModificaciones) * currentMainQty;
+                // El subtotal ahora debe usar totalExtrasCost
+                const subtotal = (basePrice + totalExtrasCost) * currentMainQty;
                 
                 carrito.push({
                     id: `${Date.now()}${Math.random().toString(36).slice(2, 7)}`,
@@ -1283,14 +1317,13 @@
                     const qty = valText === 'SÍ' ? 1 : valText === 'NO' ? 0 : parseInt(valText, 10) || 0;
                     
                     // REGLA ESTRICTA: Solo capturar si se modifica el defecto
-                    // Para toggles: capturar si es diferente del valor por defecto (SÍ para ingredientes base, NO para salsas)
+                    // Para toggles: capturar si es diferente del valor por defecto
                     // Para extras con costo: capturar si qty > 0
                     let isModified = false;
                     if (isToggle) {
-                        // Salsas de nuggets tienen default NO, ingredientes base tienen default SÍ
-                        const isNuggetsSalsa = nombre.includes('Servicio de');
-                        const defaultVal = isNuggetsSalsa ? 'NO' : 'SÍ';
-                        isModified = valText !== defaultVal;
+                        const extraDef = EXTRAS_DB.find(ex => ex.name === nombre && ex.type === 'toggle');
+                        const defaultValue = (extraDef && typeof extraDef.default === 'function') ? extraDef.default({}) : 'SÍ';
+                        isModified = valText !== defaultValue;
                     } else {
                         isModified = qty > 0;
                     }
@@ -1461,33 +1494,55 @@
                 let mensaje = `*NUEVO PEDIDO - BURGER HOUSE*\n\n*Cliente:* ${nombre}\n`;
                 mensaje += '\n*DETALLE DEL PEDIDO:*\n';
                 carrito.forEach((item) => {
-                    const isNuggetsItem = item.nombre.toLowerCase().includes('nuggets');
+                    // Detectar si este item es un Combo House (tiene extras con formato "Hamburguesa X: ...")
+                    const esComboHouseItem = item.extras?.some(ex => ex.nombre?.includes('Hamburguesa'));
 
-                    // Filtrar lo que se quitó (Toggles en NO)
-                    const sin = item.extras?.filter(ex => ex.isToggle && ex.val === 'NO').map(ex => ex.nombre.toUpperCase().replace(/^EXTRA\s+/i, ''));
-                    
-                    // Todos los extras que se agregaron o activaron
-                    const extrasAgregados = item.extras?.filter(ex => {
-                        // Para no-toggle: mostrar si qty > 0
-                        if (!ex.isToggle) return ex.qty > 0;
-                        // Para toggle: mostrar si val es SÍ (independientemente del default)
-                        return ex.val === 'SÍ';
-                    }).map(ex => {
-                        let cleanName = ex.nombre;
-                        // Para combo house, el formato ya incluye "Extra" o "Sin", no duplicar
-                        if (cleanName.includes('Hamburguesa')) {
-                            // Mantener formato de combo house sin duplicar "Extra"
-                            cleanName = cleanName.replace(/Extra\s+/g, '').replace(/Sin\s+/g, '');
-                        } else {
-                            // Para otros productos, limpiar normalmente
-                            cleanName = cleanName.replace(/^Extra\s+/i, '').replace('Servicio de ', '');
-                        }
-                        return `${cleanName}${ex.qty > 1 ? ` (${ex.qty})` : ''}`;
-                    });
-                    
                     mensaje += `*${item.cantidad}x ${item.nombre}*\n`;
-                    if (extrasAgregados?.length > 0) mensaje += `   EXTRAS:\n     - ${extrasAgregados.join('\n     - ')}\n`;
-                    if (sin?.length > 0) mensaje += `   SIN:\n     - ${sin.join('\n     - ')}\n`;
+
+                    if (esComboHouseItem) {
+                        // --- FORMATO ESPECIAL COMBO HOUSE ---
+                        // Separar modificaciones por hamburguesa y Pepsi
+                        const burgerMods = item.extras?.filter(ex => ex.nombre?.includes('Hamburguesa'));
+                        const pepsi = item.extras?.find(ex => ex.nombre?.includes('Pepsi'));
+
+                        burgerMods?.forEach(ex => {
+                            // ex.nombre tiene formato: "Hamburguesa 2: Sin Carne, Extra Chuleta x2"
+                            const colonIdx = ex.nombre.indexOf(': ');
+                            if (colonIdx === -1) {
+                                mensaje += `   - ${ex.nombre}\n`;
+                                return;
+                            }
+                            const label = ex.nombre.slice(0, colonIdx); // "Hamburguesa 2"
+                            const mods = ex.nombre.slice(colonIdx + 2); // "Sin Carne, Extra Chuleta x2"
+                            const modList = mods.split(', ').map(m => m.trim()).filter(Boolean);
+                            mensaje += `   *${label}:*\n`;
+                            modList.forEach(mod => {
+                                mensaje += `      - ${mod}\n`;
+                            });
+                        });
+
+                        if (pepsi) mensaje += `   - ${pepsi.nombre}\n`;
+
+                    } else {
+                        // --- FORMATO NORMAL ---
+                        const isNuggetsItem = item.nombre.toLowerCase().includes('nuggets');
+
+                        // Filtrar lo que se quitó (Toggles en NO)
+                        const sin = item.extras?.filter(ex => ex.isToggle && ex.val === 'NO')
+                            .map(ex => ex.nombre.toUpperCase().replace(/^EXTRA\s+/i, ''));
+
+                        // Extras agregados o activados
+                        const extrasAgregados = item.extras?.filter(ex => {
+                            if (!ex.isToggle) return ex.qty > 0;
+                            return ex.val === 'SÍ';
+                        }).map(ex => {
+                            let cleanName = ex.nombre.replace(/^Extra\s+/i, '').replace('Servicio de ', '');
+                            return `${cleanName}${ex.qty > 1 ? ` (${ex.qty})` : ''}`;
+                        });
+
+                        if (extrasAgregados?.length > 0) mensaje += `   EXTRAS:\n     - ${extrasAgregados.join('\n     - ')}\n`;
+                        if (sin?.length > 0) mensaje += `   SIN:\n     - ${sin.join('\n     - ')}\n`;
+                    }
                 });
 
                 mensaje += '\n------------------------------\n';
@@ -1502,7 +1557,7 @@
                     mensaje += `------------------------------\n`;
                     mensaje += `*TOTAL A PAGAR:* $${totalConDescuento.toFixed(2)} REF*\n`;
                 } else {
-                    mensaje += `*TOTAL DEL PEDIDO: $${totalPedido.toFixed(2)} REF*\n`;
+                    mensaje += `*TOTAL DEL PEDIDO: $${totalConDescuento.toFixed(2)} REF*\n`;
                 }
 
                 if (currentDeliveryMethod === 'delivery') mensaje += '_(El costo del delivery se calcula al recibir la ubicación)_\n';
