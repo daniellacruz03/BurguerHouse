@@ -98,6 +98,121 @@
                 animation: none;
             }
         }
+
+        /* --- Tabs Navigation --- */
+        .admin-tabs {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 2px;
+        }
+        .admin-tab {
+            background: transparent;
+            color: rgba(255,255,255,0.4);
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 10px 16px;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .admin-tab:hover {
+            color: rgba(255,255,255,0.8);
+        }
+        .admin-tab.active {
+            color: #fff;
+            border-bottom-color: #e60000;
+        }
+
+        /* --- Search Bar --- */
+        .search-wrap {
+            position: relative;
+        }
+        .search-wrap svg {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.35);
+            pointer-events: none;
+        }
+        #order-search {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 12px 16px 12px 44px;
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.25s ease, background 0.25s ease;
+        }
+        #order-search::placeholder { color: rgba(255,255,255,0.3); }
+        #order-search:focus {
+            border-color: rgba(230,0,0,0.5);
+            background: rgba(255,255,255,0.08);
+        }
+        #search-no-results {
+            text-align: center;
+            color: rgba(255,255,255,0.35);
+            padding: 32px 0;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        /* --- Day Divider --- */
+        .day-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 24px 0 12px;
+        }
+        .day-divider span {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.45);
+            white-space: nowrap;
+        }
+        .day-divider::before, .day-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.08);
+        }
+
+        /* --- Income Cards --- */
+        .income-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .income-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(230,0,0,0.3);
+        }
+        .income-title {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .income-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #22c55e;
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -157,30 +272,82 @@
                 </div>
             </div>
         </div>
+        <!-- Tabs de Navegación -->
+        <div class="admin-tabs">
+            <button class="admin-tab active" onclick="switchTab('pedidos')" id="tab-pedidos">Pedidos Pendientes</button>
+            <button class="admin-tab" onclick="switchTab('ingresos')" id="tab-ingresos">Ingresos & Estadísticas</button>
+        </div>
 
-        <!-- Stats -->
-        <div class="bg-white/5 backdrop-blur-lg rounded-2xl p-6 mb-6 border border-white/10">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-400 text-sm">Pedidos pendientes</p>
-                    <p id="pending-count" class="text-4xl font-bold text-red-500">0</p>
+        <!-- VISTA 1: PEDIDOS PENDIENTES -->
+        <div id="pedidos-view">
+            <!-- Stats -->
+            <div class="bg-white/5 backdrop-blur-lg rounded-2xl p-6 mb-6 border border-white/10">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Pedidos pendientes</p>
+                        <p id="pending-count" class="text-4xl font-bold text-red-500">0</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button id="btn-delete-all" onclick="eliminarTodosPedidos()" class="hidden px-4 py-2 bg-red-600/10 text-red-500 border border-red-500/30 hover:bg-red-600 hover:text-white rounded-xl transition-all text-sm font-semibold tracking-wide flex items-center gap-2" title="Eliminar todas las comandas">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                            Borrar Todos
+                        </button>
+                        <div id="loading" class="loader"></div>
+                    </div>
                 </div>
-                <div class="flex items-center gap-4">
-                    <button id="btn-delete-all" onclick="eliminarTodosPedidos()" class="hidden px-4 py-2 bg-red-600/10 text-red-500 border border-red-500/30 hover:bg-red-600 hover:text-white rounded-xl transition-all text-sm font-semibold tracking-wide flex items-center gap-2" title="Eliminar todas las comandas">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
-                        Borrar Todos
-                    </button>
-                    <div id="loading" class="loader"></div>
-                </div>
+            </div>
+
+            <!-- Barra de búsqueda -->
+            <div class="mb-5 search-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input id="order-search" type="text" placeholder="Buscar por cliente, producto o método..." autocomplete="off">
+            </div>
+
+            <!-- Orders Container -->
+            <div id="orders-container" class="space-y-2"></div>
+            <div id="search-no-results">No se encontraron pedidos con esa búsqueda.</div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden text-center py-12">
+                <div class="text-gray-500 text-lg">No hay pedidos pendientes</div>
             </div>
         </div>
 
-        <!-- Orders Container -->
-        <div id="orders-container" class="space-y-4"></div>
+        <!-- VISTA 2: INGRESOS Y ESTADÍSTICAS -->
+        <div id="ingresos-view" class="hidden">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- Hoy -->
+                <div class="income-card">
+                    <div class="income-title">Ingresos Hoy</div>
+                    <div class="income-amount" id="income-today">$0.00</div>
+                    <div class="text-gray-400 text-xs mt-2" id="count-today">0 pedidos completados</div>
+                </div>
+                <!-- Esta semana -->
+                <div class="income-card">
+                    <div class="income-title">Esta Semana</div>
+                    <div class="income-amount" id="income-week">$0.00</div>
+                    <div class="text-gray-400 text-xs mt-2" id="count-week">0 pedidos completados</div>
+                </div>
+                <!-- Este mes -->
+                <div class="income-card">
+                    <div class="income-title">Este Mes</div>
+                    <div class="income-amount" id="income-month">$0.00</div>
+                    <div class="text-gray-400 text-xs mt-2" id="count-month">0 pedidos completados</div>
+                </div>
+            </div>
 
-        <!-- Empty State -->
-        <div id="empty-state" class="hidden text-center py-12">
-            <div class="text-gray-500 text-lg">No hay pedidos pendientes</div>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-white">Últimos Pedidos Aprobados</h3>
+                <button onclick="reiniciarIngresos()" class="px-3 py-1.5 bg-red-600/10 text-red-500 border border-red-500/30 hover:bg-red-600 hover:text-white rounded-lg transition-all text-xs font-semibold tracking-wide flex items-center gap-2" title="Borrar todo el historial de ingresos">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                    Reiniciar
+                </button>
+            </div>
+            <div class="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
+                <div class="max-h-96 overflow-y-auto" id="approved-orders-list">
+                    <div class="p-8 text-center text-gray-500 text-sm">Cargando datos...</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -502,6 +669,9 @@
             const passcodeInput = document.getElementById('delete-passcode');
             const errorText = document.getElementById('delete-error');
             
+            modal.dataset.mode = 'pendientes';
+            modal.querySelector('p').textContent = 'Se van a eliminar de la base de datos de Burger House todas las ordenes. ¿Deseas continuar?';
+
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             passcodeInput.value = '';
@@ -530,9 +700,13 @@
             try {
                 await firebase.auth().signInWithEmailAndPassword('admin@burgerhouse.com', passcode);
 
-                const snapshot = await db.ref('pedidos').orderByChild('estado').equalTo('pendiente').once('value');
+                // Determinar si estamos borrando pendientes o ingresos
+                const isIngresos = document.getElementById('modal-delete-confirm').dataset.mode === 'ingresos';
+                const statusToMatch = isIngresos ? 'aprobado' : 'pendiente';
+
+                const snapshot = await db.ref('pedidos').orderByChild('estado').equalTo(statusToMatch).once('value');
                 if (!snapshot.exists()) {
-                    alert('No hay pedidos pendientes para borrar.');
+                    alert(`No hay pedidos ${statusToMatch}s para borrar.`);
                     cancelarEliminarTodos();
                     return;
                 }
@@ -541,8 +715,13 @@
                     updates[child.key] = null;
                 });
                 await db.ref('pedidos').update(updates);
-                console.log('Todos los pedidos pendientes han sido eliminados.');
+                console.log(`Todos los pedidos ${statusToMatch}s han sido eliminados.`);
                 cancelarEliminarTodos();
+                
+                if (isIngresos) {
+                    statsLoaded = false;
+                    cargarEstadisticasIngresos(); // Refrescar vista
+                }
             } catch (error) {
                 errorText.classList.remove('hidden');
                 errorText.textContent = 'Contraseña incorrecta.';
@@ -551,32 +730,214 @@
             }
         }
 
+        // --- BORRAR INGRESOS ---
+        function reiniciarIngresos() {
+            const modal = document.getElementById('modal-delete-confirm');
+            const passcodeInput = document.getElementById('delete-passcode');
+            const errorText = document.getElementById('delete-error');
+            
+            modal.dataset.mode = 'ingresos'; // Marcar modo para la función confirmar
+            modal.querySelector('p').textContent = 'Vas a reiniciar TODAS las estadísticas de INGRESOS (pedidos aprobados). Esta acción no se puede deshacer.';
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            passcodeInput.value = '';
+            errorText.classList.add('hidden');
+            passcodeInput.focus();
+        }
+
+
+        // --- TABS LOGIC ---
+        function switchTab(tabId) {
+            document.getElementById('tab-pedidos').classList.remove('active');
+            document.getElementById('tab-ingresos').classList.remove('active');
+            document.getElementById('tab-' + tabId).classList.add('active');
+
+            const pedidosView = document.getElementById('pedidos-view');
+            const ingresosView = document.getElementById('ingresos-view');
+
+            if (tabId === 'pedidos') {
+                pedidosView.classList.remove('hidden');
+                ingresosView.classList.add('hidden');
+            } else {
+                pedidosView.classList.add('hidden');
+                ingresosView.classList.remove('hidden');
+                cargarEstadisticasIngresos();
+            }
+        }
+
+        // --- BÚSQUEDA Y AGRUPACIÓN (PEDIDOS) ---
+        let allPendingOrders = [];
+
+        function getDayLabel(timestamp) {
+            if (!timestamp) return 'Sin fecha';
+            const orderDate = new Date(timestamp);
+            const today = new Date();
+            const yesterday = new Date();
+            yesterday.setDate(today.getDate() - 1);
+
+            const sameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+
+            if (sameDay(orderDate, today)) return 'Hoy';
+            if (sameDay(orderDate, yesterday)) return 'Ayer';
+
+            return orderDate.toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^(.)/, c => c.toUpperCase());
+        }
+
+        function renderAllOrders() {
+            const term = (document.getElementById('order-search')?.value || '').toLowerCase().trim();
+            const noResults = document.getElementById('search-no-results');
+
+            const filtered = term ? allPendingOrders.filter(order => {
+                const cliente = (order.cliente?.nombre || '').toLowerCase();
+                const metodo  = (order.cliente?.metodo  || '').toLowerCase();
+                const productos = (order.productos || []).map(p => p.nombre.toLowerCase()).join(' ');
+                return cliente.includes(term) || metodo.includes(term) || productos.includes(term);
+            }) : allPendingOrders;
+
+            if (filtered.length === 0 && allPendingOrders.length > 0) {
+                ordersContainer.innerHTML = '';
+                if (noResults) noResults.style.display = 'block';
+                return;
+            }
+            if (noResults) noResults.style.display = 'none';
+
+            const groups = {};
+            filtered.forEach(order => {
+                const label = getDayLabel(order.timestamp);
+                if (!groups[label]) groups[label] = [];
+                groups[label].push(order);
+            });
+
+            let html = '';
+            for (const [dayLabel, orders] of Object.entries(groups)) {
+                html += `<div class="day-divider"><span>${dayLabel} &mdash; ${orders.length} pedido${orders.length !== 1 ? 's' : ''}</span></div>`;
+                html += `<div class="space-y-4">${orders.map(order => renderOrderCard(order.id, order)).join('')}</div>`;
+            }
+
+            ordersContainer.innerHTML = html;
+        }
+
+        // --- INGRESOS Y ESTADÍSTICAS ---
+        let statsLoaded = false;
+        
+        function cargarEstadisticasIngresos() {
+            if (statsLoaded) return;
+            statsLoaded = true;
+            
+            const listContainer = document.getElementById('approved-orders-list');
+            listContainer.innerHTML = '<div class="p-8 text-center text-gray-500 text-sm">Cargando ingresos... <div class="loader inline-block ml-3 w-4 h-4 border-2 border-t-red-500"></div></div>';
+            
+            db.ref('pedidos').orderByChild('estado').equalTo('aprobado').once('value')
+                .then(snapshot => {
+                    const orders = [];
+                    snapshot.forEach(child => {
+                        orders.push({ id: child.key, ...child.val() });
+                    });
+                    procesarIngresos(orders);
+                })
+                .catch(err => {
+                    console.error('Error al cargar ingresos:', err);
+                    listContainer.innerHTML = '<div class="p-8 text-center text-red-500 text-sm">Error al cargar estadísticas.</div>';
+                    statsLoaded = false;
+                });
+        }
+        
+        function procesarIngresos(approvedOrders) {
+            const now = new Date();
+            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            
+            const dayOfWeek = now.getDay() === 0 ? 6 : now.getDay() - 1; // 0=Lunes
+            const startOfWeek = new Date(startOfToday);
+            startOfWeek.setDate(startOfWeek.getDate() - dayOfWeek);
+            const startOfWeekTime = startOfWeek.getTime();
+            
+            const startOfMonthTime = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+            
+            let sumToday = 0, countToday = 0;
+            let sumWeek = 0, countWeek = 0;
+            let sumMonth = 0, countMonth = 0;
+            
+            approvedOrders.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            
+            let htmlList = '';
+            let printedItems = 0;
+            
+            approvedOrders.forEach(order => {
+                const ts = order.timestamp || 0;
+                const total = order.total_usd || 0;
+                
+                if (ts >= startOfToday) { sumToday += total; countToday++; }
+                if (ts >= startOfWeekTime) { sumWeek += total; countWeek++; }
+                if (ts >= startOfMonthTime) { sumMonth += total; countMonth++; }
+                
+                if (printedItems < 50) {
+                    const dateObj = new Date(ts);
+                    const dateStr = ts > 0 ? dateObj.toLocaleDateString('es-VE', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}) : order.fecha;
+                    const cliente = order.cliente?.nombre || 'Desconocido';
+                    const numProd = order.productos?.length || 0;
+                    
+                    htmlList += `
+                        <div class="flex justify-between items-center p-4 border-b border-white/5 hover:bg-white/5 transition-colors">
+                            <div>
+                                <p class="text-white font-medium text-sm">${cliente}</p>
+                                <p class="text-gray-500 text-xs">${dateStr} &bull; ${numProd} prod(s)</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-green-400 font-bold">$${total.toFixed(2)}</p>
+                                <p class="text-[10px] uppercase text-gray-500 tracking-wider">Aprobado</p>
+                            </div>
+                        </div>
+                    `;
+                    printedItems++;
+                }
+            });
+            
+            document.getElementById('income-today').textContent = `$${sumToday.toFixed(2)}`;
+            document.getElementById('count-today').textContent = `${countToday} pedido(s)`;
+            
+            document.getElementById('income-week').textContent = `$${sumWeek.toFixed(2)}`;
+            document.getElementById('count-week').textContent = `${countWeek} pedido(s)`;
+            
+            document.getElementById('income-month').textContent = `$${sumMonth.toFixed(2)}`;
+            document.getElementById('count-month').textContent = `${countMonth} pedido(s)`;
+            
+            const listContainer = document.getElementById('approved-orders-list');
+            if (htmlList === '') {
+                listContainer.innerHTML = '<div class="p-8 text-center text-gray-500 text-sm">No hay pedidos aprobados en el historial.</div>';
+            } else {
+                listContainer.innerHTML = htmlList;
+            }
+        }
+
         // Función para empezar a escuchar pedidos (se llama tras el login exitoso)
         function iniciarEscuchaPedidos() {
             if (pedidosListener) return;
+
+            const searchInput = document.getElementById('order-search');
+            if (searchInput) {
+                searchInput.addEventListener('input', renderAllOrders);
+            }
             
-            // Escuchar cambios en tiempo real
             pedidosListener = pedidosRef.on('value', (snapshot) => {
                 console.log('Firebase: Snapshot recibido (datos actualizados)');
                 loadingElement.classList.add('hidden');
 
                 const orders = snapshot.val();
-                const pendingOrders = [];
+                allPendingOrders = [];
 
                 if (orders) {
                     Object.keys(orders).forEach(orderId => {
                         const order = orders[orderId];
-                        // La app cliente ahora guarda 'pendiente' (minúscula)
                         if (order.estado === 'pendiente') {
-                            pendingOrders.push({ id: orderId, ...order });
+                            allPendingOrders.push({ id: orderId, ...order });
                         }
                     });
                 }
 
-                // Detectar nuevos pedidos para reproducir el sonido
-                const currentPendingIds = new Set(pendingOrders.map(o => o.id));
+                const currentPendingIds = new Set(allPendingOrders.map(o => o.id));
                 if (!isInitialLoad) {
-                    const hasNewOrders = pendingOrders.some(o => !knownOrders.has(o.id));
+                    const hasNewOrders = allPendingOrders.some(o => !knownOrders.has(o.id));
                     if (hasNewOrders) {
                         notificationSound.play().catch(err => console.log('Autoplay bloqueado', err));
                     }
@@ -584,13 +945,13 @@
                 knownOrders = currentPendingIds;
                 isInitialLoad = false;
 
-                pendingCountElement.textContent = pendingOrders.length;
+                pendingCountElement.textContent = allPendingOrders.length;
 
                 const now = new Date();
                 lastUpdateElement.textContent = now.toLocaleTimeString();
                 const btnDeleteAll = document.getElementById('btn-delete-all');
 
-                if (pendingOrders.length === 0) {
+                if (allPendingOrders.length === 0) {
                     emptyStateElement.classList.remove('hidden');
                     ordersContainer.innerHTML = '';
                     if (btnDeleteAll) btnDeleteAll.classList.add('hidden');
@@ -600,12 +961,8 @@
                 emptyStateElement.classList.add('hidden');
                 if (btnDeleteAll) btnDeleteAll.classList.remove('hidden');
 
-                // Ordenar los más recientes primero
-                pendingOrders.sort((a, b) => b.timestamp - a.timestamp);
-
-                ordersContainer.innerHTML = pendingOrders.map(order =>
-                    renderOrderCard(order.id, order)
-                ).join('');
+                allPendingOrders.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                renderAllOrders();
             }, (error) => {
                 console.error('Error al escuchar pedidos:', error);
                 loadingElement.innerHTML = `

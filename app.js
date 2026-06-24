@@ -295,7 +295,7 @@
             }, 200);
         };
 
-        const imgs = Array.from(document.querySelectorAll('img'));
+        const imgs = Array.from(document.querySelectorAll('img:not([loading="lazy"])'));
         let cargadas = 0;
         const total = imgs.length;
 
