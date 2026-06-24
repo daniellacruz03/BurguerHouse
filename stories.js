@@ -46,7 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const video = document.createElement("video");
         video.src = src;
         // preload 'none' evita saturar la memoria descargando 9 videos de golpe
-        video.preload = "none"; 
+        video.preload = "none";
+        // poster: muestra el thumbnail .webp mientras el video carga (evita cuadro negro)
+        video.poster = src.replace('.mp4', '.webp'); 
         video.muted = true; 
         video.defaultMuted = true; // Refuerzo para iOS
         video.loop = true; 
