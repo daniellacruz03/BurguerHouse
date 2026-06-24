@@ -19,11 +19,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Optimizamos el observador para móviles:
-    // rootMargin: detecta el video 100px antes de que entre para iniciar la carga (buffer)
+    // Evitamos cargar y reproducir varios al mismo tiempo
     const observerOptions = { 
         root: null, 
-        rootMargin: '0px 100px 0px 100px', 
-        threshold: 0.3 
+        rootMargin: '0px', 
+        threshold: 0.6 
     };
     const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -45,8 +45,8 @@ document.addEventListener("DOMContentLoaded", () => {
         card.className = "video-story-card";
         const video = document.createElement("video");
         video.src = src;
-        // metadata carga solo lo esencial; muted y playsinline son obligatorios para autoplay en móvil
-        video.preload = "metadata"; 
+        // preload 'none' evita saturar la memoria descargando 9 videos de golpe
+        video.preload = "none"; 
         video.muted = true; 
         video.defaultMuted = true; // Refuerzo para iOS
         video.loop = true; 
