@@ -36,11 +36,11 @@
     function updateComboTabsUI() {
         const tabs = document.querySelectorAll('.combo-tab');
         const currentBurgerSpan = document.getElementById('combo-current-burger');
-        
+
         if (currentBurgerSpan) {
             currentBurgerSpan.textContent = comboHouseState.activeBurgerIndex + 1;
         }
-        
+
         tabs.forEach((tab, index) => {
             if (index === comboHouseState.activeBurgerIndex) {
                 tab.classList.add('active');
@@ -55,31 +55,31 @@
         const currentBurger = comboHouseState.burgers[comboHouseState.activeBurgerIndex];
         const modalElement = document.getElementById('modal-hamburguesa');
         if (!modalElement) return;
-        
+
         modalElement.querySelectorAll('.extra-card').forEach((card) => {
             const extraName = card.dataset.extraName;
             const isToggle = card.dataset.isToggle === 'true';
             const valText = card.querySelector('.extra-qty-val')?.innerText ?? '';
             const val = isToggle ? (valText === 'SÍ' ? 'SÍ' : 'NO') : parseInt(valText, 10) || 0;
-            
+
             if (isToggle) {
                 currentBurger.ingredientes[extraName] = val;
             } else {
                 currentBurger.extras[extraName] = val;
             }
         });
-        
+
         // Cambiar a la nueva hamburguesa
         comboHouseState.activeBurgerIndex = index;
         updateComboTabsUI();
-        
+
         // Cargar estado de la nueva hamburguesa
         const newBurger = comboHouseState.burgers[index];
         modalElement.querySelectorAll('.extra-card').forEach((card) => {
             const extraName = card.dataset.extraName;
             const isToggle = card.dataset.isToggle === 'true';
             const valSpan = card.querySelector('.extra-qty-val');
-            
+
             if (isToggle) {
                 const savedVal = newBurger.ingredientes[extraName] || 'SÍ';
                 valSpan.innerText = savedVal;
@@ -89,7 +89,7 @@
                 valSpan.innerText = savedVal;
             }
         });
-        
+
         // Recalcular precio
         if (typeof _updateTotal === 'function') _updateTotal();
     }
@@ -108,7 +108,7 @@
         { name: 'Extra Lechuga', price: 1.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
         { name: 'Extra Pepinillos', price: 1.20, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
         { name: 'Extra Salsa BBQ', price: 1.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
-        
+
         // EXTRAS CON COSTO (Menú Kids)
         { name: 'Extra Huevito Sorpresa', price: 1.00, type: 'cost', applies: c => (c.esHamburguesa && !c.esCombo) || c.esKids },
 
@@ -209,12 +209,12 @@
             document.addEventListener('firebase-auth-ready', window.registrarVisitaFirebase, { once: true });
             return;
         }
-    
+
         // Si llegamos aquí, el usuario ya está autenticado.
         try {
             const db = firebase.database();
             const userUID = firebase.auth().currentUser.uid;
-    
+
             // --- 1. LÓGICA DE VISITANTES GENERALES ---
             const counterRef = db.ref('stats/unique_visitors_count');
             if (!localStorage.getItem('bh_visitor_registered')) {
@@ -225,7 +225,7 @@
                     }
                 });
             }
-    
+
         } catch (err) {
             console.error("Error Firebase contador:", err);
         }
@@ -254,11 +254,11 @@
     function verificarYMostrarPromoPapa() {
         const promoPapaModal = document.getElementById('modal-promo-papa');
         if (!promoPapaModal) return;
-        
+
         // Solo mostrar hoy (21 de junio de 2026)
         const hoy = new Date();
         const fechaPromo = new Date(2026, 5, 21); // Mes 5 = junio (0-indexed)
-        
+
         if (hoy.toDateString() === fechaPromo.toDateString()) {
             promoPapaModal.classList.add('active');
             lockBodyScroll(true);
@@ -289,7 +289,7 @@
                 // Mostrar modal de promos después de 3s para todos los usuarios
                 setTimeout(verificarYMostrarPromo, 3000);
                 setTimeout(verificarYMostrarPromoPapa, 3000);
-                
+
                 // Mostrar tarjetas de promo según día
                 mostrarTarjetasPromo();
             }, 200);
@@ -409,7 +409,7 @@
         /* ——— UI general y modales ——— */
         const helpBtn = document.getElementById('help-btn');
         const modalHelp = document.getElementById('modal-help');
-        
+
         helpBtn?.addEventListener('click', () => {
             modalHelp.classList.add('active');
             lockBodyScroll(true);
@@ -437,7 +437,7 @@
         document.getElementById('btn-promo-ordenar')?.addEventListener('click', () => {
             document.getElementById('modal-promo-lunes-miercoles')?.classList.remove('active');
             lockBodyScroll(false);
-            
+
             // Ir al menú de hamburguesas
             const hamburguesasBtn = document.querySelector('.category-btn[data-category="hamburguesas"]');
             if (hamburguesasBtn) {
@@ -468,26 +468,26 @@
                 document.querySelectorAll('.promo-burger-card:not(#promo-combo-option)').forEach(c => c.classList.remove('selected'));
                 // Agregar clase selected al clickeado
                 card.classList.add('selected');
-                
+
                 // Cambiar imagen
                 const imgSrc = card.dataset.imgSrc;
                 const promoImg = document.getElementById('modal-promo-img');
                 if (promoImg && imgSrc) promoImg.src = imgSrc;
-                
+
                 // Actualizar valor del toggle
                 const qtyVal = card.querySelector('.extra-qty-val');
                 if (qtyVal) {
                     document.querySelectorAll('.promo-burger-card:not(#promo-combo-option) .extra-qty-val').forEach(v => v.innerText = 'NO');
                     qtyVal.innerText = 'SÍ';
                 }
-                
+
                 // Actualizar precio si es combo
                 updatePromoPrice();
             });
         });
 
         // Interruptor de combo
-        document.getElementById('promo-combo-option')?.addEventListener('click', function() {
+        document.getElementById('promo-combo-option')?.addEventListener('click', function () {
             this.classList.toggle('selected');
             const qtyVal = this.querySelector('.extra-qty-val');
             if (qtyVal) {
@@ -517,7 +517,7 @@
         document.getElementById('btn-add-promo-to-cart')?.addEventListener('click', () => {
             const selectedBurger = document.querySelector('.promo-burger-card.selected');
             const isCombo = document.getElementById('promo-combo-option')?.classList.contains('selected');
-            
+
             if (!selectedBurger) {
                 showToast('Selecciona una burger primero', 'error');
                 return;
@@ -525,7 +525,7 @@
 
             const burgerName = selectedBurger.dataset.burger;
             const basePrice = isCombo ? CONFIG.PROMO_COMBO_PRICE : CONFIG.PROMO_BASE_PRICE;
-            
+
             // Extras para el combo
             const extras = [];
             if (isCombo) {
@@ -537,7 +537,7 @@
                     precio: 0
                 });
             }
-            
+
             const btn = document.getElementById('btn-add-promo-to-cart');
             const spinner = btn?.querySelector('.btn-spinner');
             const textSpan = btn?.querySelector('.btn-text');
@@ -546,21 +546,21 @@
             if (textSpan) textSpan.innerText = 'Añadiendo...';
 
             setTimeout(() => {
-            // Agregar al carrito
-            carrito.push({
-                id: `${Date.now()}${Math.random().toString(36).slice(2, 7)}`,
-                nombre: burgerName + (isCombo ? ' (Promo Combo)' : ' (Promo)'),
-                cantidad: 1,
-                precioUnitario: basePrice,
-                extras: extras,
-                subtotal: basePrice
-            });
+                // Agregar al carrito
+                carrito.push({
+                    id: `${Date.now()}${Math.random().toString(36).slice(2, 7)}`,
+                    nombre: burgerName + (isCombo ? ' (Promo Combo)' : ' (Promo)'),
+                    cantidad: 1,
+                    precioUnitario: basePrice,
+                    extras: extras,
+                    subtotal: basePrice
+                });
 
-            actualizarInterfazCarrito();
-            document.getElementById('modal-promo-selection')?.classList.remove('active');
-            lockBodyScroll(false);
-            abrirCarritoConFeedback();
-                
+                actualizarInterfazCarrito();
+                document.getElementById('modal-promo-selection')?.classList.remove('active');
+                lockBodyScroll(false);
+                abrirCarritoConFeedback();
+
                 // Restaurar botón
                 if (btn) btn.style.pointerEvents = 'auto';
                 if (spinner) spinner.classList.remove('active');
@@ -614,7 +614,7 @@
         const aplicarCupon = async () => {
             const input = document.getElementById('coupon-input');
             const codigo = input.value.toUpperCase().trim();
-            
+
             if (!codigo) {
                 showToast('❌ Ingresa un código', 'error');
                 return;
@@ -634,11 +634,11 @@
 
             try {
                 const db = firebase.database();
-                
+
                 // Verificar si el cupón ya fue usado globalmente
                 const cuponUsadoRef = db.ref('cupones_usados/' + codigo);
                 const cuponUsadoSnap = await cuponUsadoRef.once('value');
-                
+
                 if (cuponUsadoSnap.exists()) {
                     showToast('❌ Este cupón ya fue canjeado por alguien más', 'error');
                     return;
@@ -647,32 +647,32 @@
                 // Verificar si el cupón existe
                 const cuponRef = db.ref('cupones/' + codigo);
                 const cuponSnap = await cuponRef.once('value');
-                
+
                 if (!cuponSnap.exists()) {
                     showToast('❌ Código inválido', 'error');
                     return;
                 }
 
                 const porcentaje = cuponSnap.val().descuento;
-                
+
                 // Registrar el uso INMEDIATAMENTE con UID y timestamp
-                await db.ref('cupones_usados/' + codigo).set({ 
-                    usadoPor: user.uid, 
-                    timestamp: firebase.database.ServerValue.TIMESTAMP 
+                await db.ref('cupones_usados/' + codigo).set({
+                    usadoPor: user.uid,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
                 });
-                
+
                 // Calcular monto a descontar
                 const subtotal = carrito.reduce((sum, item) => sum + item.subtotal, 0);
                 const montoDescontado = subtotal * (porcentaje / 100);
-                
+
                 cuponActivo = { codigo, porcentaje, monto: montoDescontado };
-                
+
                 // Guardar en localStorage
                 localStorage.setItem('bh_cupon_activo', JSON.stringify(cuponActivo));
-                
+
                 // Actualizar UI del carrito
                 actualizarInterfazCarrito();
-                
+
                 showToast('🎉 Cupón aplicado', 'success');
                 input.value = '';
             } catch (error) {
@@ -764,11 +764,11 @@
 
         function actualizarInterfazCarrito() {
             const totalItems = carrito.length;
-            if(cartBadge) {
+            if (cartBadge) {
                 cartBadge.style.display = totalItems > 0 ? 'flex' : 'none';
                 cartBadge.innerText = String(totalItems);
             }
-            if(cartItemsContainer) cartItemsContainer.innerHTML = '';
+            if (cartItemsContainer) cartItemsContainer.innerHTML = '';
 
             let total = 0;
             if (carrito.length === 0) {
@@ -779,11 +779,11 @@
 
             carrito.forEach((item) => {
                 total += item.subtotal;
-                
+
                 let extrasHtmlParts = [];
                 if (item.extras?.length > 0) {
                     const sinExtras = item.extras.filter(ex => ex.isToggle && ex.val === 'NO');
-                    const extrasAgregados = item.extras.filter(ex => 
+                    const extrasAgregados = item.extras.filter(ex =>
                         (!ex.isToggle && ex.qty > 0) || (ex.isToggle && ex.val === 'SÍ')
                     );
 
@@ -819,7 +819,7 @@
                 }
                 const extrasHtml = extrasHtmlParts.join('<br>');
 
-                if(cartItemsContainer){
+                if (cartItemsContainer) {
                     cartItemsContainer.insertAdjacentHTML('beforeend', `
                         <div class="cart-item-row">
                             <div class="cart-item-info">
@@ -841,13 +841,13 @@
             cartItemsContainer?.querySelectorAll('.remove-item').forEach((btn) => {
                 btn.onclick = () => {
                     carrito = carrito.filter((item) => item.id !== btn.getAttribute('data-id'));
-                    
+
                     // Si el carrito queda vacío, limpiar cupón activo
                     if (carrito.length === 0 && cuponActivo) {
                         cuponActivo = null;
                         localStorage.removeItem('bh_cupon_activo');
                     }
-                    
+
                     actualizarInterfazCarrito();
                 };
             });
@@ -864,7 +864,7 @@
                 const discountAmount = document.getElementById('discount-amount');
                 const discountPercentage = document.getElementById('discount-percentage');
                 const couponCodeDisplay = document.getElementById('coupon-code-display');
-                
+
                 if (discountSummary && discountAmount && discountPercentage && couponCodeDisplay) {
                     discountSummary.classList.remove('hidden');
                     discountAmount.textContent = `-$${nuevoMontoDescontado.toFixed(2)}`;
@@ -876,7 +876,7 @@
                 document.getElementById('discount-summary')?.classList.add('hidden');
             }
 
-            if(cartGrandTotal) cartGrandTotal.innerHTML = `$${totalConDescuento.toFixed(2)} <span class="cart-ref-total">REF</span>`;
+            if (cartGrandTotal) cartGrandTotal.innerHTML = `$${totalConDescuento.toFixed(2)} <span class="cart-ref-total">REF</span>`;
         }
 
         cartBtn?.addEventListener('click', () => {
@@ -908,7 +908,7 @@
             let extraTotal = 0;
             const modalTitleText = document.querySelector('.modal-title')?.innerText.toLowerCase() || '';
             const isComboHouse = modalTitleText.includes('combo house');
-            
+
             if (isComboHouse) {
                 // Asegurarse de que el estado de la hamburguesa actual esté guardado antes de calcular el total
                 const currentBurger = comboHouseState.burgers[comboHouseState.activeBurgerIndex];
@@ -917,7 +917,7 @@
                     const isToggle = card.dataset.isToggle === 'true';
                     const valText = card.querySelector('.extra-qty-val')?.innerText ?? '';
                     const val = isToggle ? (valText === 'SÍ' ? 'SÍ' : 'NO') : parseInt(valText, 10) || 0;
-                    
+
                     if (isToggle) {
                         currentBurger.ingredientes[extraName] = val;
                     } else {
@@ -961,14 +961,14 @@
                 const name = item.querySelector('.item-name')?.textContent.trim() ?? '';
                 const desc = item.querySelector('.item-desc')?.textContent.trim() ?? '';
                 basePrice = parsePrice(item.querySelector('.item-price')?.innerText ?? '0');
-                
+
                 const nameLower = name.toLowerCase();
                 const descLower = desc.toLowerCase();
                 const esKids = !!item.closest('#kids');
                 esHamburguesa = !!item.closest('#hamburguesas') || !!item.closest('#ensaladas') || esKids || nameLower === 'crispy bowl';
                 esComboHouse = nameLower.includes('combo house');
                 const esBebida = !!item.closest('#bebidas');
-                
+
                 modal?.querySelector('.modal-content')?.classList.toggle('food-modal', !esBebida);
                 if (modalTitle) modalTitle.innerText = name;
                 if (modalDesc) modalDesc.innerText = desc;
@@ -1017,7 +1017,7 @@
                     const applicableExtras = EXTRAS_DB.filter(ex => ex.applies(ctx)); // Filtra todos los extras que aplican
                     const toggleExtras = applicableExtras.filter(ex => ex.type === 'toggle'); // Separa los toggles
                     const costExtras = applicableExtras.filter(ex => ex.type === 'cost'); // Separa los extras con costo
-                    
+
                     // Para promos, poner "Papitas + Bombita" primero
                     let orderedExtras;
                     if (ctx.nameLower.includes('promo')) {
@@ -1027,9 +1027,9 @@
                     } else {
                         orderedExtras = [...toggleExtras, ...costExtras]; // Une, poniendo los toggles primero
                     }
-                    
+
                     let extrasHTML = '';
-                    
+
                     if (esComboHouse) {
                         // Para combo house, separar en dos secciones claras
                         extrasHTML += `
@@ -1037,9 +1037,9 @@
                                 <h4 class="extras-section-title">Ingredientes Base</h4>
                                 <div class="extras-grid">
                                     ${toggleExtras.map(ex => {
-                                        const defaultVal = (ex.default && typeof ex.default === 'function') ? ex.default(ctx) : 'SÍ'; // Manejar función default
-                                        const isSelected = defaultVal === 'SÍ';
-                                        return `
+                            const defaultVal = (ex.default && typeof ex.default === 'function') ? ex.default(ctx) : 'SÍ'; // Manejar función default
+                            const isSelected = defaultVal === 'SÍ';
+                            return `
                                         <div class="extra-card ${isSelected ? 'selected' : ''}" data-extra-price="0" data-is-toggle="true" data-extra-name="${ex.name}">
                                             <div class="extra-info-text">
                                                 <span class="extra-name">${ex.name}</span>
@@ -1049,14 +1049,14 @@
                                             </div>
                                             <span class="extra-qty-val hidden">${defaultVal}</span>
                                         </div>`;
-                                    }).join('')}
+                        }).join('')}
                                 </div>
                             </div>
                             <div class="extras-section">
                                 <h4 class="extras-section-title">Extras (Costo Adicional)</h4>
                                 <div class="extras-grid">
                                     ${costExtras.map(ex => {
-                                        return `
+                            return `
                                         <div class="extra-card" data-extra-price="${ex.price}" data-is-toggle="false" data-extra-name="${ex.name}">
                                             <div class="extra-info-text">
                                                 <span class="extra-name">${ex.name}</span> <span class="extra-cost">+$${ex.price.toFixed(2)}</span>
@@ -1067,7 +1067,7 @@
                                                 <button class="extra-qty-btn plus">+</button>
                                             </div>
                                         </div>`;
-                                    }).join('')}
+                        }).join('')}
                                 </div>
                             </div>
                         `;
@@ -1077,14 +1077,14 @@
                             const isToggle = ex.type === 'toggle';
                             const defaultVal = isToggle ? ((ex.default && typeof ex.default === 'function') ? ex.default(ctx) : 'SÍ') : '0'; // Manejar función default
                             const isSelected = isToggle && defaultVal === 'SÍ';
-                            
+
                             return `
                             <div class="extra-card ${isSelected ? 'selected' : ''}" data-extra-price="${isToggle ? 0 : ex.price}" data-is-toggle="${isToggle}" data-extra-name="${ex.name}">
                                 <div class="extra-info-text">
                                     <span class="extra-name">${ex.name}</span>
                                     ${!isToggle && ex.price > 0 ? `<span class="extra-cost">+$${ex.price.toFixed(2)}</span>` : ''}
                                 </div>
-                                ${isToggle 
+                                ${isToggle
                                     ? `
                                     <div class="toggle-switch">
                                         <span class="toggle-indicator"></span>
@@ -1100,7 +1100,7 @@
                             </div>`;
                         }).join('');
                     }
-                    
+
                     extrasGrid.innerHTML = extrasHTML;
 
                     if (extrasContainer) extrasContainer.style.display = orderedExtras.length > 0 ? 'block' : 'none';
@@ -1144,15 +1144,15 @@
                 const modalTitleText = document.querySelector('.modal-title')?.innerText.toLowerCase() || '';
                 const isNuggetsContext = modalTitleText.includes('nuggets');
                 const isSauce = (card.querySelector('.extra-name')?.innerText || '').toLowerCase().includes('servicio de salsa');
-            
+
                 if (isNuggetsContext && isSauce) {
                     const isCurrentlySelected = card.classList.contains('selected');
-                    
+
                     // Contar otras salsas seleccionadas, excluyendo la actual si ya está seleccionada
                     const otherSelectedSaucesCount = Array.from(extrasGrid.querySelectorAll('.extra-card[data-is-toggle="true"].selected'))
                         .filter(c => c !== card && (c.querySelector('.extra-name')?.innerText || '').toLowerCase().includes('servicio de salsa'))
                         .length;
-            
+
                     // Si se está intentando activar una tercera salsa
                     if (!isCurrentlySelected && otherSelectedSaucesCount >= 2) {
                         showToast('Puedes seleccionar un máximo de 2 salsas.', 'error');
@@ -1164,7 +1164,7 @@
                 card.classList.toggle('selected');
                 valSpan.innerText = card.classList.contains('selected') ? 'SÍ' : 'NO';
                 valueChanged = true;
-            } 
+            }
             // Lógica para Contadores (+/-)
             else if (e.target.classList.contains('extra-qty-btn')) {
                 const btn = e.target;
@@ -1172,7 +1172,7 @@
 
                 if (btn.classList.contains('plus')) currentVal++;
                 else if (btn.classList.contains('minus') && currentVal > 0) currentVal--;
-                
+
                 valSpan.innerText = String(currentVal);
                 valueChanged = true;
             }
@@ -1211,147 +1211,147 @@
 
         btnAddOrderMain?.addEventListener('click', () => {
             if (currentMainQty < 1 || !modal) return;
-            
+
             // Iniciar animación
             const spinner = btnAddOrderMain.querySelector('.btn-spinner');
             const textSpan = btnAddOrderMain.querySelector('.btn-text');
             btnAddOrderMain.style.pointerEvents = 'none';
             if (spinner) spinner.classList.add('active');
             if (textSpan) textSpan.innerText = 'Añadiendo...';
-            
+
             triggerFlyToCart('modal-img');
 
             const extrasSeleccionados = [];
-            
+
             setTimeout(() => {
-            // LÓGICA ESPECIAL PARA COMBO HOUSE
-            if (esComboHouse) {
-                // Guardar estado actual de la hamburguesa activa antes de agregar
-                const currentBurger = comboHouseState.burgers[comboHouseState.activeBurgerIndex];
-                modal.querySelectorAll('.extra-card').forEach((card) => {
-                    const extraName = card.dataset.extraName;
-                    const isToggle = card.dataset.isToggle === 'true';
-                    const valText = card.querySelector('.extra-qty-val')?.innerText ?? '';
-                    const val = isToggle ? (valText === 'SÍ' ? 'SÍ' : 'NO') : parseInt(valText, 10) || 0;
-                    
-                    if (isToggle) {
-                        currentBurger.ingredientes[extraName] = val;
-                    } else {
-                        currentBurger.extras[extraName] = val;
-                    }
-                });
-                
-                const allBurgerModifications = []; // Recopilar todas las modificaciones para todas las hamburguesas
-                let totalExtrasCost = 0; // Para sumar el costo de todos los extras en todas las hamburguesas
+                // LÓGICA ESPECIAL PARA COMBO HOUSE
+                if (esComboHouse) {
+                    // Guardar estado actual de la hamburguesa activa antes de agregar
+                    const currentBurger = comboHouseState.burgers[comboHouseState.activeBurgerIndex];
+                    modal.querySelectorAll('.extra-card').forEach((card) => {
+                        const extraName = card.dataset.extraName;
+                        const isToggle = card.dataset.isToggle === 'true';
+                        const valText = card.querySelector('.extra-qty-val')?.innerText ?? '';
+                        const val = isToggle ? (valText === 'SÍ' ? 'SÍ' : 'NO') : parseInt(valText, 10) || 0;
 
-                for (let i = 0; i < comboHouseState.burgers.length; i++) {
-                    const burger = comboHouseState.burgers[i];
-                    const modificationsForThisBurger = [];
-                    
-                    // Verificar ingredientes base modificados (diferentes del valor por defecto)
-                    Object.entries(burger.ingredientes).forEach(([nombre, val]) => {
-                        // Obtener el valor por defecto de EXTRAS_DB para comparación
-                        const extraDef = EXTRAS_DB.find(ex => ex.name === nombre && ex.type === 'toggle');
-                        // Por defecto 'SÍ' si no se encuentra o no tiene función default
-                        const defaultValue = (extraDef && typeof extraDef.default === 'function') ? extraDef.default({}) : 'SÍ'; 
-                        if (val !== defaultValue) {
-                            modificationsForThisBurger.push(`Sin ${nombre}`);
+                        if (isToggle) {
+                            currentBurger.ingredientes[extraName] = val;
+                        } else {
+                            currentBurger.extras[extraName] = val;
                         }
                     });
-                    
-                    // Verificar extras con costo modificados (mayores a 0)
-                    Object.entries(burger.extras).forEach(([nombre, qty]) => {
-                        if (qty > 0) {
-                            const extraDef = EXTRAS_DB.find(ex => ex.name === nombre && ex.type === 'cost');
-                            const precioExtra = extraDef ? extraDef.price : 0;
-                            totalExtrasCost += precioExtra * qty; // Sumar el costo total de los extras
-                            // Evitar redundancia: no agregar "Extra" si el nombre ya empieza con "Extra"
-                            const prefijo = /^extra\s/i.test(nombre) ? '' : 'Extra ';
-                            modificationsForThisBurger.push(`${prefijo}${nombre}${qty > 1 ? ` x${qty}` : ''}`);
+
+                    const allBurgerModifications = []; // Recopilar todas las modificaciones para todas las hamburguesas
+                    let totalExtrasCost = 0; // Para sumar el costo de todos los extras en todas las hamburguesas
+
+                    for (let i = 0; i < comboHouseState.burgers.length; i++) {
+                        const burger = comboHouseState.burgers[i];
+                        const modificationsForThisBurger = [];
+
+                        // Verificar ingredientes base modificados (diferentes del valor por defecto)
+                        Object.entries(burger.ingredientes).forEach(([nombre, val]) => {
+                            // Obtener el valor por defecto de EXTRAS_DB para comparación
+                            const extraDef = EXTRAS_DB.find(ex => ex.name === nombre && ex.type === 'toggle');
+                            // Por defecto 'SÍ' si no se encuentra o no tiene función default
+                            const defaultValue = (extraDef && typeof extraDef.default === 'function') ? extraDef.default({}) : 'SÍ';
+                            if (val !== defaultValue) {
+                                modificationsForThisBurger.push(`Sin ${nombre}`);
+                            }
+                        });
+
+                        // Verificar extras con costo modificados (mayores a 0)
+                        Object.entries(burger.extras).forEach(([nombre, qty]) => {
+                            if (qty > 0) {
+                                const extraDef = EXTRAS_DB.find(ex => ex.name === nombre && ex.type === 'cost');
+                                const precioExtra = extraDef ? extraDef.price : 0;
+                                totalExtrasCost += precioExtra * qty; // Sumar el costo total de los extras
+                                // Evitar redundancia: no agregar "Extra" si el nombre ya empieza con "Extra"
+                                const prefijo = /^extra\s/i.test(nombre) ? '' : 'Extra ';
+                                modificationsForThisBurger.push(`${prefijo}${nombre}${qty > 1 ? ` x${qty}` : ''}`);
+                            }
+                        });
+
+                        // Si esta hamburguesa tiene modificaciones, agregarlas a la lista general
+                        if (modificationsForThisBurger.length > 0) {
+                            allBurgerModifications.push({
+                                nombre: `Hamburguesa ${i + 1}: ${modificationsForThisBurger.join(', ')}`,
+                                qty: 1,
+                                val: 'SÍ',
+                                isToggle: false,
+                                precio: 0 // El precio ya está contabilizado en totalExtrasCost
+                            });
+                        }
+                    }
+
+                    // Solo agregar las modificaciones de las hamburguesas a extrasSeleccionados si hay alguna
+                    if (allBurgerModifications.length > 0) {
+                        extrasSeleccionados.push(...allBurgerModifications);
+                    }
+
+                    // Agregar Pepsi por defecto (siempre presente para Combo House)
+                    extrasSeleccionados.push({
+                        nombre: '(+ Pepsi 1L)',
+                        qty: 1,
+                        val: '1',
+                        isToggle: false,
+                        precio: 0
+                    });
+
+                    // El subtotal ahora debe usar totalExtrasCost
+                    const subtotal = (basePrice + totalExtrasCost) * currentMainQty;
+
+                    carrito.push({
+                        id: `${Date.now()}${Math.random().toString(36).slice(2, 7)}`,
+                        nombre: modalTitle?.innerText ?? 'Producto',
+                        cantidad: currentMainQty,
+                        precioUnitario: basePrice,
+                        extras: extrasSeleccionados,
+                        subtotal: Number(subtotal.toFixed(2))
+                    });
+                } else {
+                    // LÓGICA NORMAL PARA OTROS PRODUCTOS
+                    modal.querySelectorAll('.extra-card').forEach((card) => {
+                        const valText = card.querySelector('.extra-qty-val')?.innerText ?? '';
+                        const nombre = card.querySelector('.extra-name')?.innerText ?? '';
+                        const isToggle = card.dataset.isToggle === 'true';
+                        const qty = valText === 'SÍ' ? 1 : valText === 'NO' ? 0 : parseInt(valText, 10) || 0;
+
+                        // REGLA ESTRICTA: Solo capturar si se modifica el defecto
+                        // Para toggles: capturar si es diferente del valor por defecto
+                        // Para extras con costo: capturar si qty > 0
+                        let isModified = false;
+                        if (isToggle) {
+                            const extraDef = EXTRAS_DB.find(ex => ex.name === nombre && ex.type === 'toggle');
+                            const defaultValue = (extraDef && typeof extraDef.default === 'function') ? extraDef.default({}) : 'SÍ';
+                            isModified = valText !== defaultValue;
+                        } else {
+                            isModified = qty > 0;
+                        }
+
+                        if (isModified) {
+                            extrasSeleccionados.push({
+                                nombre, qty, val: valText, isToggle,
+                                precio: (parseFloat(card.dataset.extraPrice || '0') * qty)
+                            });
                         }
                     });
-                    
-                    // Si esta hamburguesa tiene modificaciones, agregarlas a la lista general
-                    if (modificationsForThisBurger.length > 0) {
-                        allBurgerModifications.push({
-                            nombre: `Hamburguesa ${i + 1}: ${modificationsForThisBurger.join(', ')}`,
-                            qty: 1,
-                            val: 'SÍ',
-                            isToggle: false,
-                            precio: 0 // El precio ya está contabilizado en totalExtrasCost
-                        });
-                    }
+
+                    const subtotal = (basePrice + extrasSeleccionados.reduce((acc, e) => acc + e.precio, 0)) * currentMainQty;
+
+                    carrito.push({
+                        id: `${Date.now()}${Math.random().toString(36).slice(2, 7)}`,
+                        nombre: modalTitle?.innerText ?? 'Producto',
+                        cantidad: currentMainQty,
+                        precioUnitario: basePrice,
+                        extras: extrasSeleccionados,
+                        subtotal: Number(subtotal.toFixed(2))
+                    });
                 }
-                
-                // Solo agregar las modificaciones de las hamburguesas a extrasSeleccionados si hay alguna
-                if (allBurgerModifications.length > 0) {
-                    extrasSeleccionados.push(...allBurgerModifications);
-                }
-                
-                // Agregar Pepsi por defecto (siempre presente para Combo House)
-                extrasSeleccionados.push({
-                    nombre: '(+ Pepsi 1L)',
-                    qty: 1,
-                    val: '1',
-                    isToggle: false,
-                    precio: 0
-                });
-                
-                // El subtotal ahora debe usar totalExtrasCost
-                const subtotal = (basePrice + totalExtrasCost) * currentMainQty;
-                
-                carrito.push({
-                    id: `${Date.now()}${Math.random().toString(36).slice(2, 7)}`,
-                    nombre: modalTitle?.innerText ?? 'Producto',
-                    cantidad: currentMainQty,
-                    precioUnitario: basePrice,
-                    extras: extrasSeleccionados,
-                    subtotal: Number(subtotal.toFixed(2))
-                });
-            } else {
-                // LÓGICA NORMAL PARA OTROS PRODUCTOS
-                modal.querySelectorAll('.extra-card').forEach((card) => {
-                    const valText = card.querySelector('.extra-qty-val')?.innerText ?? '';
-                    const nombre = card.querySelector('.extra-name')?.innerText ?? '';
-                    const isToggle = card.dataset.isToggle === 'true';
-                    const qty = valText === 'SÍ' ? 1 : valText === 'NO' ? 0 : parseInt(valText, 10) || 0;
-                    
-                    // REGLA ESTRICTA: Solo capturar si se modifica el defecto
-                    // Para toggles: capturar si es diferente del valor por defecto
-                    // Para extras con costo: capturar si qty > 0
-                    let isModified = false;
-                    if (isToggle) {
-                        const extraDef = EXTRAS_DB.find(ex => ex.name === nombre && ex.type === 'toggle');
-                        const defaultValue = (extraDef && typeof extraDef.default === 'function') ? extraDef.default({}) : 'SÍ';
-                        isModified = valText !== defaultValue;
-                    } else {
-                        isModified = qty > 0;
-                    }
-                    
-                    if (isModified) {
-                        extrasSeleccionados.push({
-                            nombre, qty, val: valText, isToggle,
-                            precio: (parseFloat(card.dataset.extraPrice || '0') * qty)
-                        });
-                    }
-                });
 
-                const subtotal = (basePrice + extrasSeleccionados.reduce((acc, e) => acc + e.precio, 0)) * currentMainQty;
+                actualizarInterfazCarrito();
+                cerrarFunc();
+                abrirCarritoConFeedback();
 
-                carrito.push({
-                    id: `${Date.now()}${Math.random().toString(36).slice(2, 7)}`,
-                    nombre: modalTitle?.innerText ?? 'Producto',
-                    cantidad: currentMainQty,
-                    precioUnitario: basePrice,
-                    extras: extrasSeleccionados,
-                    subtotal: Number(subtotal.toFixed(2))
-                });
-            }
-
-            actualizarInterfazCarrito();
-            cerrarFunc();
-            abrirCarritoConFeedback();
-            
                 // Restaurar botón para futuras aperturas
                 btnAddOrderMain.style.pointerEvents = 'auto';
                 if (spinner) spinner.classList.remove('active');
@@ -1362,7 +1362,7 @@
         document.getElementById('btn-go-checkout')?.addEventListener('click', (e) => {
             const btn = e.currentTarget;
             if (carrito.length === 0) return showToast('Añade algo al carrito primero', 'error');
-            
+
             const spinner = btn.querySelector('.btn-spinner');
             const textSpan = btn.querySelector('.btn-text');
             btn.style.pointerEvents = 'none';
@@ -1372,7 +1372,7 @@
             setTimeout(() => {
                 history.pushState({ ui: 'checkout' }, '');
                 syncUIWithState();
-                
+
                 btn.style.pointerEvents = 'auto';
                 if (spinner) spinner.classList.remove('active');
                 if (textSpan) textSpan.innerText = 'Confirmar Pedido';
@@ -1392,7 +1392,7 @@
             setTimeout(() => {
                 document.getElementById('modal-closed')?.classList.remove('active');
                 lockBodyScroll(false);
-                
+
                 btn.style.pointerEvents = 'auto';
                 if (spinner) spinner.classList.remove('active');
                 if (textSpan) textSpan.innerText = 'Pre-ordenar';
@@ -1402,17 +1402,17 @@
         /* --- BOTÓN DE UBICACIÓN OPTIMIZADO Y ANTI-CRASH --- */
         const btnLocation = document.getElementById('btn-get-location');
         const inputMaps = document.getElementById('maps');
-        
+
         if (btnLocation && inputMaps) {
             btnLocation.addEventListener('click', () => {
                 if (!navigator.geolocation) {
                     return showToast('Tu dispositivo no soporta geolocalización.', 'error');
                 }
-                
+
                 const spinner = btnLocation.querySelector('.btn-spinner');
                 const textSpan = btnLocation.querySelector('.btn-text') || btnLocation.querySelector('span');
                 const svgIcon = btnLocation.querySelector('.location-icon');
-                
+
                 const originalText = textSpan.innerText;
                 textSpan.innerText = 'Buscando...';
                 btnLocation.classList.add('loading');
@@ -1425,10 +1425,10 @@
                         const lat = position.coords.latitude;
                         const lng = position.coords.longitude;
                         inputMaps.value = `https://maps.google.com/?q=${lat},${lng}`;
-                        
+
                         inputMaps.classList.add('location-success');
                         setTimeout(() => inputMaps.classList.remove('location-success'), 2000);
-                        
+
                         textSpan.innerText = '¡Ubicación guardada!';
                         btnLocation.classList.remove('loading');
                         btnLocation.disabled = false;
@@ -1442,7 +1442,7 @@
                         btnLocation.disabled = false;
                         if (spinner) spinner.classList.remove('active');
                         if (svgIcon) svgIcon.style.display = 'block';
-                        
+
                         let errorMsg = 'Error al obtener ubicación. Permite el acceso GPS.';
                         if (error.code === 1) {
                             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -1454,7 +1454,7 @@
                         }
                         if (error.code === 2) errorMsg = 'Información de ubicación no disponible (señal débil). Pega tu enlace de Maps manualmente.';
                         if (error.code === 3) errorMsg = 'Tiempo de espera agotado. Pega tu enlace de Maps manualmente.';
-                        
+
                         showToast(errorMsg, 'error');
                     },
                     { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
@@ -1465,7 +1465,7 @@
         /* --- PROCESO DE PAGO (ANTI-CRASH) --- */
         document.getElementById('form-delivery')?.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const submitBtn = document.getElementById('btn-whatsapp-final');
             const originalBtnText = submitBtn.innerHTML;
 
@@ -1551,7 +1551,7 @@
                 if (cuponActivo) {
                     const montoDescontado = totalPedido * (cuponActivo.porcentaje / 100);
                     totalConDescuento = totalPedido - montoDescontado;
-                    
+
                     mensaje += `*SUBTOTAL:* $${totalPedido.toFixed(2)} REF\n`;
                     mensaje += `*CUPÓN MUNDIAL (${cuponActivo.codigo}):* -${cuponActivo.porcentaje}% (-$${montoDescontado.toFixed(2)} REF)\n`;
                     mensaje += `------------------------------\n`;
@@ -1582,7 +1582,7 @@
                         console.warn("Firebase no está disponible. Saltando registro en DB para no bloquear WhatsApp.");
                         return Promise.resolve(); // Permite que el flujo siga hacia WhatsApp sin romperse
                     }
-                    
+
                     const fechaActual = new Date().toLocaleString();
                     const productosResumen = carrito.map(item => `${item.cantidad}x ${item.nombre}`).join(', ');
 
@@ -1604,11 +1604,11 @@
                                 timestamp: firebase.database.ServerValue.TIMESTAMP,
                                 estado: "pendiente"
                             };
-                            
+
                             if (cuponActivo) {
                                 pedidoData.cupon_usado = cuponActivo.codigo;
                             }
-                            
+
                             await db.ref('pedidos').push(pedidoData);
                         } catch (err) { console.error("Fallo menor: Firebase no respondió a tiempo", err); }
                     }
@@ -1635,15 +1635,15 @@
                 registrarEnBasesDeDatos();
 
                 // 3. FINALIZAR ORDEN Y REDIRIGIR
-                try { localStorage.removeItem('bh_cart'); } catch (e) {}
+                try { localStorage.removeItem('bh_cart'); } catch (e) { }
 
                 pedidoConfirmado = true;
                 history.pushState({ orderSent: true }, '');
-                
+
                 // Limpiar formulario para evitar mensaje de "desea salir de la página"
                 const form = document.getElementById('form-delivery');
                 if (form) form.reset();
-                
+
                 // Asegurar redirección a WhatsApp siempre sin mensaje de advertencia
                 try {
                     window.location.replace(url);
@@ -1651,7 +1651,7 @@
                     // Fallback si window.location.replace falla
                     window.open(url, '_self');
                 }
-                
+
                 // Actualizar Interfaz
                 cartSidebar?.classList.add('cart-closed');
                 document.getElementById('modal-reminder')?.classList.add('active');
@@ -1671,7 +1671,7 @@
             }
         });
 
-        const reloadAfterOrder = (e) => { 
+        const reloadAfterOrder = (e) => {
             const btn = e?.currentTarget;
             if (btn) {
                 const spinner = btn.querySelector('.btn-spinner');
@@ -1681,8 +1681,8 @@
                 if (textSpan) textSpan.innerText = 'Cargando...';
             }
             setTimeout(() => {
-                pedidoConfirmado = false; 
-                window.location.reload(); 
+                pedidoConfirmado = false;
+                window.location.reload();
             }, 350);
         };
         document.getElementById('btn-reminder-ok')?.addEventListener('click', reloadAfterOrder);
