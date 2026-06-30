@@ -1701,5 +1701,17 @@
         });
 
         window.addEventListener('beforeunload', (e) => { if (!pedidoConfirmado) e.preventDefault(); });
+
+        // Precargar imágenes de los modales para que se abran instantáneamente
+        window.addEventListener('load', () => {
+            const preloadUrls = new Set();
+            document.querySelectorAll('[data-img-src]').forEach(el => {
+                if (el.dataset.imgSrc) preloadUrls.add(el.dataset.imgSrc);
+            });
+            preloadUrls.forEach(url => {
+                const img = new Image();
+                img.src = url;
+            });
+        });
     });
 })();
