@@ -1112,6 +1112,7 @@
                 if (modalImg) {
                     modalImg.src = itemImageSrc || 'hamburguesa.webp';
                     modalImg.className = '';
+                    if (esBebida) modalImg.classList.add('modal-img-bebida');
                     if (esKids || name === 'Pork House' || name === 'Servicio de Papas con Topping' || nameLower.includes('nuggets')) modalImg.classList.add('modal-img-bottom-aligned');
                     if (name === 'Crispy House' || name === 'House Tower') modalImg.classList.add('modal-img-alejar');
                     if (name === 'Junior Crispy') modalImg.classList.add('modal-img-junior-crispy-lower');
