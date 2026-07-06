@@ -13,7 +13,7 @@
         WEEKDAY_OPEN: 1020,
         WEEKDAY_CLOSE: 1350,
         WEEKEND_OPEN: 780,
-        PROMO_BASE_PRICE: 6.5,
+        PROMO_BASE_PRICE: 6.49,
         PROMO_COMBO_PRICE: 8.5,
         PROMO_COMBO_EXTRA: 2.0
     };

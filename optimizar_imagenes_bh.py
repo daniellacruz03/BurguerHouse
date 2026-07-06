@@ -33,27 +33,32 @@ def optimizar_todo(directorio_proyecto):
             tamano_antes_kb = os.path.getsize(ruta_original) / 1024
 
             try:
-                with Image.open(ruta_original) as img:
-                    if img.mode in ('RGBA', 'P'):
-                        img = img.convert('RGBA')
+                with Image.open(ruta_original) as img_orig:
+                    img_orig.load() # Load image data into memory before closing the file
+                    if img_orig.mode in ('RGBA', 'P', 'LA'):
+                        img = img_orig.convert('RGBA')
                     else:
-                        img = img.convert('RGB')
+                        img = img_orig.convert('RGB')
 
                     width, height = img.size
                     if width > MAX_WIDTH:
                         ratio = MAX_WIDTH / float(width)
                         new_height = int(float(height) * ratio)
-                        img = img.resize((MAX_WIDTH, new_height), Image.Resampling.LANCZOS)
+                        try:
+                            resample_filter = Image.Resampling.LANCZOS
+                        except AttributeError:
+                            resample_filter = Image.LANCZOS
+                        img = img.resize((MAX_WIDTH, new_height), resample_filter)
                         print(f"  Redimensionada: {archivo} ({width}px -> {MAX_WIDTH}px)")
 
-                    # Ajustar calidad segun tamano
-                    calidad = QUALITY_TARGET
-                    if tamano_antes_kb > MAX_SIZE_KB * 2:
-                        calidad = 60
-                    elif tamano_antes_kb > MAX_SIZE_KB:
-                        calidad = 68
+                # Ajustar calidad segun tamano
+                calidad = QUALITY_TARGET
+                if tamano_antes_kb > MAX_SIZE_KB * 2:
+                    calidad = 60
+                elif tamano_antes_kb > MAX_SIZE_KB:
+                    calidad = 68
 
-                    img.save(ruta_webp, 'WEBP', quality=calidad, method=6)
+                img.save(ruta_webp, 'WEBP', quality=calidad, method=6)
 
                 tamano_despues_kb = os.path.getsize(ruta_webp) / 1024
                 ahorro = tamano_antes_kb - tamano_despues_kb
