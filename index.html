@@ -574,7 +574,8 @@
 
         .badge-best,
         .badge-new,
-        .badge-promo {
+        .badge-promo,
+        .badge-discount {
             color: #ffffff !important;
             border: none !important;
             border-radius: 999px !important;
@@ -597,6 +598,16 @@
         .badge-promo {
             background: #ffbb33 !important;
             color: #000000 !important;
+        }
+
+        .badge-discount {
+            background: #a855f7 !important;
+            animation: pulse-discount 1.8s ease-in-out infinite;
+        }
+
+        @keyframes pulse-discount {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
         }
 
         section:not(#bebidas) .menu-item.promo-item {
@@ -1576,7 +1587,8 @@
             }
 
             .badge-best,
-            .badge-new {
+            .badge-new,
+            .badge-discount {
                 position: relative !important;
                 display: inline-block !important;
                 top: 0 !important;
@@ -2055,6 +2067,42 @@
         <section id="hamburguesas"
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:max-w-6xl lg:mx-auto">
 
+            <!-- TITAN HOUSE — 10% DESCUENTO -->
+            <div class="menu-item">
+                <img src="titan house.webp" class="item-img-bg" alt="Titan House" decoding="async" loading="lazy" width="400"
+                    height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="badge-discount">10% DESCUENTO</span>
+                        <span class="item-name">Titan House</span>
+                        <p class="item-desc">Pan de papa, triple carne, tocineta, queso americano, salsa de la casa,
+                            papas fritas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="titan house.webp">
+                        <span class="item-price">$11,69</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HOUSE TOWER — 10% DESCUENTO -->
+            <div class="menu-item">
+                <img src="housetower.webp" class="item-img-bg ajuste-alejar" alt="House Tower" decoding="async" loading="lazy"
+                    width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="badge-discount">10% DESCUENTO</span>
+                        <span class="item-name">House Tower</span>
+                        <p class="item-desc">Pan de papa, carne, chuleta, pollo, pepinillo, tocineta, queso americano,
+                            lechuga, salsa de la casa, papas fritas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="housetower.webp">
+                        <span class="item-price">$16,19</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- PROMO CHEESE HOUSE -->
             <div class="menu-item promo-item">
                 <img src="cheesepromo.webp" class="item-img-bg ajuste-subir" alt="PROMO Cheese House" decoding="async" loading="lazy"
@@ -2296,53 +2344,6 @@
                 </div>
             </div>
 
-            <div class="menu-item">
-                <img src="titan house.webp" class="item-img-bg" alt="Titan House" decoding="async" loading="lazy" width="400"
-                    height="220">
-                <div class="item-info-split">
-                    <div class="item-info">
-                        <span class="item-name">Titan House</span>
-                        <p class="item-desc">Pan de papa, triple carne, tocineta, queso americano, salsa de la casa,
-                            papas fritas.</p>
-                    </div>
-                    <div class="item-price-wrapper" data-img-src="titan house.webp">
-                        <span class="item-price">$12,99</span>
-                        <span class="item-ref">REF</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="menu-item">
-                <img src="house especial.webp" class="item-img-bg" alt="House Special" decoding="async" loading="lazy" width="400"
-                    height="220">
-                <div class="item-info-split">
-                    <div class="item-info">
-                        <span class="item-name">House Special</span>
-                        <p class="item-desc">Pan de papa, pollo, chuleta, pepinillo, tocineta, queso americano, lechuga,
-                            salsa de la casa, papas fritas.</p>
-                    </div>
-                    <div class="item-price-wrapper" data-img-src="house especial.webp">
-                        <span class="item-price">$14,49</span>
-                        <span class="item-ref">REF</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="menu-item">
-                <img src="housetower.webp" class="item-img-bg ajuste-alejar" alt="House Tower" decoding="async" loading="lazy"
-                    width="400" height="220">
-                <div class="item-info-split">
-                    <div class="item-info">
-                        <span class="item-name">House Tower</span>
-                        <p class="item-desc">Pan de papa, carne, chuleta, pollo, pepinillo, tocineta, queso americano,
-                            lechuga, salsa de la casa, papas fritas.</p>
-                    </div>
-                    <div class="item-price-wrapper" data-img-src="housetower.webp">
-                        <span class="item-price">$17,99</span>
-                        <span class="item-ref">REF</span>
-                    </div>
-                </div>
-            </div>
         </section>
 
         <section id="ensaladas"
