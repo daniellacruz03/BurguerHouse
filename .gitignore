@@ -67,3 +67,23 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+
+# ============================================
+# Android / Capacitor (APK ya compilada)
+# ============================================
+
+# Proyecto Android generado por Capacitor
+android/
+
+# Build web que Capacitor copia a la APK
+www/
+
+# Configuración de Capacitor
+capacitor.config.json
+capacitor.config.ts
+
+# Archivos de optimización de imágenes (scripts locales)
+optimizar.py
+optimizar_imagenes_bh.py
+requirements.txt
+videos_crudos/
