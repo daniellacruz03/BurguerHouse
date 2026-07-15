@@ -3,17 +3,17 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Burger House Merida</title>
     <!-- Favicon e Icono de Aplicación -->
-    <link rel="icon" href="logobh.webp" type="image/webp">
-    <link rel="apple-touch-icon" href="logobh.webp">
+    <link rel="icon" href="images/logobh.webp" type="image/webp">
+    <link rel="apple-touch-icon" href="images/logobh.webp">
     <!-- Precarga del logo para evitar que desaparezca durante la carga -->
 
     <!-- Meta Tags para Redes Sociales (Open Graph) -->
     <meta property="og:title" content="Burger House | Menú Digital">
     <meta property="og:description" content="Explora nuestras hamburguesas y haz tu pedido directamente por WhatsApp.">
-    <meta property="og:image" content="logobh.webp">
+    <meta property="og:image" content="images/logobh.webp">
     <meta property="og:type" content="website">
     <meta name="theme-color" content="#080808">
     <link rel="stylesheet" href="style-tailwind.css">
@@ -28,9 +28,9 @@
         gtag('config', 'G-YBR4MCPDXQ');
     </script>
 
-    <link rel="preload" href="logobh.webp" as="image">
-    <link rel="preload" href="promolunesmiercoles.webp" as="image">
-    <link rel="preload" href="promopapa.webp" as="image">
+    <link rel="preload" href="images/logobh.webp" as="image">
+    <link rel="preload" href="images/promolunesmiercoles.webp" as="image">
+    <link rel="preload" href="images/promopapa.webp" as="image">
     <!-- Optimización de fuentes: Preconectar y cargar vía link es más rápido que @import -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -574,7 +574,8 @@
 
         .badge-best,
         .badge-new,
-        .badge-promo {
+        .badge-promo,
+        .badge-discount {
             color: #ffffff !important;
             border: none !important;
             border-radius: 999px !important;
@@ -597,6 +598,16 @@
         .badge-promo {
             background: #ffbb33 !important;
             color: #000000 !important;
+        }
+
+        .badge-discount {
+            background: #a855f7 !important;
+            animation: pulse-discount 1.8s ease-in-out infinite;
+        }
+
+        @keyframes pulse-discount {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
         }
 
         section:not(#bebidas) .menu-item.promo-item {
@@ -1490,7 +1501,7 @@
 
         @media (max-width: 768px) {
             body {
-                background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('brasas.webp') !important;
+                background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('images/brasas.webp') !important;
                 background-attachment: scroll !important;
                 background-size: cover !important;
                 background-position: center !important;
@@ -1576,7 +1587,8 @@
             }
 
             .badge-best,
-            .badge-new {
+            .badge-new,
+            .badge-discount {
                 position: relative !important;
                 display: inline-block !important;
                 top: 0 !important;
@@ -1946,7 +1958,7 @@
     <div class="contenedor-logo" id="preloader">
         <div class="preloader-inner">
             <div class="logo-glow-wrap">
-                <img src="logobh.webp" alt="Logo Burger House" class="logo-animado" width="165" height="165"
+                <img src="images/logobh.webp" alt="Logo Burger House" class="logo-animado" width="165" height="165"
                     decoding="async">
             </div>
             <div class="preloader-bar" aria-hidden="true">
@@ -1960,11 +1972,11 @@
     <div class="sticky-nav">
         <!-- Fila Superior: Logo (izquierda) y Carrito (derecha) -->
         <div class="header-top-row">
-            <img src="logobh.webp" alt="Logo Burger House" class="menu-header-logo" width="50" height="50"
+            <img src="images/logobh.webp" alt="Logo Burger House" class="menu-header-logo" width="50" height="50"
                 decoding="async">
             <div id="cart-floating-btn" class="cart-btn-hidden">
                 <span id="cart-badge">0</span>
-                <img src="bolsadelivery.webp" alt="Delivery" class="icono-moto" width="30" height="30">
+                <img src="images/bolsadelivery.webp" alt="Delivery" class="icono-moto" width="30" height="30">
             </div>
         </div>
 
@@ -2055,10 +2067,46 @@
         <section id="hamburguesas"
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:max-w-6xl lg:mx-auto">
 
+            <!-- TITAN HOUSE — 10% DESCUENTO -->
+            <div class="menu-item">
+                <img src="images/titan house.webp" class="item-img-bg" alt="Titan House" decoding="async" loading="lazy"
+                    width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="badge-discount">10% DESCUENTO</span>
+                        <span class="item-name">Titan House</span>
+                        <p class="item-desc">Pan de papa, triple carne, tocineta, queso americano, salsa de la casa,
+                            papas fritas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="images/titan house.webp">
+                        <span class="item-price">$11,69</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HOUSE TOWER — 10% DESCUENTO -->
+            <div class="menu-item">
+                <img src="images/housetower.webp" class="item-img-bg ajuste-alejar" alt="House Tower" decoding="async"
+                    loading="lazy" width="400" height="220">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="badge-discount">10% DESCUENTO</span>
+                        <span class="item-name">House Tower</span>
+                        <p class="item-desc">Pan de papa, carne, chuleta, pollo, pepinillo, tocineta, queso americano,
+                            lechuga, salsa de la casa, papas fritas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="images/housetower.webp">
+                        <span class="item-price">$16,19</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- PROMO CHEESE HOUSE -->
             <div class="menu-item promo-item">
-                <img src="cheesepromo.webp" class="item-img-bg ajuste-subir" alt="PROMO Cheese House" decoding="async" loading="lazy"
-                    width="900" height="500">
+                <img src="images/cheesepromo.webp" class="item-img-bg ajuste-subir" alt="PROMO Cheese House"
+                    decoding="async" loading="lazy" width="900" height="500">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="badge-promo">PROMO</span>
@@ -2066,7 +2114,7 @@
                         <p class="item-desc">Pan de papa, carne, triple queso americano, salsa de la casa. (Sin
                             tocineta)</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="cheesepromo.webp">
+                    <div class="item-price-wrapper" data-img-src="images/cheesepromo.webp">
                         <span class="item-price">$6,49</span>
                         <span class="item-ref">REF</span>
                     </div>
@@ -2075,8 +2123,8 @@
 
             <!-- PROMO HOUSE CLASSICS -->
             <div class="menu-item promo-item">
-                <img src="classicpromo.webp" class="item-img-bg ajuste-subir" alt="PROMO House Classics" decoding="async" loading="lazy"
-                    width="900" height="500">
+                <img src="images/classicpromo.webp" class="item-img-bg ajuste-subir" alt="PROMO House Classics"
+                    decoding="async" loading="lazy" width="900" height="500">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="badge-promo">PROMO</span>
@@ -2084,7 +2132,7 @@
                         <p class="item-desc">Pan de papa, carne, pepinillo, queso americano, lechuga, salsa de la casa.
                             (Sin tocineta)</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="classicpromo.webp">
+                    <div class="item-price-wrapper" data-img-src="images/classicpromo.webp">
                         <span class="item-price">$6,49</span>
                         <span class="item-ref">REF</span>
                     </div>
@@ -2093,38 +2141,41 @@
 
             <!-- PROMO BABY CRISPY -->
             <div class="menu-item promo-item">
-                <img src="babypromo.webp" class="item-img-bg ajuste-baby" alt="PROMO Baby Crispy" decoding="async" loading="lazy"
-                    width="900" height="500">
+                <img src="images/babypromo.webp" class="item-img-bg ajuste-baby" alt="PROMO Baby Crispy"
+                    decoding="async" loading="lazy" width="900" height="500">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="badge-promo">PROMO</span>
                         <span class="item-name">Promo Baby Crispy</span>
-                        <p class="item-desc">Pan de papa, pollo crispy, salsa de queso, BBQ, salsa de la casa (sin tocineta).</p>
+                        <p class="item-desc">Pan de papa, pollo crispy, salsa de queso, BBQ, salsa de la casa (sin
+                            tocineta).</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="babypromo.webp">
+                    <div class="item-price-wrapper" data-img-src="images/babypromo.webp">
                         <span class="item-price">$6,49</span>
                         <span class="item-ref">REF</span>
                     </div>
                 </div>
             </div>
             <div class="menu-item">
-                    <img src="crispydeluxe.webp" class="item-img-bg ajuste-subir" alt="Crispy Deluxe" decoding="async" loading="lazy" width="900" height="500">
-                    <div class="item-info-split">
-                        <div class="item-info">
-                            <span class="badge-new">NUEVA</span>
-                            <span class="item-name">Crispy Deluxe</span>
-                            <p class="item-desc">Pan, pollo crispy, lechuga, mayonesa, pepinillos, queso americano y salsa de la casa.</p>
-                        </div>
-                        <div class="item-price-wrapper" data-img-src="crispydeluxe.webp">
-                            <span class="item-price">$9,99</span>
-                            <span class="item-ref">REF</span>
-                        </div>
+                <img src="images/crispydeluxe.webp" class="item-img-bg ajuste-subir" alt="Crispy Deluxe"
+                    decoding="async" loading="lazy" width="900" height="500">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="badge-new">NUEVA</span>
+                        <span class="item-name">Crispy Deluxe</span>
+                        <p class="item-desc">Pan, pollo crispy, lechuga, mayonesa, pepinillos, queso americano y salsa
+                            de la casa.</p>
                     </div>
+                    <div class="item-price-wrapper" data-img-src="images/crispydeluxe.webp">
+                        <span class="item-price">$9,99</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
             </div>
 
             <div class="menu-item">
-                <img src="cheese house.webp" class="item-img-bg ajuste-subir" alt="Cheese House" decoding="async" loading="lazy"
-                    width="900" height="500">
+                <img src="images/cheese house.webp" class="item-img-bg ajuste-subir" alt="Cheese House" decoding="async"
+                    loading="lazy" width="900" height="500">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="badge-best">LAS MÁS VENDIDAS</span>
@@ -2132,7 +2183,7 @@
                         <p class="item-desc">Pan de papa, carne, tocineta, triple queso americano, salsa de la casa,
                             papas fritas.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="cheese house.webp">
+                    <div class="item-price-wrapper" data-img-src="images/cheese house.webp">
                         <span class="item-price">$9,99</span>
                         <span class="item-ref">REF</span>
                     </div>
@@ -2140,8 +2191,8 @@
             </div>
 
             <div class="menu-item">
-                <img src="houseclasic.webp" class="item-img-bg ajuste-subir" alt="House Classics" decoding="async" loading="lazy"
-                    width="900" height="500">
+                <img src="images/houseclasic.webp" class="item-img-bg ajuste-subir" alt="House Classics"
+                    decoding="async" loading="lazy" width="900" height="500">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="badge-best">LAS MÁS VENDIDAS</span>
@@ -2149,7 +2200,7 @@
                         <p class="item-desc">Pan de papa, carne, pepinillo, tocineta, queso americano, lechuga, salsa de
                             la casa, papas fritas.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="houseclasic.webp">
+                    <div class="item-price-wrapper" data-img-src="images/houseclasic.webp">
                         <span class="item-price">$9,49</span>
                         <span class="item-ref">REF</span>
                     </div>
@@ -2157,15 +2208,15 @@
             </div>
 
             <div class="menu-item">
-                <img src="crispy house.webp" class="item-img-bg ajuste-alejar" alt="Crispy House" decoding="async" loading="lazy"
-                    width="400" height="220">
+                <img src="images/crispy house.webp" class="item-img-bg ajuste-alejar" alt="Crispy House"
+                    decoding="async" loading="lazy" width="400" height="220">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="item-name">Crispy House</span>
                         <p class="item-desc">Pan de papa, pollo crispy, tocineta, doble queso americano, pepinillos,
                             lechuga, salsa de la casa, papas fritas.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="crispy house.webp">
+                    <div class="item-price-wrapper" data-img-src="images/crispy house.webp">
                         <span class="item-price">$12,99</span>
                         <span class="item-ref">REF</span>
                     </div>
@@ -2173,15 +2224,15 @@
             </div>
 
             <div class="menu-item">
-                <img src="junior crispy.webp" class="item-img-bg ajuste-crispy" alt="Junior Crispy" decoding="async" loading="lazy"
-                    width="400" height="220">
+                <img src="images/junior crispy.webp" class="item-img-bg ajuste-crispy" alt="Junior Crispy"
+                    decoding="async" loading="lazy" width="400" height="220">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="item-name">Junior Crispy</span>
                         <p class="item-desc">Pan de papa, pollo crispy, pepinillos, tocineta, queso americano, lechuga,
                             salsa de la casa, papas fritas.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="junior crispy.webp">
+                    <div class="item-price-wrapper" data-img-src="images/junior crispy.webp">
                         <span class="item-price">$10,99</span>
                         <span class="item-ref">REF</span>
                     </div>
@@ -2189,15 +2240,16 @@
             </div>
 
             <div class="menu-item">
-                <img src="baby crispy.webp" class="item-img-bg ajuste-baby" alt="Baby Crispy" decoding="async" loading="lazy" width="400"
-                    height="220">
+                <img src="images/baby crispy.webp" class="item-img-bg ajuste-baby" alt="Baby Crispy" decoding="async"
+                    loading="lazy" width="400" height="220">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="badge-new">NUEVA</span>
                         <span class="item-name">Baby Crispy</span>
-                        <p class="item-desc">Pan de papa, pollo crispy, salsa de queso, BBQ, salsa de la casa, papas fritas.</p>
+                        <p class="item-desc">Pan de papa, pollo crispy, salsa de queso, BBQ, salsa de la casa, papas
+                            fritas.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="baby crispy.webp">
+                    <div class="item-price-wrapper" data-img-src="images/baby crispy.webp">
                         <span class="item-price">$8,99</span>
                         <span class="item-ref">REF</span>
                     </div>
@@ -2205,14 +2257,14 @@
             </div>
 
             <div class="menu-item">
-                <img src="combo house.webp" class="item-img-bg" alt="Combo House" decoding="async" loading="lazy" width="400"
-                    height="220">
+                <img src="images/combo house.webp" class="item-img-bg" alt="Combo House" decoding="async" loading="lazy"
+                    width="400" height="220">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="item-name">Combo House</span>
                         <p class="item-desc">4 Burgers (carne 100gr), papas fritas y Pepsi de litro.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="combo house.webp">
+                    <div class="item-price-wrapper" data-img-src="images/combo house.webp">
                         <span class="item-price">$24,99</span>
                         <span class="item-ref">REF</span>
                     </div>
@@ -2220,15 +2272,15 @@
             </div>
 
             <div class="menu-item">
-                <img src="grand house.webp" class="item-img-bg" alt="Grand House Burger" decoding="async" loading="lazy" width="400"
-                    height="220">
+                <img src="images/grand house.webp" class="item-img-bg" alt="Grand House Burger" decoding="async"
+                    loading="lazy" width="400" height="220">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="item-name">Grand House Burger</span>
                         <p class="item-desc">Pan de papa, carne, chuleta, pepinillos, tocineta, queso americano,
                             lechuga, salsa de la casa y papas fritas.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="grand house.webp">
+                    <div class="item-price-wrapper" data-img-src="images/grand house.webp">
                         <span class="item-price">$14,49</span>
                         <span class="item-ref">REF</span>
                     </div>
@@ -2236,14 +2288,15 @@
             </div>
 
             <div class="menu-item">
-                <img src="pork house.webp" class="item-img-bg" alt="Pork House" decoding="async" loading="lazy" width="400" height="220">
+                <img src="images/pork house.webp" class="item-img-bg" alt="Pork House" decoding="async" loading="lazy"
+                    width="400" height="220">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="item-name">Pork House</span>
                         <p class="item-desc">Pan de papa, chuleta, pepinillo, tocineta, queso americano, lechuga, salsa
                             de la casa, papas fritas.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="pork house.webp">
+                    <div class="item-price-wrapper" data-img-src="images/pork house.webp">
                         <span class="item-price">$11,49</span>
                         <span class="item-ref">REF</span>
                     </div>
@@ -2251,15 +2304,15 @@
             </div>
 
             <div class="menu-item">
-                <img src="chicken house.webp" class="item-img-bg" alt="Chicken House" decoding="async" loading="lazy" width="400"
-                    height="220">
+                <img src="images/chicken house.webp" class="item-img-bg" alt="Chicken House" decoding="async"
+                    loading="lazy" width="400" height="220">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="item-name">Chicken House</span>
                         <p class="item-desc">Pan de papa, pollo, pepinillo, tocineta, queso americano, lechuga, salsa de
                             la casa, papas fritas.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="chicken house.webp">
+                    <div class="item-price-wrapper" data-img-src="images/chicken house.webp">
                         <span class="item-price">$9,99</span>
                         <span class="item-ref">REF</span>
                     </div>
@@ -2267,14 +2320,15 @@
             </div>
 
             <div class="menu-item">
-                <img src="big house.webp" class="item-img-bg" alt="Big House" decoding="async" loading="lazy" width="400" height="220">
+                <img src="images/big house.webp" class="item-img-bg" alt="Big House" decoding="async" loading="lazy"
+                    width="400" height="220">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="item-name">Big House</span>
                         <p class="item-desc">Pan de papa, doble carne, pepinillo, tocineta, queso americano, lechuga,
                             salsa de la casa, papas fritas.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="big house.webp">
+                    <div class="item-price-wrapper" data-img-src="images/big house.webp">
                         <span class="item-price">$12,49</span>
                         <span class="item-ref">REF</span>
                     </div>
@@ -2282,63 +2336,33 @@
             </div>
 
             <div class="menu-item">
-                <img src="town house.webp" class="item-img-bg" alt="Town House" decoding="async" loading="lazy" width="400" height="220">
+                <img src="images/town house.webp" class="item-img-bg" alt="Town House" decoding="async" loading="lazy"
+                    width="400" height="220">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="item-name">Town House</span>
                         <p class="item-desc">Pan de papa, carne, pollo, pepinillo, tocineta, queso americano, lechuga,
                             salsa de la casa, papas fritas.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="town house.webp">
+                    <div class="item-price-wrapper" data-img-src="images/town house.webp">
                         <span class="item-price">$12,99</span>
                         <span class="item-ref">REF</span>
                     </div>
                 </div>
             </div>
 
-            <div class="menu-item">
-                <img src="titan house.webp" class="item-img-bg" alt="Titan House" decoding="async" loading="lazy" width="400"
-                    height="220">
-                <div class="item-info-split">
-                    <div class="item-info">
-                        <span class="item-name">Titan House</span>
-                        <p class="item-desc">Pan de papa, triple carne, tocineta, queso americano, salsa de la casa,
-                            papas fritas.</p>
-                    </div>
-                    <div class="item-price-wrapper" data-img-src="titan house.webp">
-                        <span class="item-price">$12,99</span>
-                        <span class="item-ref">REF</span>
-                    </div>
-                </div>
-            </div>
 
             <div class="menu-item">
-                <img src="house especial.webp" class="item-img-bg" alt="House Special" decoding="async" loading="lazy" width="400"
-                    height="220">
+                <img src="images/house especial.webp" class="item-img-bg" alt="House Special" decoding="async"
+                    loading="lazy" width="400" height="220">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="item-name">House Special</span>
                         <p class="item-desc">Pan de papa, pollo, chuleta, pepinillo, tocineta, queso americano, lechuga,
                             salsa de la casa, papas fritas.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="house especial.webp">
+                    <div class="item-price-wrapper" data-img-src="images/house especial.webp">
                         <span class="item-price">$14,49</span>
-                        <span class="item-ref">REF</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="menu-item">
-                <img src="housetower.webp" class="item-img-bg ajuste-alejar" alt="House Tower" decoding="async" loading="lazy"
-                    width="400" height="220">
-                <div class="item-info-split">
-                    <div class="item-info">
-                        <span class="item-name">House Tower</span>
-                        <p class="item-desc">Pan de papa, carne, chuleta, pollo, pepinillo, tocineta, queso americano,
-                            lechuga, salsa de la casa, papas fritas.</p>
-                    </div>
-                    <div class="item-price-wrapper" data-img-src="housetower.webp">
-                        <span class="item-price">$17,99</span>
                         <span class="item-ref">REF</span>
                     </div>
                 </div>
@@ -2348,14 +2372,15 @@
         <section id="ensaladas"
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:max-w-6xl lg:mx-auto">
             <div class="menu-item">
-                <img src="ensalada.webp" class="item-img-bg" alt="House Salad" decoding="async" loading="lazy" width="400" height="220">
+                <img src="images/ensalada.webp" class="item-img-bg" alt="House Salad" decoding="async" loading="lazy"
+                    width="400" height="220">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="item-name">House Salad</span>
                         <p class="item-desc">Lechuga, crotones, tocineta, queso parmesano, pechuga 200gr, salsa de la
                             casa.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="ensalada.webp">
+                    <div class="item-price-wrapper" data-img-src="images/ensalada.webp">
                         <span class="item-price">$9,49</span>
                         <span class="item-ref">REF</span>
                     </div>
@@ -2366,15 +2391,15 @@
         <section id="kids"
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:max-w-6xl lg:mx-auto">
             <div class="menu-item">
-                <img src="kids house.webp" class="item-img-bg ajuste-subir" alt="Kids House" decoding="async" loading="lazy" width="400"
-                    height="220">
+                <img src="images/kids house.webp" class="item-img-bg ajuste-subir" alt="Kids House" decoding="async"
+                    loading="lazy" width="400" height="220">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="item-name">Kids House</span>
                         <p class="item-desc">Pan de papa, carne, queso americano, papas fritas, huevito sorpresa y
                             juguito.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="kids house.webp">
+                    <div class="item-price-wrapper" data-img-src="images/kids house.webp">
                         <span class="item-price">$9,49</span>
                         <span class="item-ref">REF</span>
                     </div>
@@ -2385,8 +2410,8 @@
         <section id="servicios"
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:max-w-6xl lg:mx-auto">
             <div class="menu-item">
-                <img src="bowl.webp" class="item-img-bg ajuste-subir" alt="Crispy Bowl" decoding="async" loading="lazy" width="900"
-                    height="500">
+                <img src="images/bowl.webp" class="item-img-bg ajuste-subir" alt="Crispy Bowl" decoding="async"
+                    loading="lazy" width="900" height="500">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="badge-new">NUEVO</span>
@@ -2394,75 +2419,77 @@
                         <p class="item-desc">150grs de pechuga crispy, 250grs de papas fritas, barbecue, queso fundido y
                             salsa de la casa.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="bowl.webp">
+                    <div class="item-price-wrapper" data-img-src="images/bowl.webp">
                         <span class="item-price">$8,49</span>
                         <span class="item-ref">REF</span>
                     </div>
                 </div>
             </div>
             <div class="menu-item">
-                <img src="papacontoppings.webp" class="item-img-bg" alt="Papas con Topping" decoding="async" loading="lazy" width="400"
-                    height="220">
+                <img src="images/papacontoppings.webp" class="item-img-bg" alt="Papas con Topping" decoding="async"
+                    loading="lazy" width="400" height="220">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="item-name">Servicio de Papas con Topping</span>
                         <p class="item-desc">Papas fritas, salsa de queso y topping de tocineta.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="papacontoppings.webp">
+                    <div class="item-price-wrapper" data-img-src="images/papacontoppings.webp">
                         <span class="item-price">$7,49</span>
                         <span class="item-ref">REF</span>
                     </div>
                 </div>
             </div>
             <div class="menu-item">
-                <img src="papassintopping.webp" class="item-img-bg" alt="Papas Sin Topping" decoding="async" loading="lazy" width="400"
-                    height="220">
+                <img src="images/papassintopping.webp" class="item-img-bg" alt="Papas Sin Topping" decoding="async"
+                    loading="lazy" width="400" height="220">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="item-name">Servicio de Papas (Sin Toppings)</span>
                         <p class="item-desc">Ración generosa de papas fritas clásicas.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="papassintopping.webp">
+                    <div class="item-price-wrapper" data-img-src="images/papassintopping.webp">
                         <span class="item-price">$4,5</span>
                         <span class="item-ref">REF</span>
                     </div>
                 </div>
             </div>
             <div class="menu-item">
-                <img src="papascajita.webp" class="item-img-bg" alt="Cajita Papas" decoding="async" loading="lazy" width="400"
-                    height="220">
+                <img src="images/papascajita.webp" class="item-img-bg" alt="Cajita Papas" decoding="async"
+                    loading="lazy" width="400" height="220">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="item-name">Cajita Papas (115g)</span>
                         <p class="item-desc">Porción individual de papas fritas crujientes.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="papascajita.webp">
+                    <div class="item-price-wrapper" data-img-src="images/papascajita.webp">
                         <span class="item-price">$2,49</span>
                         <span class="item-ref">REF</span>
                     </div>
                 </div>
             </div>
             <div class="menu-item">
-                <img src="tequeños.webp" class="item-img-bg" alt="Tequeños" decoding="async" loading="lazy" width="400" height="220">
+                <img src="images/tequeños.webp" class="item-img-bg" alt="Tequeños" decoding="async" loading="lazy"
+                    width="400" height="220">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="item-name">Servicio de Tequeños</span>
                         <p class="item-desc">Tequeños (6 unidades).</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="tequeños.webp">
+                    <div class="item-price-wrapper" data-img-src="images/tequeños.webp">
                         <span class="item-price">$5,99</span>
                         <span class="item-ref">REF</span>
                     </div>
                 </div>
             </div>
             <div class="menu-item">
-                <img src="nuggetsmenu.webp" class="item-img-bg" alt="Nuggets" decoding="async" loading="lazy" width="400" height="220">
+                <img src="images/nuggetsmenu.webp" class="item-img-bg" alt="Nuggets" decoding="async" loading="lazy"
+                    width="400" height="220">
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="item-name">Servicio de Nuggets</span>
                         <p class="item-desc">Nuggets de pollo súper crujientes.</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="nuggetsmenu.webp">
+                    <div class="item-price-wrapper" data-img-src="images/nuggetsmenu.webp">
                         <span class="item-price">$7,99</span>
                         <span class="item-ref">REF</span>
                     </div>
@@ -2474,112 +2501,112 @@
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:max-w-6xl lg:mx-auto">
             <div class="menu-item">
                 <div class="item-info"><span class="item-name">Juguito</span></div>
-                <div class="item-price-wrapper" data-img-src="juguito.webp">
+                <div class="item-price-wrapper" data-img-src="images/juguito.webp">
                     <span class="item-price">$1,5</span>
                     <span class="item-ref">REF</span>
                 </div>
             </div>
             <div class="menu-item">
                 <div class="item-info"><span class="item-name">Coca-Cola Bombita 355 ML</span></div>
-                <div class="item-price-wrapper" data-img-src="cocacolabombita.webp">
+                <div class="item-price-wrapper" data-img-src="images/cocacolabombita.webp">
                     <span class="item-price">$1</span>
                     <span class="item-ref">REF</span>
                 </div>
             </div>
             <div class="menu-item hidden">
                 <div class="item-info"><span class="item-name">Coca-Cola Bombita Light 355 ML</span></div>
-                <div class="item-price-wrapper" data-img-src="cocacolalight.webp">
+                <div class="item-price-wrapper" data-img-src="images/cocacolalight.webp">
                     <span class="item-price">$1</span>
                     <span class="item-ref">REF</span>
                 </div>
             </div>
             <!-- <div class="menu-item hidden">
                 <div class="item-info"><span class="item-name">Coca-Cola Bombita Zero 355 ML</span></div>
-                <div class="item-price-wrapper" data-img-src="gaseosa.webp">
+                <div class="item-price-wrapper" data-img-src="images/gaseosa.webp">
                     <span class="item-price">$1</span>
                     <span class="item-ref">REF</span>
                 </div>
             </div> -->
             <div class="menu-item">
                 <div class="item-info"><span class="item-name">Coca-Cola Lata 350 ML</span></div>
-                <div class="item-price-wrapper" data-img-src="cocacolalataclasica.webp">
+                <div class="item-price-wrapper" data-img-src="images/cocacolalataclasica.webp">
                     <span class="item-price">$1,5</span>
                     <span class="item-ref">REF</span>
                 </div>
             </div>
             <div class="menu-item hidden">
                 <div class="item-info"><span class="item-name">Coca-Cola Lata Zero 350ML</span></div>
-                <div class="item-price-wrapper" data-img-src="cocacolalatazero.webp">
+                <div class="item-price-wrapper" data-img-src="images/cocacolalatazero.webp">
                     <span class="item-price">$1,5</span>
                     <span class="item-ref">REF</span>
                 </div>
             </div>
             <div class="menu-item">
                 <div class="item-info"><span class="item-name">Coca-Cola 1L</span></div>
-                <div class="item-price-wrapper" data-img-src="cocacolabotella.webp">
+                <div class="item-price-wrapper" data-img-src="images/cocacolabotella.webp">
                     <span class="item-price">$2</span>
                     <span class="item-ref">REF</span>
                 </div>
             </div>
             <div class="menu-item">
                 <div class="item-info"><span class="item-name">Coca-Cola 1L Zero</span></div>
-                <div class="item-price-wrapper" data-img-src="cocacolalitrozero.webp">
+                <div class="item-price-wrapper" data-img-src="images/cocacolalitrozero.webp">
                     <span class="item-price">$2</span>
                     <span class="item-ref">REF</span>
                 </div>
             </div>
             <div class="menu-item">
                 <div class="item-info"><span class="item-name">Pepsi 1L</span></div>
-                <div class="item-price-wrapper" data-img-src="pepsi1l.webp">
+                <div class="item-price-wrapper" data-img-src="images/pepsi1l.webp">
                     <span class="item-price">$1,5</span>
                     <span class="item-ref">REF</span>
                 </div>
             </div>
             <div class="menu-item">
                 <div class="item-info"><span class="item-name">Manzanita 1L</span></div>
-                <div class="item-price-wrapper" data-img-src="gaseosa.webp">
+                <div class="item-price-wrapper" data-img-src="images/gaseosa.webp">
                     <span class="item-price">$1,5</span>
                     <span class="item-ref">REF</span>
                 </div>
             </div>
             <div class="menu-item">
                 <div class="item-info"><span class="item-name">7Up 1L</span></div>
-                <div class="item-price-wrapper" data-img-src="7up.webp">
+                <div class="item-price-wrapper" data-img-src="images/7up.webp">
                     <span class="item-price">$1,5</span>
                     <span class="item-ref">REF</span>
                 </div>
             </div>
             <div class="menu-item">
                 <div class="item-info"><span class="item-name">Lipton Durazno</span></div>
-                <div class="item-price-wrapper" data-img-src="lipton.webp">
+                <div class="item-price-wrapper" data-img-src="images/lipton.webp">
                     <span class="item-price">$2,5</span>
                     <span class="item-ref">REF</span>
                 </div>
             </div>
             <div class="menu-item">
                 <div class="item-info"><span class="item-name">Lipton Limón</span></div>
-                <div class="item-price-wrapper" data-img-src="lipton.webp">
+                <div class="item-price-wrapper" data-img-src="images/lipton.webp">
                     <span class="item-price">$2,5</span>
                     <span class="item-ref">REF</span>
                 </div>
             </div>
             <div class="menu-item">
                 <div class="item-info"><span class="item-name">Coca-Cola 1.5L</span></div>
-                <div class="item-price-wrapper" data-img-src="cocacolabotella.webp">
+                <div class="item-price-wrapper" data-img-src="images/cocacolabotella.webp">
                     <span class="item-price">$2,5</span>
                     <span class="item-ref">REF</span>
                 </div>
             </div>
             <div class="menu-item">
                 <div class="item-info"><span class="item-name">Coca-Cola 2L</span></div>
-                <div class="item-price-wrapper" data-img-src="cocacolabotella.webp">
+                <div class="item-price-wrapper" data-img-src="images/cocacolabotella.webp">
                     <span class="item-price">$3</span>
                     <span class="item-ref">REF</span>
                 </div>
             </div>
             <div class="menu-item">
                 <div class="item-info"><span class="item-name">Agua Mineral 600ml</span></div>
-                <div class="item-price-wrapper" data-img-src="gaseosa.webp">
+                <div class="item-price-wrapper" data-img-src="images/gaseosa.webp">
                     <span class="item-price">$1</span>
                     <span class="item-ref">REF</span>
                 </div>
@@ -2647,7 +2674,7 @@
     <div id="cart-sidebar" class="cart-closed">
         <div class="cart-header">
             <h2>
-                <img src="bolsadelivery.webp" alt="Delivery" class="icono-moto" width="30" height="30">
+                <img src="images/bolsadelivery.webp" alt="Delivery" class="icono-moto" width="30" height="30">
                 Mi Pedido
             </h2>
             <button id="close-cart">&times;</button>
@@ -3202,7 +3229,7 @@
         <div class="modal-content promo-modal-content">
             <button class="close-promo" id="btn-close-promo">&times;</button>
             <div class="promo-img-container">
-                <img src="promolunesmiercoles.webp" alt="Promoción Especial" decoding="async">
+                <img src="images/promolunesmiercoles.webp" alt="Promoción Especial" decoding="async">
                 <button id="btn-promo-ordenar" class="btn-promo-premium">
                     ¡ORDENAR AHORA!
                 </button>
@@ -3215,7 +3242,7 @@
         <div class="modal-content promo-modal-content">
             <button class="close-promo" id="btn-close-promo-papa">&times;</button>
             <div class="promo-img-container">
-                <img src="promopapa.webp" alt="Promoción Papa" decoding="async">
+                <img src="images/promopapa.webp" alt="Promoción Papa" decoding="async">
                 <button id="btn-promo-papa-ordenar" class="btn-promo-premium">
                     ¡ORDENAR AHORA!
                 </button>
@@ -3228,7 +3255,7 @@
         <div class="modal-content">
             <button class="close-modal" id="close-promo-selection">&times;</button>
             <div class="modal-image-container">
-                <img src="houseclasic.webp" alt="Promoción" id="modal-promo-img"
+                <img src="images/houseclasic.webp" alt="Promoción" id="modal-promo-img"
                     style="object-fit: cover; width: 100%; height: 100%;">
             </div>
             <div class="modal-details">
@@ -3239,7 +3266,7 @@
                     <h3 class="extras-title">Selecciona tu Burger</h3>
                     <div class="extras-grid" id="promo-burger-options">
                         <div class="extra-card promo-burger-card selected" data-burger="House Classic"
-                            data-img-src="houseclasic.webp">
+                            data-img-src="images/houseclasic.webp">
                             <div class="extra-info-text"><span class="extra-name">House Classic</span></div>
                             <div class="promo-toggle-switch">
                                 <span class="promo-switch-indicator"></span>
@@ -3247,7 +3274,7 @@
                             </div>
                         </div>
                         <div class="extra-card promo-burger-card" data-burger="Cheese House"
-                            data-img-src="cheese house.webp">
+                            data-img-src="images/cheese house.webp">
                             <div class="extra-info-text"><span class="extra-name">Cheese House</span></div>
                             <div class="promo-toggle-switch">
                                 <span class="promo-switch-indicator"></span>
@@ -3255,7 +3282,7 @@
                             </div>
                         </div>
                         <div class="extra-card promo-burger-card" data-burger="Baby Crispy"
-                            data-img-src="baby crispy.webp">
+                            data-img-src="images/baby crispy.webp">
                             <div class="extra-info-text"><span class="extra-name">Baby Crispy</span></div>
                             <div class="promo-toggle-switch">
                                 <span class="promo-switch-indicator"></span>
@@ -3336,7 +3363,7 @@
     <div id="modal-closed" class="modal" style="z-index: var(--layer-c3);">
         <div class="modal-content upsell-content closed-store-content">
             <div class="modal-details">
-                <img src="logobh.webp" alt="Logo"
+                <img src="images/logobh.webp" alt="Logo"
                     style="width: 70px; border-radius: 50%; display: block; margin: 0 auto 15px auto;">
                 <h2 class="modal-title">¡Hola! Estamos cerrados</h2>
                 <p class="modal-description">Nuestro horario de atención es:<br><br>
@@ -3378,7 +3405,7 @@
 
             <div class="modal-details">
                 <div class="logo-container">
-                    <img src="logobh.webp" alt="Burger House" class="discount-logo" decoding="async">
+                    <img src="images/logobh.webp" alt="Burger House" class="discount-logo" decoding="async">
                 </div>
 
                 <h2 class="modal-title discount-title">¡FELICIDADES!</h2>
@@ -3886,6 +3913,30 @@
     <!-- Carga de lógica -->
     <script src="app.js"></script>
     <script src="stories.js"></script>
+    <!-- Inicialización del StatusBar de Capacitor -->
+    <script>
+        window.addEventListener('load', function () {
+            if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
+                // Esperar a que los plugins estén listos
+                document.addEventListener('deviceready', initStatusBar, false);
+                // Fallback si deviceready no se dispara (Capacitor moderno)
+                setTimeout(initStatusBar, 300);
+            }
+        });
+
+        function initStatusBar() {
+            try {
+                var StatusBar = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.StatusBar;
+                if (StatusBar) {
+                    StatusBar.setOverlaysWebView({ overlay: false });
+                    StatusBar.setBackgroundColor({ color: '#000000' });
+                    StatusBar.setStyle({ style: 'DARK' });
+                }
+            } catch (e) {
+                console.warn('StatusBar plugin no disponible:', e);
+            }
+        }
+    </script>
 </body>
 
 </html>
