@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Este proyecto es un sistema de menú digital optimizado para conversión, integrado con persistencia de datos y automatización de reportes.",
   "main": "app.js",
-"scripts": {
+  "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:css": "npx @tailwindcss/cli -i ./input.css -o ./style-tailwind.css",
     "watch:css": "npx @tailwindcss/cli -i ./input.css -o ./style-tailwind.css --watch"
@@ -22,5 +22,12 @@
   "homepage": "https://github.com/daniellacruz03/BurguerHouse#readme",
   "devDependencies": {
     "tailwindcss": "^4.3.0"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/cli": "^8.4.1",
+    "@capacitor/core": "^8.4.1",
+    "@capacitor/geolocation": "^8.2.0",
+    "@capacitor/status-bar": "^8.0.2"
   }
 }

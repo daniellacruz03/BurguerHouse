@@ -10,9 +10,9 @@
         TIMEZONE: 'America/Caracas',
         WHATSAPP: '584127510090',
         PRELOADER_FALLBACK_MS: 3000,
-        WEEKDAY_OPEN: 1020,
+        WEEKDAY_OPEN: 720,
         WEEKDAY_CLOSE: 1350,
-        WEEKEND_OPEN: 780,
+        WEEKEND_OPEN: 720,
         PROMO_BASE_PRICE: 6.49,
         PROMO_COMBO_PRICE: 8.5,
         PROMO_COMBO_EXTRA: 2.0
@@ -1110,7 +1110,7 @@
 
                 const itemImageSrc = item.querySelector('.item-price-wrapper')?.dataset.imgSrc;
                 if (modalImg) {
-                    modalImg.src = itemImageSrc || 'hamburguesa.webp';
+                    modalImg.src = itemImageSrc || 'images/hamburguesa.webp';
                     modalImg.className = '';
                     if (esBebida) modalImg.classList.add('modal-img-bebida');
                     if (esKids || name === 'Pork House' || name === 'Servicio de Papas con Topping' || nameLower.includes('nuggets')) modalImg.classList.add('modal-img-bottom-aligned');
@@ -1405,11 +1405,7 @@
         const inputMaps = document.getElementById('maps');
 
         if (btnLocation && inputMaps) {
-            btnLocation.addEventListener('click', () => {
-                if (!navigator.geolocation) {
-                    return showToast('Tu dispositivo no soporta geolocalización.', 'error');
-                }
-
+            btnLocation.addEventListener('click', async () => {
                 const spinner = btnLocation.querySelector('.btn-spinner');
                 const textSpan = btnLocation.querySelector('.btn-text') || btnLocation.querySelector('span');
                 const svgIcon = btnLocation.querySelector('.location-icon');
@@ -1421,45 +1417,67 @@
                 if (spinner) spinner.classList.add('active');
                 if (svgIcon) svgIcon.style.display = 'none';
 
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const lat = position.coords.latitude;
-                        const lng = position.coords.longitude;
-                        inputMaps.value = `https://maps.google.com/?q=${lat},${lng}`;
+                const resetBtn = () => {
+                    textSpan.innerText = originalText;
+                    btnLocation.classList.remove('loading');
+                    btnLocation.disabled = false;
+                    if (spinner) spinner.classList.remove('active');
+                    if (svgIcon) svgIcon.style.display = 'block';
+                };
 
-                        inputMaps.classList.add('location-success');
-                        setTimeout(() => inputMaps.classList.remove('location-success'), 2000);
+                try {
+                    // Usar plugin Capacitor si está disponible (APK Android/iOS)
+                    // → dispara el diálogo nativo "Permitir ubicación"
+                    const CapGeo = window.Capacitor?.Plugins?.Geolocation;
 
-                        textSpan.innerText = '¡Ubicación guardada!';
-                        btnLocation.classList.remove('loading');
-                        btnLocation.disabled = false;
-                        if (spinner) spinner.classList.remove('active');
-                        if (svgIcon) svgIcon.style.display = 'block';
-                        showToast('Ubicación capturada correctamente', 'success');
-                    },
-                    (error) => {
-                        textSpan.innerText = originalText;
-                        btnLocation.classList.remove('loading');
-                        btnLocation.disabled = false;
-                        if (spinner) spinner.classList.remove('active');
-                        if (svgIcon) svgIcon.style.display = 'block';
+                    let lat, lng;
 
-                        let errorMsg = 'Error al obtener ubicación. Permite el acceso GPS.';
-                        if (error.code === 1) {
-                            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-                            if (isIOS) {
-                                errorMsg = 'iPhone: Ve a Ajustes > Safari > Ubicación > Permitir. O pega tu enlace de Maps manualmente.';
-                            } else {
-                                errorMsg = 'Permiso de ubicación denegado. Permite el acceso GPS o pega tu enlace de Maps manualmente.';
-                            }
+                    if (CapGeo) {
+                        // Pedir permiso explícitamente (solo aparece la 1ra vez)
+                        const permResult = await CapGeo.requestPermissions();
+                        if (permResult.location === 'denied') {
+                            resetBtn();
+                            return showToast('Permiso de ubicación denegado. Actívalo en Ajustes > Aplicaciones > Burger House.', 'error');
                         }
-                        if (error.code === 2) errorMsg = 'Información de ubicación no disponible (señal débil). Pega tu enlace de Maps manualmente.';
-                        if (error.code === 3) errorMsg = 'Tiempo de espera agotado. Pega tu enlace de Maps manualmente.';
+                        const pos = await CapGeo.getCurrentPosition({ enableHighAccuracy: true, timeout: 15000 });
+                        lat = pos.coords.latitude;
+                        lng = pos.coords.longitude;
+                    } else {
+                        // Fallback web: navigator.geolocation estándar
+                        if (!navigator.geolocation) {
+                            resetBtn();
+                            return showToast('Tu dispositivo no soporta geolocalización.', 'error');
+                        }
+                        const pos = await new Promise((resolve, reject) =>
+                            navigator.geolocation.getCurrentPosition(resolve, reject,
+                                { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 })
+                        );
+                        lat = pos.coords.latitude;
+                        lng = pos.coords.longitude;
+                    }
 
-                        showToast(errorMsg, 'error');
-                    },
-                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-                );
+                    inputMaps.value = `https://maps.google.com/?q=${lat},${lng}`;
+                    inputMaps.classList.add('location-success');
+                    setTimeout(() => inputMaps.classList.remove('location-success'), 2000);
+                    textSpan.innerText = '¡Ubicación guardada!';
+                    btnLocation.classList.remove('loading');
+                    btnLocation.disabled = false;
+                    if (spinner) spinner.classList.remove('active');
+                    if (svgIcon) svgIcon.style.display = 'block';
+                    showToast('Ubicación capturada correctamente', 'success');
+
+                } catch (error) {
+                    resetBtn();
+                    let errorMsg = 'Error al obtener ubicación. Permite el acceso GPS.';
+                    if (error.code === 1 || error.message?.includes('denied')) {
+                        errorMsg = 'Permiso denegado. Ve a Ajustes > Apps > Burger House > Permisos > Ubicación.';
+                    } else if (error.code === 2) {
+                        errorMsg = 'Señal GPS débil. Pega tu enlace de Maps manualmente.';
+                    } else if (error.code === 3) {
+                        errorMsg = 'Tiempo de espera agotado. Pega tu enlace de Maps manualmente.';
+                    }
+                    showToast(errorMsg, 'error');
+                }
             });
         }
 
