@@ -82,8 +82,11 @@ www/
 capacitor.config.json
 capacitor.config.ts
 
-# Archivos de optimización de imágenes (scripts locales)
+# Archivos de optimización de imágenes y scripts locales de sincronización
 optimizar.py
 optimizar_imagenes_bh.py
 requirements.txt
 videos_crudos/
+SYNC.bat
+sync.ps1
+pedidos.json

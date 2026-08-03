@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
     videoFeed.innerHTML = '';
 
     // IMPORTANTE: Estos nombres deben coincidir con los archivos en /assets/videos/
-    // El script optimizar.py genera estos nombres basados en tu carpeta /videos_crudos/
     const videoSources = [
         './assets/videos/bowlbhvideo.mp4', './assets/videos/kidshousevideobh.mp4',
         './assets/videos/video1bh.mp4', './assets/videos/video2bh.mp4',
@@ -12,29 +11,40 @@ document.addEventListener("DOMContentLoaded", () => {
         './assets/videos/video5bh.mp4', './assets/videos/video6bh.mp4', './assets/videos/video7bh.mp4'
     ];
 
-    // Mezcla aleatoria completa de todos los videos para un feed dinámico en cada carga
+    // Mezcla aleatoria de todos los videos
     for (let i = videoSources.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [videoSources[i], videoSources[j]] = [videoSources[j], videoSources[i]];
     }
 
-    // Optimizamos el observador para móviles:
-    // Evitamos cargar y reproducir varios al mismo tiempo
+    // Observador ultrasensible y optimizado para ahorrar ancho de banda
     const observerOptions = { 
         root: null, 
         rootMargin: '0px', 
-        threshold: 0.6 
+        threshold: 0.5 
     };
+
     const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const video = entry.target.querySelector('video');
             if (video) {
+                const dataSrc = video.getAttribute('data-src');
                 if (entry.isIntersecting) {
-                    // Usamos una promesa para evitar errores si el video no ha cargado
+                    // Asignar el src de video solo cuando entra a la vista
+                    if (!video.src || video.src === '' || video.getAttribute('src') === '') {
+                        video.src = dataSrc;
+                    }
                     const playPromise = video.play();
-                    if (playPromise !== undefined) { playPromise.catch(() => { /* Auto-play prevenido */ }); }
+                    if (playPromise !== undefined) { 
+                        playPromise.catch(() => { /* Auto-play prevenido por el navegador */ }); 
+                    }
                 } else {
+                    // Pausar y liberar la transmisión HTTP cuando sale de vista
                     video.pause();
+                    if (video.hasAttribute('src')) {
+                        video.removeAttribute('src');
+                        video.load(); // Cancela la descarga de datos en segundo plano
+                    }
                 }
             }
         });
@@ -44,21 +54,22 @@ document.addEventListener("DOMContentLoaded", () => {
         const card = document.createElement("div");
         card.className = "video-story-card";
         const video = document.createElement("video");
-        video.src = src;
-        // preload 'none' evita saturar la memoria descargando 9 videos de golpe
+        
+        // Usamos data-src en lugar de src directo para evitar descargas masivas al inicio
+        video.setAttribute('data-src', src);
         video.preload = "none";
-        // poster: muestra el thumbnail .webp mientras el video carga (evita cuadro negro)
+        
+        // poster: muestra la portada .webp liviana (25KB) antes de cargar el video
         video.poster = src.replace('.mp4', '.webp'); 
         video.muted = true; 
-        video.defaultMuted = true; // Refuerzo para iOS
+        video.defaultMuted = true; 
         video.loop = true; 
-        video.setAttribute('playsinline', ''); // Atributo booleano crítico para iOS
-        video.setAttribute('webkit-playsinline', ''); // Compatibilidad antigua
+        video.setAttribute('playsinline', ''); 
+        video.setAttribute('webkit-playsinline', ''); 
 
-        // Manejo de errores para evitar "cuadros negros"
+        // Manejo de errores silencioso
         video.onerror = () => {
-            console.error(`❌ Error cargando video: ${src}. Verifique que el nombre coincida con el archivo optimizado.`);
-            card.style.display = 'none'; // Oculta la tarjeta si el video no existe
+            card.style.display = 'none'; 
         };
 
         card.appendChild(video);

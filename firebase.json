@@ -4,7 +4,36 @@
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      "node_modules/**",
+      "**/android/**",
+      "android/**",
+      "**/videos_crudos/**",
+      "videos_crudos/**",
+      "**/www/**",
+      "www/**",
+      "**/*.apk",
+      "**/*.py",
+      "**/*.bat",
+      "**/*.ps1",
+      "**/*.md",
+      "**/requirements.txt",
+      "**/pedidos.json",
+      "**/package*.json",
+      "**/capacitor.config.json",
+      "**/images/*.png",
+      "**/*.png"
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(jpg|jpeg|gif|png|webp|mp4|webm|svg|css|js|mp3|woff2)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
+          }
+        ]
+      }
     ]
   }
 }
