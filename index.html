@@ -10,6 +10,14 @@
     <link rel="apple-touch-icon" href="images/logobh.webp">
     <!-- Precarga del logo para evitar que desaparezca durante la carga -->
 
+    <!-- Limpieza automática de la URL (Remueve /index.html dejando solo la raíz del dominio) -->
+    <script>
+        if (window.location.pathname.endsWith('/index.html')) {
+            const cleanPath = window.location.pathname.replace(/\/index\.html$/, '/') + window.location.search + window.location.hash;
+            window.history.replaceState(null, '', cleanPath);
+        }
+    </script>
+
     <!-- Meta Tags para Redes Sociales (Open Graph) -->
     <meta property="og:title" content="Burger House | Menú Digital">
     <meta property="og:description" content="Explora nuestras hamburguesas y haz tu pedido directamente por WhatsApp.">
