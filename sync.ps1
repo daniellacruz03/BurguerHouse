@@ -1,4 +1,4 @@
-﻿# ============================================================
+# ============================================================
 #  Burger House - Script de sincronizacion web a APK
 #  Ejecuta este script cada vez que hagas cambios en el codigo
 #  para actualizar tanto la carpeta www/ como el proyecto Android
@@ -23,7 +23,8 @@ $archivos = @(
     "style-tailwind.css",
     "admin.html",
     "404.html",
-    "mantenimiento.html"
+    "mantenimiento.html",
+    "privacidad.html"
 )
 
 foreach ($archivo in $archivos) {
