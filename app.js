@@ -21,6 +21,54 @@
     // Referencia mutable a updateTotal (se asigna dentro del DOMContentLoaded)
     let _updateTotal = null;
 
+    // --- META PIXEL INTEGRATION HELPER ---
+    const trackMetaEvent = (eventName, params = {}) => {
+        if (typeof window.fbq === 'function') {
+            try {
+                window.fbq('track', eventName, params);
+                console.log(`[Meta Pixel] Evento '${eventName}' enviado:`, params);
+            } catch (err) {
+                console.warn(`[Meta Pixel] Error al enviar evento '${eventName}':`, err);
+            }
+        }
+    };
+
+    // Banner de consentimiento de privacidad / cookies para Meta Pixel
+    const initCookieConsent = () => {
+        if (localStorage.getItem('bh_cookie_consent')) return;
+        const banner = document.createElement('div');
+        banner.id = 'bh-cookie-banner';
+        banner.style.cssText = `
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 480px; background: rgba(18, 18, 18, 0.95);
+            backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px; padding: 16px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 999999; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 0.85rem;
+            display: flex; flex-direction: column; gap: 12px;
+        `;
+        banner.innerHTML = `
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:1.3rem;">🍪</span>
+                <p style="margin:0; line-height:1.4; color:#e0e0e0;">
+                    Usamos cookies y Meta Pixel para medir la experiencia y optimizar tu pedido. Consulta nuestra <a href="privacidad.html" style="color:#ffb703; text-decoration:underline;">Política de Privacidad</a>.
+                </p>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button id="bh-cookie-reject" style="background:transparent; border:1px solid #555; color:#ccc; padding:6px 14px; border-radius:8px; cursor:pointer; font-size:0.8rem;">Rechazar</button>
+                <button id="bh-cookie-accept" style="background:#e50914; border:none; color:#fff; font-weight:600; padding:6px 16px; border-radius:8px; cursor:pointer; font-size:0.8rem;">Aceptar</button>
+            </div>
+        `;
+        document.body.appendChild(banner);
+        document.getElementById('bh-cookie-accept')?.addEventListener('click', () => {
+            localStorage.setItem('bh_cookie_consent', 'accepted');
+            banner.remove();
+        });
+        document.getElementById('bh-cookie-reject')?.addEventListener('click', () => {
+            localStorage.setItem('bh_cookie_consent', 'rejected');
+            banner.remove();
+        });
+    };
+
     // --- ESTADO DEL COMBO HOUSE ---
     let comboHouseState = {
         activeBurgerIndex: 0, // 0-3 (Burger 1-4)
@@ -241,7 +289,7 @@
     function mostrarTarjetasPromo() {
         const promoItems = document.querySelectorAll('.promo-item');
         const isPromoDay = isPromoWindowActive();
-        
+
         promoItems.forEach(item => {
             if (isPromoDay) {
                 item.classList.add('visible');
