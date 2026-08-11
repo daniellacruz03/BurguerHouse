@@ -93,7 +93,9 @@ body {
     margin: 0;
     padding: 0;
     background: linear-gradient(to bottom, #1a0000 0%, var(--bg-color) 100%);
-    background-attachment: fixed;
+    /* background-attachment: fixed removido: Safari no puede hacer GPU-scroll con fixed,
+       causando lag visible en Mac. Se reemplaza con scroll (default) sin pérdida visual. */
+    background-attachment: scroll;
     background-size: cover;
     height: 100%;
     min-height: 100vh;
@@ -149,6 +151,33 @@ body {
     filter: none !important;
     animation: flotar 12s ease-in-out infinite;
     will-change: transform;
+}
+
+/* ===== OPTIMIZACIONES SAFARI / MAC =====
+   Safari en macOS (especialmente Retina) tiene problemas conocidos con:
+   - backdrop-filter en múltiples elementos simultáneos
+   - background-attachment: fixed (ya corregido arriba)
+   - Animaciones simultáneas de múltiples elementos fixed/absolute
+   Esta sección desactiva las animaciones decorativas flotantes en Safari. */
+@supports (-webkit-touch-callout: none) {
+    /* Solo Safari tiene esta propiedad */
+    .corner-item {
+        animation: none !important;
+        will-change: auto !important;
+    }
+}
+
+/* Respeta preferencias del sistema para reducir movimiento (accesibilidad + performance) */
+@media (prefers-reduced-motion: reduce) {
+    .corner-item,
+    .logo-animado,
+    .category-bar {
+        animation: none !important;
+    }
+    * {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
 }
 
 .papa-top-left { width: 280px; top: 5%; left: -60px; }
@@ -283,15 +312,15 @@ body {
 
 .search-container-full .search-input {
     width: 100%;
-    background: rgba(30, 30, 30, 0.8) !important;
+    background: rgba(30, 30, 30, 0.92) !important;
     border: 1px solid rgba(255, 255, 255, 0.12) !important;
     border-radius: 25px !important;
     padding: 14px 20px 14px 48px !important;
     color: #ffffff !important;
     font-size: 0.95rem !important;
     font-family: var(--font-body) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
+    /* backdrop-filter removido: misma causa que .menu-item. El fondo se compensa
+       aumentando la opacidad del background para mantener la apariencia frosted. */
     box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3) !important;
     transition: all 0.3s ease !important;
 }
@@ -318,7 +347,8 @@ body {
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     width: 100%;
-    animation: slideHint 6s ease-in-out infinite;
+    /* slideHint animation desactivada: animación infinita en la barra de categorías
+       genera repaints constantes que contribuyen al lag en Safari/Mac. */
     position: relative;
 }
 
@@ -453,8 +483,8 @@ h1, h2, h3, h4, h5, h6 {
 .menu-item {
     background: rgba(255, 255, 255, 0.04);
     position: relative;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    /* backdrop-filter removido: con decenas de tarjetas en pantalla Retina (Mac),
+       cada blur consume GPU masivamente. Se mantiene la apariencia con background opaco. */
     border-left: 6px solid var(--primary-color);
     border-radius: 15px;
     padding: 20px;
