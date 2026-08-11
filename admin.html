@@ -528,6 +528,22 @@
                 </div>
             </div>
 
+            <!-- Top Clientes -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+                <div class="chart-card">
+                    <div class="chart-card-title">👑 Top clientes (por pedidos)</div>
+                    <div id="top-clients-chart">
+                        <div class="text-gray-500 text-xs text-center">Cargando...</div>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-card-title">💸 Top clientes (por gasto total)</div>
+                    <div id="top-clients-spend-chart">
+                        <div class="text-gray-500 text-xs text-center">Cargando...</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Historial -->
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-bold text-white">📋 Historial de Pedidos</h3>
@@ -775,13 +791,6 @@
                     
                     ${notas ? `<p class="text-gray-300 text-sm mb-2"><strong class="text-gray-500">Notas:</strong> ${notas}</p>` : ''}
                     ${ubicacion ? `<p class="text-gray-300 text-sm mb-4"><strong class="text-gray-500">Ubicacion:</strong> <a href="${ubicacion}" target="_blank" class="text-blue-400 hover:underline">Ver en Maps 🗺️</a></p>` : ''}
-                    
-                    <div class="mt-3 flex items-center gap-2">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs font-semibold tracking-wide">
-                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"/></svg>
-                            Pendiente de preparación
-                        </span>
-                    </div>
                 </div>
             `;
         }
@@ -1164,6 +1173,66 @@
                 ${totalDel > 0 ? `<div class="text-xs text-gray-500 mt-2">${delivPct.toFixed(0)}% Delivery</div>` : ''}
             `;
             document.getElementById('donut-chart').innerHTML = donutHTML;
+
+            // --- Top clientes ---
+            // Agrupar por nombre (no hay ID de cliente en Firebase, se usa nombre)
+            const clienteMap = {};
+            allOrders.forEach(order => {
+                const name = (order.cliente?.nombre || 'Sin nombre').trim();
+                if (!clienteMap[name]) clienteMap[name] = { count: 0, total: 0, lastOrder: 0 };
+                clienteMap[name].count++;
+                clienteMap[name].total += order.total_usd || 0;
+                if ((order.timestamp || 0) > clienteMap[name].lastOrder)
+                    clienteMap[name].lastOrder = order.timestamp || 0;
+            });
+
+            const clientColors = ['#f59e0b','#fbbf24','#fcd34d','#fde68a','#fef3c7'];
+
+            // Por cantidad de pedidos
+            const topByCount = Object.entries(clienteMap)
+                .sort((a, b) => b[1].count - a[1].count)
+                .slice(0, 7);
+            const maxClientCount = topByCount[0]?.[1].count || 1;
+            const clientCountHTML = topByCount.map(([name, data], idx) => {
+                const pct       = (data.count / maxClientCount) * 100;
+                const shortName = name.length > 22 ? name.slice(0, 20) + '…' : name;
+                const medal     = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}.`;
+                return `
+                    <div class="top-product-row">
+                        <div class="top-product-label">
+                            <span>${medal} ${shortName}</span>
+                            <span class="font-bold" style="color:${clientColors[Math.min(idx,4)]}">${data.count} pedido${data.count !== 1 ? 's' : ''}</span>
+                        </div>
+                        <div class="top-product-track">
+                            <div class="top-product-fill" style="width:${pct}%; background:${clientColors[Math.min(idx,4)]}"></div>
+                        </div>
+                    </div>`;
+            }).join('');
+            document.getElementById('top-clients-chart').innerHTML =
+                topByCount.length > 0 ? clientCountHTML : '<div class="text-gray-500 text-xs text-center py-4">Sin datos aún</div>';
+
+            // Por gasto total
+            const topBySpend = Object.entries(clienteMap)
+                .sort((a, b) => b[1].total - a[1].total)
+                .slice(0, 7);
+            const maxClientSpend = topBySpend[0]?.[1].total || 0.01;
+            const clientSpendHTML = topBySpend.map(([name, data], idx) => {
+                const pct       = (data.total / maxClientSpend) * 100;
+                const shortName = name.length > 22 ? name.slice(0, 20) + '…' : name;
+                const medal     = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}.`;
+                return `
+                    <div class="top-product-row">
+                        <div class="top-product-label">
+                            <span>${medal} ${shortName}</span>
+                            <span class="font-bold" style="color:#22c55e">$${data.total.toFixed(2)}</span>
+                        </div>
+                        <div class="top-product-track">
+                            <div class="top-product-fill" style="width:${pct}%; background:#22c55e"></div>
+                        </div>
+                    </div>`;
+            }).join('');
+            document.getElementById('top-clients-spend-chart').innerHTML =
+                topBySpend.length > 0 ? clientSpendHTML : '<div class="text-gray-500 text-xs text-center py-4">Sin datos aún</div>';
 
             // --- Historial ---
             const listContainer = document.getElementById('approved-orders-list');
