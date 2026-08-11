@@ -544,6 +544,43 @@
                 </div>
             </div>
 
+            <!-- Zonas + Up-selling -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+                <!-- Zonas de entrega -->
+                <div class="chart-card">
+                    <div class="chart-card-title">📍 Zonas de entrega frecuentes</div>
+                    <div id="zones-chart">
+                        <div class="text-gray-500 text-xs text-center">Cargando...</div>
+                    </div>
+                </div>
+                <!-- Up-selling -->
+                <div class="chart-card">
+                    <div class="chart-card-title">📈 Adicionales &amp; Up-selling</div>
+                    <div id="upsell-chart">
+                        <div class="text-gray-500 text-xs text-center">Cargando...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom 5 + Recurrencia -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+                <!-- Bottom 5 productos -->
+                <div class="chart-card">
+                    <div class="chart-card-title">🚭 Productos menos vendidos</div>
+                    <div class="text-gray-500 text-xs mb-3" style="margin-top:-8px">Evaluar si conviene ajustar precio o sacar del menú</div>
+                    <div id="bottom-products-chart">
+                        <div class="text-gray-500 text-xs text-center">Cargando...</div>
+                    </div>
+                </div>
+                <!-- Recurrencia -->
+                <div class="chart-card">
+                    <div class="chart-card-title">🔄 Tasa de recurrencia (30 días)</div>
+                    <div id="recurrence-chart">
+                        <div class="text-gray-500 text-xs text-center">Cargando...</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Historial -->
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-bold text-white">📋 Historial de Pedidos</h3>
@@ -1233,6 +1270,164 @@
             }).join('');
             document.getElementById('top-clients-spend-chart').innerHTML =
                 topBySpend.length > 0 ? clientSpendHTML : '<div class="text-gray-500 text-xs text-center py-4">Sin datos aún</div>';
+
+            // =============================================
+            // --- ZONAS DE ENTREGA ---
+            // =============================================
+            // Extraer palabras clave de las notas de pedidos delivery
+            const stopWords = new Set(['de','la','el','los','las','en','a','y','con','sin','por','para','al','del','una','un','que','mi','su','es','se','no','le','lo','como','mas','pero','si','ya','muy','yo','tu','no','es','un','las','los','del','con','por','para','que']);
+            const zoneWords = {};
+            let totalDeliveryWithNotes = 0;
+            allOrders.forEach(order => {
+                if ((order.cliente?.metodo || '').toLowerCase() === 'delivery') {
+                    const notas = (order.cliente?.notas_referencia || '').toLowerCase();
+                    if (notas.length > 3) {
+                        totalDeliveryWithNotes++;
+                        const words = notas.match(/[a-záéíóúüñ]{4,}/g) || [];
+                        words.forEach(w => {
+                            if (!stopWords.has(w)) zoneWords[w] = (zoneWords[w] || 0) + 1;
+                        });
+                    }
+                }
+            });
+            const topZones = Object.entries(zoneWords).sort((a, b) => b[1] - a[1]).slice(0, 8);
+            const maxZone = topZones[0]?.[1] || 1;
+            const zoneColors = ['#3b82f6','#60a5fa','#93c5fd','#bfdbfe','#dbeafe','#eff6ff'];
+            const zonesHTML = topZones.length > 0
+                ? topZones.map(([word, count], idx) => `
+                    <div class="top-product-row">
+                        <div class="top-product-label">
+                            <span>📍 ${word.charAt(0).toUpperCase() + word.slice(1)}</span>
+                            <span class="font-bold" style="color:${zoneColors[Math.min(idx,5)]}">${count} pedido${count !== 1 ? 's' : ''}</span>
+                        </div>
+                        <div class="top-product-track">
+                            <div class="top-product-fill" style="width:${(count/maxZone*100).toFixed(0)}%; background:${zoneColors[Math.min(idx,5)]}"></div>
+                        </div>
+                    </div>`).join('')
+                + `<div class="text-gray-600 text-xs mt-3">${totalDeliveryWithNotes} pedidos delivery con referencias</div>`
+                : '<div class="text-gray-500 text-xs text-center py-4">Sin datos de referencias aún</div>';
+            document.getElementById('zones-chart').innerHTML = zonesHTML;
+
+            // =============================================
+            // --- UP-SELLING ---
+            // =============================================
+            const bebidasKw  = ['coca','pepsi','lipton','7up','manzanita','juguito','agua','refresco','sprite','fanta','nestea'];
+            const sidesKw    = ['papa','papas','frita','tequeño','nugget','aros'];
+            const combosKw   = ['combo','house'];
+
+            let withBebidas = 0, withSides = 0, withCombos = 0, withExtras = 0;
+            const totalOrders = allOrders.length || 1;
+
+            allOrders.forEach(order => {
+                const prods = order.productos || [];
+                const hasB = prods.some(p => bebidasKw.some(k => (p.nombre || '').toLowerCase().includes(k)));
+                const hasS = prods.some(p => sidesKw.some(k => (p.nombre || '').toLowerCase().includes(k)));
+                const hasC = prods.some(p => combosKw.every(k => (p.nombre || '').toLowerCase().includes(k)));
+                const hasE = prods.some(p => (p.detalles_personalizacion || []).some(d => d.cantidad > 0));
+                if (hasB) withBebidas++;
+                if (hasS) withSides++;
+                if (hasC) withCombos++;
+                if (hasE) withExtras++;
+            });
+
+            const upsellItems = [
+                { icon: '🥤', label: 'Incluyen bebida',         count: withBebidas,  color: '#3b82f6' },
+                { icon: '🍟', label: 'Incluyen papas/sides',   count: withSides,    color: '#f59e0b' },
+                { icon: '🍔', label: 'Piden Combo House',       count: withCombos,   color: '#e60000' },
+                { icon: '➕', label: 'Con extras/personalización', count: withExtras,   color: '#22c55e' },
+            ];
+            const upsellHTML = upsellItems.map(item => {
+                const pct = ((item.count / totalOrders) * 100).toFixed(0);
+                return `
+                    <div class="top-product-row">
+                        <div class="top-product-label">
+                            <span>${item.icon} ${item.label}</span>
+                            <span class="font-bold" style="color:${item.color}">${pct}% <span class="text-gray-500 font-normal">(${item.count})</span></span>
+                        </div>
+                        <div class="top-product-track">
+                            <div class="top-product-fill" style="width:${pct}%; background:${item.color}"></div>
+                        </div>
+                    </div>`;
+            }).join('');
+            document.getElementById('upsell-chart').innerHTML = upsellHTML;
+
+            // =============================================
+            // --- BOTTOM 5 PRODUCTOS ("hueso") ---
+            // =============================================
+            const bottomProducts = Object.entries(productCounts)
+                .filter(([name]) => !bebidasKw.some(k => name.toLowerCase().includes(k))) // excluir bebidas
+                .sort((a, b) => a[1] - b[1]) // ascendente
+                .slice(0, 5);
+            const maxBottom = bottomProducts[bottomProducts.length - 1]?.[1] || 1;
+            const bottomHTML = bottomProducts.length >= 2
+                ? bottomProducts.map(([name, count]) => {
+                    const pct       = Math.max((count / maxBottom) * 100, 8);
+                    const shortName = name.length > 22 ? name.slice(0, 20) + '…' : name;
+                    return `
+                        <div class="top-product-row">
+                            <div class="top-product-label">
+                                <span>🚭 ${shortName}</span>
+                                <span class="text-gray-400 font-bold">${count}x</span>
+                            </div>
+                            <div class="top-product-track">
+                                <div class="top-product-fill" style="width:${pct}%; background:#6b7280"></div>
+                            </div>
+                        </div>`;
+                }).join('')
+                : '<div class="text-gray-500 text-xs text-center py-4">Necesitas más pedidos para ver esto</div>';
+            document.getElementById('bottom-products-chart').innerHTML = bottomHTML;
+
+            // =============================================
+            // --- TASA DE RECURRENCIA (30 días) ---
+            // =============================================
+            const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+            const clientFirstTs  = {}; // nombre → primer timestamp
+            const clientIn30Days = new Set(); // nombres activos en últimos 30 días
+
+            allOrders.forEach(order => {
+                const name = (order.cliente?.nombre || 'Sin nombre').trim();
+                const ts   = order.timestamp || 0;
+                if (!clientFirstTs[name] || ts < clientFirstTs[name]) clientFirstTs[name] = ts;
+                if (ts >= thirtyDaysAgo) clientIn30Days.add(name);
+            });
+
+            const active30     = [...clientIn30Days];
+            const returning30  = active30.filter(name => clientFirstTs[name] < thirtyDaysAgo);
+            const new30        = active30.filter(name => clientFirstTs[name] >= thirtyDaysAgo);
+            const recurRate    = active30.length > 0 ? (returning30.length / active30.length * 100).toFixed(1) : 0;
+            const newRate      = active30.length > 0 ? (new30.length / active30.length * 100).toFixed(1) : 0;
+            const recurrPct    = parseFloat(recurRate);
+            const recurrGap    = 100 - recurrPct;
+
+            const recurrenceHTML = `
+                <div style="display:flex; align-items:center; gap:20px; justify-content:center; margin-bottom:12px">
+                    <svg viewBox="0 0 42 42" style="width:90px;height:90px;transform:rotate(-90deg);flex-shrink:0">
+                        <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="rgba(255,255,255,0.07)" stroke-width="5"/>
+                        <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#22c55e" stroke-width="5"
+                            stroke-dasharray="${recurrPct.toFixed(1)} ${recurrGap.toFixed(1)}" stroke-dashoffset="0"/>
+                        <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#3b82f6" stroke-width="5"
+                            stroke-dasharray="${recurrGap.toFixed(1)} ${recurrPct.toFixed(1)}" stroke-dashoffset="${(100 - recurrPct).toFixed(1)}"/>
+                    </svg>
+                    <div>
+                        <div style="font-size:2rem;font-weight:700;color:#22c55e;line-height:1">${recurRate}%</div>
+                        <div style="font-size:0.7rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-top:4px">Tasa de recurrencia</div>
+                        <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:6px">${active30.length} clientes activos en 30 días</div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:16px;justify-content:center">
+                    <div style="display:flex;align-items:center;gap:6px">
+                        <div style="width:10px;height:10px;border-radius:50%;background:#22c55e"></div>
+                        <span style="font-size:0.75rem;color:rgba(255,255,255,0.5)">Recurrentes <span style="color:#fff;font-weight:700">${returning30.length}</span></span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px">
+                        <div style="width:10px;height:10px;border-radius:50%;background:#3b82f6"></div>
+                        <span style="font-size:0.75rem;color:rgba(255,255,255,0.5)">Nuevos <span style="color:#fff;font-weight:700">${new30.length}</span></span>
+                    </div>
+                </div>
+                ${active30.length === 0 ? '<div class="text-gray-500 text-xs text-center mt-3">Sin pedidos en los últimos 30 días</div>' : ''}
+                <div style="font-size:0.65rem;color:rgba(255,255,255,0.2);margin-top:10px;text-align:center">Identificación por nombre de cliente</div>
+            `;
+            document.getElementById('recurrence-chart').innerHTML = recurrenceHTML;
 
             // --- Historial ---
             const listContainer = document.getElementById('approved-orders-list');
