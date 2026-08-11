@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -213,6 +213,134 @@
             font-weight: 700;
             color: #22c55e;
         }
+
+        /* === STATS DASHBOARD === */
+        .stat-kpi-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .stat-kpi-card:hover {
+            border-color: rgba(230,0,0,0.35);
+            transform: translateY(-2px);
+        }
+        .stat-icon { font-size: 1.4rem; margin-bottom: 8px; }
+        .stat-value {
+            font-size: 1.55rem;
+            font-weight: 700;
+            color: #22c55e;
+            line-height: 1.1;
+        }
+        .stat-label {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.4);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+        .stat-sub {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.28);
+            margin-top: 2px;
+        }
+        .chart-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 20px;
+        }
+        .chart-card-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.45);
+            margin-bottom: 16px;
+        }
+        /* Bar chart 7 days */
+        .bar-chart-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 5px;
+            height: 110px;
+        }
+        .bar-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 3px;
+            height: 100%;
+        }
+        .bar-fill {
+            width: 100%;
+            background: linear-gradient(to top, #e60000, #ff6b6b);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.7s cubic-bezier(.23,1,.32,1);
+            min-height: 2px;
+        }
+        .bar-fill.today { background: linear-gradient(to top, #22c55e, #4ade80); }
+        .bar-label {
+            font-size: 0.5rem;
+            color: rgba(255,255,255,0.3);
+            text-align: center;
+            white-space: nowrap;
+        }
+        .bar-amount {
+            font-size: 0.5rem;
+            color: rgba(255,255,255,0.45);
+            font-weight: 700;
+        }
+        /* Top products */
+        .top-product-row { margin-bottom: 10px; }
+        .top-product-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.73rem;
+            color: rgba(255,255,255,0.65);
+            margin-bottom: 4px;
+        }
+        .top-product-track {
+            height: 5px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .top-product-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.7s cubic-bezier(.23,1,.32,1);
+        }
+        /* Secondary KPIs */
+        .stat-kpi-secondary {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .stat-icon-sm { font-size: 1.5rem; flex-shrink: 0; }
+        .stat-value-sm { font-size: 1.1rem; font-weight: 700; color: #fff; }
+        .stat-label-sm {
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.38);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+        /* Read-only order card (no action buttons) */
+        .order-card-readonly {
+            border-left: 3px solid rgba(230,0,0,0.4);
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -313,35 +441,97 @@
             </div>
         </div>
 
-        <!-- VISTA 2: INGRESOS Y ESTADÍSTICAS -->
+        <!-- VISTA 2: DASHBOARD DE ESTADÍSTICAS -->
         <div id="ingresos-view" class="hidden">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <!-- Hoy -->
-                <div class="income-card">
-                    <div class="income-title">Ingresos Hoy</div>
-                    <div class="income-amount" id="income-today">$0.00</div>
-                    <div class="text-gray-400 text-xs mt-2" id="count-today">0 pedidos completados</div>
+
+            <!-- KPI Cards Row: 5 tarjetas -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
+                <div class="stat-kpi-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-value" id="income-today">$0.00</div>
+                    <div class="stat-label">Hoy</div>
+                    <div class="stat-sub" id="count-today">0 pedidos</div>
                 </div>
-                <!-- Esta semana -->
-                <div class="income-card">
-                    <div class="income-title">Esta Semana</div>
-                    <div class="income-amount" id="income-week">$0.00</div>
-                    <div class="text-gray-400 text-xs mt-2" id="count-week">0 pedidos completados</div>
+                <div class="stat-kpi-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-value" id="income-week">$0.00</div>
+                    <div class="stat-label">Esta semana</div>
+                    <div class="stat-sub" id="count-week">0 pedidos</div>
                 </div>
-                <!-- Este mes -->
-                <div class="income-card">
-                    <div class="income-title">Este Mes</div>
-                    <div class="income-amount" id="income-month">$0.00</div>
-                    <div class="text-gray-400 text-xs mt-2" id="count-month">0 pedidos completados</div>
+                <div class="stat-kpi-card">
+                    <div class="stat-icon">📆</div>
+                    <div class="stat-value" id="income-month">$0.00</div>
+                    <div class="stat-label">Este mes</div>
+                    <div class="stat-sub" id="count-month">0 pedidos</div>
+                </div>
+                <div class="stat-kpi-card">
+                    <div class="stat-icon">🎫</div>
+                    <div class="stat-value" id="income-avg">$0.00</div>
+                    <div class="stat-label">Ticket prom.</div>
+                    <div class="stat-sub" id="count-avg">este mes</div>
+                </div>
+                <div class="stat-kpi-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-value" id="stat-visitors">—</div>
+                    <div class="stat-label">Visitantes únicos</div>
+                    <div class="stat-sub" id="stat-conversion">conversión: —%</div>
                 </div>
             </div>
 
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+                <!-- Bar chart 7 días -->
+                <div class="chart-card">
+                    <div class="chart-card-title">📊 Ingresos últimos 7 días</div>
+                    <div id="bar-chart-7d" class="bar-chart-container">
+                        <div class="text-gray-500 text-xs text-center w-full">Cargando...</div>
+                    </div>
+                </div>
+                <!-- Top 5 productos -->
+                <div class="chart-card">
+                    <div class="chart-card-title">🏆 Top productos</div>
+                    <div id="top-products-chart">
+                        <div class="text-gray-500 text-xs text-center">Cargando...</div>
+                    </div>
+                </div>
+                <!-- Donut delivery vs pickup -->
+                <div class="chart-card flex flex-col items-center">
+                    <div class="chart-card-title w-full">🛵 Delivery vs Pickup</div>
+                    <div id="donut-chart" class="flex flex-col items-center justify-center flex-1">
+                        <div class="text-gray-500 text-xs">Cargando...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI Secundarios -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div class="stat-kpi-secondary">
+                    <div class="stat-icon-sm">⏰</div>
+                    <div>
+                        <div class="stat-value-sm" id="stat-peak-hour">—</div>
+                        <div class="stat-label-sm">Hora pico de pedidos</div>
+                    </div>
+                </div>
+                <div class="stat-kpi-secondary">
+                    <div class="stat-icon-sm">🔥</div>
+                    <div>
+                        <div class="stat-value-sm" id="stat-best-day">—</div>
+                        <div class="stat-label-sm">Mejor día de la semana</div>
+                    </div>
+                </div>
+                <div class="stat-kpi-secondary">
+                    <div class="stat-icon-sm">📦</div>
+                    <div>
+                        <div class="stat-value-sm" id="stat-total-orders">—</div>
+                        <div class="stat-label-sm">Total pedidos registrados</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historial -->
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold text-white">Últimos Pedidos Aprobados</h3>
-                <button onclick="reiniciarIngresos()" class="px-3 py-1.5 bg-red-600/10 text-red-500 border border-red-500/30 hover:bg-red-600 hover:text-white rounded-lg transition-all text-xs font-semibold tracking-wide flex items-center gap-2" title="Borrar todo el historial de ingresos">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
-                    Reiniciar
-                </button>
+                <h3 class="text-xl font-bold text-white">📋 Historial de Pedidos</h3>
+                <span class="text-gray-500 text-xs" id="historial-count"></span>
             </div>
             <div class="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
                 <div class="max-h-96 overflow-y-auto" id="approved-orders-list">
@@ -586,82 +776,18 @@
                     ${notas ? `<p class="text-gray-300 text-sm mb-2"><strong class="text-gray-500">Notas:</strong> ${notas}</p>` : ''}
                     ${ubicacion ? `<p class="text-gray-300 text-sm mb-4"><strong class="text-gray-500">Ubicacion:</strong> <a href="${ubicacion}" target="_blank" class="text-blue-400 hover:underline">Ver en Maps 🗺️</a></p>` : ''}
                     
-                    <div class="flex gap-3 mt-4">
-                        <button onclick="aprobarPedido('${orderId}')" class="btn-approve flex-1 px-4 py-3 rounded-xl font-semibold text-white shadow-lg">
-                            Marcar como Aprobado
-                        </button>
-                        <button onclick="eliminarPedido('${orderId}')" class="px-4 py-3 rounded-xl font-semibold text-white shadow-lg bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 transition-all">
-                            Eliminar
-                        </button>
+                    <div class="mt-3 flex items-center gap-2">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs font-semibold tracking-wide">
+                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"/></svg>
+                            Pendiente de preparación
+                        </span>
                     </div>
                 </div>
             `;
         }
 
-        // Funcion para aprobar pedido
-        async function aprobarPedido(orderId) {
-            try {
-                // Obtener datos del pedido antes de aprobar
-                const snapshot = await db.ref('pedidos/' + orderId).once('value');
-                const orderData = snapshot.val();
-
-                if (!orderData) {
-                    alert('No se encontraron datos del pedido');
-                    return;
-                }
-
-                // Actualizar estado en Firebase
-                await db.ref('pedidos/' + orderId).update({
-                    estado: 'aprobado'
-                });
-
-                // Enviar a SheetDB
-                try {
-                    const productosResumen = orderData.productos.map(p => `${p.cantidad}x ${p.nombre}`).join(', ');
-                    await fetch('https://sheetdb.io/api/v1/qyjuou0mbnjhc', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            data: [{
-                                fecha: orderData.fecha,
-                                cliente: orderData.cliente?.nombre || 'Cliente sin nombre',
-                                metodo: orderData.cliente?.metodo || 'No especificado',
-                                productos: productosResumen,
-                                total: orderData.total_usd?.toFixed(2) || '0.00',
-                                notas: orderData.cliente?.notas_referencia || "Sin notas adicionales",
-                                ubicacion: orderData.cliente?.ubicacion_maps || "N/A"
-                            }]
-                        })
-                    });
-                    console.log('Pedido enviado a SheetDB exitosamente');
-                } catch (err) {
-                    console.error('Error al enviar a SheetDB:', err);
-                    // No bloqueamos el proceso si SheetDB falla
-                }
-
-                console.log('Pedido aprobado exitosamente:', orderId);
-                // El listener on('value') actualizará la UI automáticamente
-
-            } catch (error) {
-                console.error('Error al aprobar pedido:', error);
-                alert('Hubo un error al intentar aprobar el pedido. Revisa tu conexión.');
-            }
-        }
-
-        // Funcion para eliminar pedido
-        async function eliminarPedido(orderId) {
-            if (!confirm('¿Estás seguro de que deseas eliminar este pedido? Esta acción no se puede deshacer.')) {
-                return;
-            }
-
-            try {
-                await db.ref('pedidos/' + orderId).remove();
-                console.log('Pedido eliminado exitosamente:', orderId);
-            } catch (error) {
-                console.error('Error al eliminar pedido:', error);
-                alert('Error al eliminar el pedido. Por favor, intenta nuevamente.');
-            }
-        }
+        // Aprobar y eliminar individuales desactivados — panel es solo lectura.
+        // Los pedidos se gestionan directamente desde WhatsApp.
 
         // Funcion para eliminar TODOS los pedidos de golpe
         function eliminarTodosPedidos() {
@@ -818,17 +944,18 @@
             ordersContainer.innerHTML = html;
         }
 
-        // --- INGRESOS Y ESTADÍSTICAS ---
+        // --- DASHBOARD DE ESTADÍSTICAS ---
         let statsLoaded = false;
-        
+
         function cargarEstadisticasIngresos() {
             if (statsLoaded) return;
             statsLoaded = true;
-            
+
             const listContainer = document.getElementById('approved-orders-list');
-            listContainer.innerHTML = '<div class="p-8 text-center text-gray-500 text-sm">Cargando ingresos... <div class="loader inline-block ml-3 w-4 h-4 border-2 border-t-red-500"></div></div>';
-            
-            db.ref('pedidos').orderByChild('estado').equalTo('aprobado').once('value')
+            listContainer.innerHTML = '<div class="p-8 text-center text-gray-500 text-sm">Cargando datos... <div class="loader inline-block ml-3 w-4 h-4 border-2 border-t-red-500"></div></div>';
+
+            // Leer TODOS los pedidos (sin filtrar por estado)
+            db.ref('pedidos').once('value')
                 .then(snapshot => {
                     const orders = [];
                     snapshot.forEach(child => {
@@ -837,76 +964,226 @@
                     procesarIngresos(orders);
                 })
                 .catch(err => {
-                    console.error('Error al cargar ingresos:', err);
+                    console.error('Error al cargar estadísticas:', err);
                     listContainer.innerHTML = '<div class="p-8 text-center text-red-500 text-sm">Error al cargar estadísticas.</div>';
                     statsLoaded = false;
                 });
         }
-        
-        function procesarIngresos(approvedOrders) {
+
+        function procesarIngresos(allOrders) {
             const now = new Date();
             const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-            
-            const dayOfWeek = now.getDay() === 0 ? 6 : now.getDay() - 1; // 0=Lunes
+
+            const dayOfWeek = now.getDay() === 0 ? 6 : now.getDay() - 1;
             const startOfWeek = new Date(startOfToday);
             startOfWeek.setDate(startOfWeek.getDate() - dayOfWeek);
             const startOfWeekTime = startOfWeek.getTime();
-            
             const startOfMonthTime = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-            
+
             let sumToday = 0, countToday = 0;
             let sumWeek = 0, countWeek = 0;
             let sumMonth = 0, countMonth = 0;
-            
-            approvedOrders.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-            
+
+            // Producto counts
+            const productCounts = {};
+            // Delivery vs pickup
+            let deliveryCount = 0, pickupCount = 0;
+            // Hora pico
+            const hourCounts = new Array(24).fill(0);
+            // Mejor día semana
+            const dayTotalsWeek = new Array(7).fill(0);
+            const dayNames7 = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+            // Últimos 7 días para el gráfico de barras
+            const last7Days = {};
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date(startOfToday);
+                d.setDate(d.getDate() - i);
+                const key = d.toDateString();
+                const label = d.toLocaleDateString('es-VE', { weekday: 'short', day: 'numeric' }).toUpperCase();
+                last7Days[key] = { label, sum: 0, count: 0, isToday: i === 0 };
+            }
+
+            allOrders.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
             let htmlList = '';
             let printedItems = 0;
-            
-            approvedOrders.forEach(order => {
+
+            allOrders.forEach(order => {
                 const ts = order.timestamp || 0;
                 const total = order.total_usd || 0;
-                
-                if (ts >= startOfToday) { sumToday += total; countToday++; }
-                if (ts >= startOfWeekTime) { sumWeek += total; countWeek++; }
-                if (ts >= startOfMonthTime) { sumMonth += total; countMonth++; }
-                
+
+                // KPI sums
+                if (ts >= startOfToday)    { sumToday += total; countToday++; }
+                if (ts >= startOfWeekTime) { sumWeek  += total; countWeek++;  }
+                if (ts >= startOfMonthTime){ sumMonth += total; countMonth++; }
+
+                // Top productos
+                (order.productos || []).forEach(p => {
+                    const name = p.nombre || 'Desconocido';
+                    if (!productCounts[name]) productCounts[name] = 0;
+                    productCounts[name] += (p.cantidad || 1);
+                });
+
+                // Delivery vs pickup
+                if ((order.cliente?.metodo || '').toLowerCase() === 'delivery') deliveryCount++;
+                else pickupCount++;
+
+                // Hora pico
+                if (ts) hourCounts[new Date(ts).getHours()]++;
+
+                // Mejor día de semana
+                if (ts) dayTotalsWeek[new Date(ts).getDay()] += total;
+
+                // 7-day chart
+                if (ts) {
+                    const dayKey = new Date(ts).toDateString();
+                    if (last7Days[dayKey]) {
+                        last7Days[dayKey].sum += total;
+                        last7Days[dayKey].count++;
+                    }
+                }
+
+                // Historial (últimos 50)
                 if (printedItems < 50) {
                     const dateObj = new Date(ts);
-                    const dateStr = ts > 0 ? dateObj.toLocaleDateString('es-VE', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}) : order.fecha;
+                    const dateStr = ts > 0
+                        ? dateObj.toLocaleDateString('es-VE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
+                        : (order.fecha || '—');
                     const cliente = order.cliente?.nombre || 'Desconocido';
+                    const metodo  = order.cliente?.metodo || '—';
                     const numProd = order.productos?.length || 0;
-                    
+                    const emojiMetodo = metodo.toLowerCase() === 'delivery' ? '🛵' : '🏠';
+
                     htmlList += `
                         <div class="flex justify-between items-center p-4 border-b border-white/5 hover:bg-white/5 transition-colors">
                             <div>
                                 <p class="text-white font-medium text-sm">${cliente}</p>
-                                <p class="text-gray-500 text-xs">${dateStr} &bull; ${numProd} prod(s)</p>
+                                <p class="text-gray-500 text-xs">${dateStr} &bull; ${numProd} prod(s) &bull; ${emojiMetodo} ${metodo}</p>
                             </div>
                             <div class="text-right">
                                 <p class="text-green-400 font-bold">$${total.toFixed(2)}</p>
-                                <p class="text-[10px] uppercase text-gray-500 tracking-wider">Aprobado</p>
+                                <p class="text-[10px] uppercase tracking-wider text-yellow-500/70">pendiente</p>
                             </div>
                         </div>
                     `;
                     printedItems++;
                 }
             });
-            
-            document.getElementById('income-today').textContent = `$${sumToday.toFixed(2)}`;
-            document.getElementById('count-today').textContent = `${countToday} pedido(s)`;
-            
-            document.getElementById('income-week').textContent = `$${sumWeek.toFixed(2)}`;
-            document.getElementById('count-week').textContent = `${countWeek} pedido(s)`;
-            
-            document.getElementById('income-month').textContent = `$${sumMonth.toFixed(2)}`;
-            document.getElementById('count-month').textContent = `${countMonth} pedido(s)`;
-            
+
+            // --- Actualizar KPI Cards ---
+            document.getElementById('income-today').textContent  = `$${sumToday.toFixed(2)}`;
+            document.getElementById('count-today').textContent   = `${countToday} pedido(s)`;
+            document.getElementById('income-week').textContent   = `$${sumWeek.toFixed(2)}`;
+            document.getElementById('count-week').textContent    = `${countWeek} pedido(s)`;
+            document.getElementById('income-month').textContent  = `$${sumMonth.toFixed(2)}`;
+            document.getElementById('count-month').textContent   = `${countMonth} pedido(s)`;
+
+            const ticketAvg = countMonth > 0 ? sumMonth / countMonth : 0;
+            document.getElementById('income-avg').textContent = `$${ticketAvg.toFixed(2)}`;
+            document.getElementById('count-avg').textContent  = 'este mes';
+
+            // --- KPIs secundarios ---
+            document.getElementById('stat-total-orders').textContent = allOrders.length;
+
+            const peakHour  = hourCounts.indexOf(Math.max(...hourCounts));
+            const peakCount = hourCounts[peakHour];
+            document.getElementById('stat-peak-hour').textContent =
+                peakCount > 0 ? `${peakHour}:00 – ${peakHour + 1}:00` : '—';
+
+            const bestDayIdx = dayTotalsWeek.indexOf(Math.max(...dayTotalsWeek));
+            document.getElementById('stat-best-day').textContent =
+                Math.max(...dayTotalsWeek) > 0 ? dayNames7[bestDayIdx] : '—';
+
+            // --- Gráfico de barras 7 días ---
+            const days7Array = Object.values(last7Days);
+            const maxSum7   = Math.max(...days7Array.map(d => d.sum), 0.01);
+            const barHTML   = days7Array.map(day => {
+                const pct       = Math.max((day.sum / maxSum7) * 100, day.count > 0 ? 6 : 0);
+                const amountStr = day.sum > 0 ? `$${day.sum.toFixed(0)}` : '';
+                return `
+                    <div class="bar-col">
+                        <div class="bar-amount">${amountStr}</div>
+                        <div class="bar-fill${day.isToday ? ' today' : ''}" style="height:${pct}%"></div>
+                        <div class="bar-label">${day.label}</div>
+                    </div>`;
+            }).join('');
+            document.getElementById('bar-chart-7d').innerHTML = barHTML;
+
+            // --- Top productos ---
+            const topProducts = Object.entries(productCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+            const maxCount = topProducts[0]?.[1] || 1;
+            const topColors = ['#e60000','#ff4444','#ff6b6b','#ff8888','#ffaaaa'];
+            const topHTML = topProducts.map(([name, count], idx) => {
+                const pct       = (count / maxCount) * 100;
+                const shortName = name.length > 22 ? name.slice(0, 20) + '…' : name;
+                return `
+                    <div class="top-product-row">
+                        <div class="top-product-label">
+                            <span>${idx + 1}. ${shortName}</span>
+                            <span class="font-bold" style="color:${topColors[idx]}">${count}x</span>
+                        </div>
+                        <div class="top-product-track">
+                            <div class="top-product-fill" style="width:${pct}%; background:${topColors[idx]}"></div>
+                        </div>
+                    </div>`;
+            }).join('');
+            document.getElementById('top-products-chart').innerHTML =
+                topProducts.length > 0 ? topHTML : '<div class="text-gray-500 text-xs text-center py-4">Sin datos aún</div>';
+
+            // --- Donut delivery vs pickup ---
+            const totalDel  = deliveryCount + pickupCount;
+            const delivPct  = totalDel > 0 ? (deliveryCount / totalDel) * 100 : 50;
+            const pickPct   = 100 - delivPct;
+            // Circumference ≈ 100 cuando r = 15.91549430918954 (2πr ≈ 100)
+            const donutHTML = `
+                <svg viewBox="0 0 42 42" style="width:110px;height:110px;transform:rotate(-90deg)">
+                    <circle cx="21" cy="21" r="15.91549430918954" fill="transparent"
+                        stroke="rgba(255,255,255,0.07)" stroke-width="5"/>
+                    <circle cx="21" cy="21" r="15.91549430918954" fill="transparent"
+                        stroke="#e60000" stroke-width="5"
+                        stroke-dasharray="${delivPct.toFixed(1)} ${(100 - delivPct).toFixed(1)}"
+                        stroke-dashoffset="0"/>
+                    <circle cx="21" cy="21" r="15.91549430918954" fill="transparent"
+                        stroke="#22c55e" stroke-width="5"
+                        stroke-dasharray="${pickPct.toFixed(1)} ${(100 - pickPct).toFixed(1)}"
+                        stroke-dashoffset="${(100 - delivPct).toFixed(1)}"/>
+                </svg>
+                <div class="flex gap-5 mt-3">
+                    <div class="flex items-center gap-1.5">
+                        <div style="width:10px;height:10px;border-radius:50%;background:#e60000"></div>
+                        <span class="text-xs text-gray-400">Delivery <span class="text-white font-bold">${deliveryCount}</span></span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <div style="width:10px;height:10px;border-radius:50%;background:#22c55e"></div>
+                        <span class="text-xs text-gray-400">Pickup <span class="text-white font-bold">${pickupCount}</span></span>
+                    </div>
+                </div>
+                ${totalDel > 0 ? `<div class="text-xs text-gray-500 mt-2">${delivPct.toFixed(0)}% Delivery</div>` : ''}
+            `;
+            document.getElementById('donut-chart').innerHTML = donutHTML;
+
+            // --- Historial ---
             const listContainer = document.getElementById('approved-orders-list');
-            if (htmlList === '') {
-                listContainer.innerHTML = '<div class="p-8 text-center text-gray-500 text-sm">No hay pedidos aprobados en el historial.</div>';
-            } else {
-                listContainer.innerHTML = htmlList;
+            listContainer.innerHTML = htmlList || '<div class="p-8 text-center text-gray-500 text-sm">No hay pedidos registrados aún.</div>';
+
+            const histEl = document.getElementById('historial-count');
+            if (histEl) histEl.textContent = `${printedItems} de ${allOrders.length} pedido(s)`;
+
+            // --- Visitantes únicos + Tasa de conversión (Firebase) ---
+            if (db) {
+                db.ref('stats/unique_visitors_count').once('value').then(snap => {
+                    const visitors = snap.val() || 0;
+                    document.getElementById('stat-visitors').textContent = visitors.toLocaleString();
+                    const convRate = visitors > 0
+                        ? ((allOrders.length / visitors) * 100).toFixed(1)
+                        : '0.0';
+                    document.getElementById('stat-conversion').textContent = `conversión: ${convRate}%`;
+                }).catch(() => {
+                    document.getElementById('stat-visitors').textContent = '—';
+                });
             }
         }
 
