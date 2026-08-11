@@ -544,19 +544,12 @@
                 </div>
             </div>
 
-            <!-- Zonas + Up-selling -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-                <!-- Zonas de entrega -->
-                <div class="chart-card">
-                    <div class="chart-card-title">📍 Zonas de entrega frecuentes</div>
-                    <div id="zones-chart">
-                        <div class="text-gray-500 text-xs text-center">Cargando...</div>
-                    </div>
-                </div>
-                <!-- Up-selling -->
+
+            <!-- Up-selling -->
+            <div class="mb-8">
                 <div class="chart-card">
                     <div class="chart-card-title">📈 Adicionales &amp; Up-selling</div>
-                    <div id="upsell-chart">
+                    <div id="upsell-chart" class="grid grid-cols-1 md:grid-cols-2 gap-x-8">
                         <div class="text-gray-500 text-xs text-center">Cargando...</div>
                     </div>
                 </div>
@@ -1271,42 +1264,6 @@
             document.getElementById('top-clients-spend-chart').innerHTML =
                 topBySpend.length > 0 ? clientSpendHTML : '<div class="text-gray-500 text-xs text-center py-4">Sin datos aún</div>';
 
-            // =============================================
-            // --- ZONAS DE ENTREGA ---
-            // =============================================
-            // Extraer palabras clave de las notas de pedidos delivery
-            const stopWords = new Set(['de','la','el','los','las','en','a','y','con','sin','por','para','al','del','una','un','que','mi','su','es','se','no','le','lo','como','mas','pero','si','ya','muy','yo','tu','no','es','un','las','los','del','con','por','para','que']);
-            const zoneWords = {};
-            let totalDeliveryWithNotes = 0;
-            allOrders.forEach(order => {
-                if ((order.cliente?.metodo || '').toLowerCase() === 'delivery') {
-                    const notas = (order.cliente?.notas_referencia || '').toLowerCase();
-                    if (notas.length > 3) {
-                        totalDeliveryWithNotes++;
-                        const words = notas.match(/[a-záéíóúüñ]{4,}/g) || [];
-                        words.forEach(w => {
-                            if (!stopWords.has(w)) zoneWords[w] = (zoneWords[w] || 0) + 1;
-                        });
-                    }
-                }
-            });
-            const topZones = Object.entries(zoneWords).sort((a, b) => b[1] - a[1]).slice(0, 8);
-            const maxZone = topZones[0]?.[1] || 1;
-            const zoneColors = ['#3b82f6','#60a5fa','#93c5fd','#bfdbfe','#dbeafe','#eff6ff'];
-            const zonesHTML = topZones.length > 0
-                ? topZones.map(([word, count], idx) => `
-                    <div class="top-product-row">
-                        <div class="top-product-label">
-                            <span>📍 ${word.charAt(0).toUpperCase() + word.slice(1)}</span>
-                            <span class="font-bold" style="color:${zoneColors[Math.min(idx,5)]}">${count} pedido${count !== 1 ? 's' : ''}</span>
-                        </div>
-                        <div class="top-product-track">
-                            <div class="top-product-fill" style="width:${(count/maxZone*100).toFixed(0)}%; background:${zoneColors[Math.min(idx,5)]}"></div>
-                        </div>
-                    </div>`).join('')
-                + `<div class="text-gray-600 text-xs mt-3">${totalDeliveryWithNotes} pedidos delivery con referencias</div>`
-                : '<div class="text-gray-500 text-xs text-center py-4">Sin datos de referencias aún</div>';
-            document.getElementById('zones-chart').innerHTML = zonesHTML;
 
             // =============================================
             // --- UP-SELLING ---
