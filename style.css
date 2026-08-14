@@ -2627,3 +2627,18 @@ section:not(#bebidas) .item-price-wrapper { display: flex !important; flex-direc
 @media (max-width: 768px) { #modal-promo-selection .modal-image-container { height: 65vh !important; max-height: 550px !important; } }
 
 .hidden { display: none !important; }
+
+/* Estilos de Logo LACRUSH Engineering */
+.logo-text {
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #ffffff; /* Adaptado para dark mode (original: #1d1d1f) */
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
+}
+
+.logo-sub {
+  font-weight: 400;
+  color: #86868b;
+}
