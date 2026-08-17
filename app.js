@@ -13,9 +13,9 @@
         WEEKDAY_OPEN: 720,
         WEEKDAY_CLOSE: 1350,
         WEEKEND_OPEN: 720,
-        PROMO_BASE_PRICE: 6.49,
-        PROMO_COMBO_PRICE: 8.5,
-        PROMO_COMBO_EXTRA: 2.0
+        PROMO_BASE_PRICE: 6.5,
+        PROMO_COMBO_PRICE: 9.0,
+        PROMO_COMBO_EXTRA: 2.5
     };
 
     // Referencia mutable a updateTotal (se asigna dentro del DOMContentLoaded)
