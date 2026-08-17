@@ -165,8 +165,8 @@
         { name: 'Servicio de Ketchup', type: 'toggle', applies: c => c.isNuggets, default: () => 'NO' }, // Por defecto NO
         { name: 'Servicio de Salsa de la Casa', type: 'toggle', applies: c => c.isNuggets, default: () => 'SÍ' }, // Por defecto SÍ
 
-        // COMBO PROMO (Bombita + Papitas) - Solo para tarjetas de promo
-        { name: 'Papitas + Bombita', price: CONFIG.PROMO_COMBO_EXTRA, type: 'cost', applies: c => c.nameLower.includes('promo') && !c.esCombo },
+        // COMBO PROMO (Lata + Papitas) - Solo para tarjetas de promo
+        { name: 'Papitas + Lata', price: CONFIG.PROMO_COMBO_EXTRA, type: 'cost', applies: c => c.nameLower.includes('promo') && !c.esCombo },
 
         // INGREDIENTES BASE (Interruptores SÍ/NO) -> APLICAN ESTRICTAMENTE LEYENDO LA DESCRIPCIÓN
         { name: 'Pan', type: 'toggle', applies: c => c.descLower.includes('pan') && !c.esCombo || c.esComboHouse, default: () => 'SÍ' },
@@ -578,7 +578,7 @@
             const extras = [];
             if (isCombo) {
                 extras.push({
-                    nombre: 'Bombita',
+                    nombre: 'Lata',
                     qty: 1,
                     val: '1',
                     isToggle: false,
@@ -1066,11 +1066,11 @@
                     const toggleExtras = applicableExtras.filter(ex => ex.type === 'toggle'); // Separa los toggles
                     const costExtras = applicableExtras.filter(ex => ex.type === 'cost'); // Separa los extras con costo
 
-                    // Para promos, poner "Papitas + Bombita" primero
+                    // Para promos, poner "Papitas + Lata" primero
                     let orderedExtras;
                     if (ctx.nameLower.includes('promo')) {
-                        const promoCombo = costExtras.find(ex => ex.name === 'Papitas + Bombita');
-                        const otherCostExtras = costExtras.filter(ex => ex.name !== 'Papitas + Bombita');
+                        const promoCombo = costExtras.find(ex => ex.name === 'Papitas + Lata');
+                        const otherCostExtras = costExtras.filter(ex => ex.name !== 'Papitas + Lata');
                         orderedExtras = promoCombo ? [promoCombo, ...toggleExtras, ...otherCostExtras] : [...toggleExtras, ...costExtras];
                     } else {
                         orderedExtras = [...toggleExtras, ...costExtras]; // Une, poniendo los toggles primero
