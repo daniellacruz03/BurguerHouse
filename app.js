@@ -154,6 +154,7 @@
         { name: 'Extra Tocineta', price: 2.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
         { name: 'Extra Salsa de la Casa', price: 1.20, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
         { name: 'Extra Lechuga', price: 1.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
+        { name: 'Extra Cebolla', price: 1.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
         { name: 'Extra Pepinillos', price: 1.20, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
         { name: 'Extra Salsa BBQ', price: 1.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
 
@@ -175,8 +176,9 @@
         { name: 'Pollo a la plancha', type: 'toggle', applies: c => c.descLower.includes('pollo') && !c.descLower.includes('pollo crispy') && !c.descLower.includes('pechuga crispy') && !c.isNuggets && !c.esCombo, default: () => 'SÍ' },
         { name: 'Chuleta', type: 'toggle', applies: c => c.descLower.includes('chuleta') && !c.esCombo, default: () => 'SÍ' },
         { name: 'Tocineta', type: 'toggle', applies: c => c.descLower.includes('tocineta') && !c.esCombo && !c.nameLower.includes('promo') || c.esComboHouse, default: () => 'SÍ' },
-        { name: 'Queso Americano', type: 'toggle', applies: c => c.descLower.includes('queso') && !c.esCombo && !c.isCrispyBowl, default: () => 'SÍ' },
+        { name: 'Queso Americano', type: 'toggle', applies: c => (c.descLower.includes('queso') || c.descLower.includes('facilista')) && !c.esCombo && !c.isCrispyBowl, default: () => 'SÍ' },
         { name: 'Queso Fundido', type: 'toggle', applies: c => c.descLower.includes('queso') && !c.esCombo && c.isCrispyBowl || c.esComboHouse, default: () => 'SÍ' },
+        { name: 'Cebolla', type: 'toggle', applies: c => c.descLower.includes('cebolla') && !c.esCombo, default: () => 'SÍ' },
         { name: 'Pepinillos', type: 'toggle', applies: c => c.descLower.includes('pepinillo') && !c.esCombo, default: () => 'SÍ' },
         { name: 'Lechuga', type: 'toggle', applies: c => c.descLower.includes('lechuga') && !c.esCombo || c.esComboHouse, default: () => 'SÍ' },
         { name: 'Mayonesa', type: 'toggle', applies: c => c.descLower.includes('mayonesa') && !c.esCombo, default: () => 'SÍ' },

@@ -287,6 +287,33 @@
             min-height: 2px;
         }
         .bar-fill.today { background: linear-gradient(to top, #22c55e, #4ade80); }
+        .bar-fill.current-month {
+            background: linear-gradient(to top, #22c55e, #4ade80);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+        }
+        .bar-fill.best-month {
+            background: linear-gradient(to top, #f59e0b, #fbbf24);
+        }
+        .month-card-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 14px;
+            padding: 14px 18px;
+            transition: all 0.25s ease;
+        }
+        .month-card-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+        .month-card-item.is-current {
+            border-left: 4px solid #22c55e;
+            background: rgba(34, 197, 94, 0.05);
+            border-color: rgba(34, 197, 94, 0.25);
+        }
+        .month-card-item.is-best {
+            border-left: 4px solid #f59e0b;
+        }
         .bar-label {
             font-size: 0.5rem;
             color: rgba(255,255,255,0.3);
@@ -499,6 +526,38 @@
                     <div class="chart-card-title w-full">🛵 Delivery vs Pickup</div>
                     <div id="donut-chart" class="flex flex-col items-center justify-center flex-1">
                         <div class="text-gray-500 text-xs">Cargando...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Histórico de Ingresos por Mes -->
+            <div class="mb-8">
+                <div class="chart-card">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                        <div>
+                            <div class="chart-card-title mb-1">📅 Histórico de Ingresos por Mes</div>
+                            <p class="text-gray-400 text-xs">Total generado, pedidos y ticket promedio mes a mes</p>
+                        </div>
+                        <div id="monthly-summary-badges" class="flex flex-wrap gap-2 text-xs">
+                            <div class="text-gray-500 text-xs">Cargando resumen...</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Gráfico de barras mensual -->
+                    <div class="mb-6 bg-black/20 rounded-xl p-4 border border-white/5">
+                        <div class="text-xs text-gray-400 font-semibold mb-3 flex items-center justify-between">
+                            <span>Evolución Mensual ($ USD)</span>
+                            <span class="text-[11px] text-gray-500">Últimos meses registrados</span>
+                        </div>
+                        <div id="monthly-bar-chart" class="bar-chart-container" style="height: 125px;">
+                            <div class="text-gray-500 text-xs text-center w-full py-4">Cargando gráfico mensual...</div>
+                        </div>
+                    </div>
+
+                    <!-- Desglose detallado por mes -->
+                    <div class="text-xs text-gray-400 font-semibold mb-3">Detalle de Facturación por Mes</div>
+                    <div id="monthly-breakdown-list" class="space-y-3">
+                        <div class="text-gray-500 text-xs text-center py-6">Cargando desglose mensual...</div>
                     </div>
                 </div>
             </div>
@@ -1009,6 +1068,27 @@
                 });
         }
 
+        function parseOrderDate(order) {
+            if (order.timestamp && typeof order.timestamp === 'number') {
+                const d = new Date(order.timestamp);
+                if (!isNaN(d.getTime())) return d;
+            }
+            if (order.fecha) {
+                try {
+                    const partes = order.fecha.split(', ');
+                    if (partes.length >= 2) {
+                        const [dia, mes, anio] = partes[0].split('/').map(Number);
+                        const [hora, min, seg] = partes[1].split(':').map(Number);
+                        const d = new Date(anio, mes - 1, dia, hora || 0, min || 0, seg || 0);
+                        if (!isNaN(d.getTime())) return d;
+                    }
+                    const d = new Date(order.fecha);
+                    if (!isNaN(d.getTime())) return d;
+                } catch (e) {}
+            }
+            return null;
+        }
+
         function procesarIngresos(allOrders) {
             const now = new Date();
             const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -1022,6 +1102,17 @@
             let sumToday = 0, countToday = 0;
             let sumWeek = 0, countWeek = 0;
             let sumMonth = 0, countMonth = 0;
+            let historicRevenueTotal = 0;
+
+            const monthNamesLong = [
+                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ];
+            const monthNamesShort = [
+                'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+                'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+            ];
+            const monthlyMap = {};
 
             // Producto counts
             const productCounts = {};
@@ -1049,13 +1140,35 @@
             let printedItems = 0;
 
             allOrders.forEach(order => {
-                const ts = order.timestamp || 0;
-                const total = order.total_usd || 0;
+                const orderDate = parseOrderDate(order);
+                const ts = orderDate ? orderDate.getTime() : (order.timestamp || 0);
+                const total = Number(order.total_usd) || 0;
+                historicRevenueTotal += total;
 
                 // KPI sums
                 if (ts >= startOfToday)    { sumToday += total; countToday++; }
                 if (ts >= startOfWeekTime) { sumWeek  += total; countWeek++;  }
                 if (ts >= startOfMonthTime){ sumMonth += total; countMonth++; }
+
+                // Agrupación mensual
+                if (orderDate) {
+                    const year = orderDate.getFullYear();
+                    const monthIdx = orderDate.getMonth();
+                    const monthKey = `${year}-${String(monthIdx + 1).padStart(2, '0')}`;
+                    if (!monthlyMap[monthKey]) {
+                        monthlyMap[monthKey] = {
+                            key: monthKey,
+                            year: year,
+                            monthIndex: monthIdx,
+                            monthName: `${monthNamesLong[monthIdx]} ${year}`,
+                            shortLabel: `${monthNamesShort[monthIdx]} '${String(year).slice(-2)}`,
+                            sum: 0,
+                            count: 0
+                        };
+                    }
+                    monthlyMap[monthKey].sum += total;
+                    monthlyMap[monthKey].count++;
+                }
 
                 // Top productos
                 (order.productos || []).forEach(p => {
@@ -1121,6 +1234,151 @@
             const ticketAvg = countMonth > 0 ? sumMonth / countMonth : 0;
             document.getElementById('income-avg').textContent = `$${ticketAvg.toFixed(2)}`;
             document.getElementById('count-avg').textContent  = 'este mes';
+
+            // --- Procesar y Renderizar Ingresos por Mes ---
+            const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            const sortedMonthKeys = Object.keys(monthlyMap).sort(); // Cronológico
+            
+            // Calcular crecimiento mes a mes
+            let prevMonthSum = null;
+            let bestMonthKey = null;
+            let maxMonthSum = 0;
+
+            sortedMonthKeys.forEach(key => {
+                const m = monthlyMap[key];
+                if (prevMonthSum !== null && prevMonthSum > 0) {
+                    m.growth = ((m.sum - prevMonthSum) / prevMonthSum) * 100;
+                } else {
+                    m.growth = null;
+                }
+                prevMonthSum = m.sum;
+
+                if (m.sum > maxMonthSum) {
+                    maxMonthSum = m.sum;
+                    bestMonthKey = key;
+                }
+            });
+
+            // Insignias resumen mensual
+            const badgesContainer = document.getElementById('monthly-summary-badges');
+            if (badgesContainer) {
+                const totalMonths = sortedMonthKeys.length;
+                const avgMonthly = totalMonths > 0 ? (historicRevenueTotal / totalMonths) : 0;
+                const bestMonthName = bestMonthKey ? monthlyMap[bestMonthKey].monthName : '—';
+                const bestMonthSum = bestMonthKey ? monthlyMap[bestMonthKey].sum : 0;
+
+                badgesContainer.innerHTML = `
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-gray-300">
+                        <span class="text-gray-400">Total Histórico:</span>
+                        <span class="font-bold text-green-400">$${historicRevenueTotal.toFixed(2)}</span>
+                    </div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-gray-300">
+                        <span class="text-gray-400">Promedio/Mes:</span>
+                        <span class="font-bold text-white">$${avgMonthly.toFixed(2)}</span>
+                    </div>
+                    ${bestMonthKey ? `
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300">
+                        <span>🏆 Récord:</span>
+                        <span class="font-bold">${bestMonthName} ($${bestMonthSum.toFixed(2)})</span>
+                    </div>` : ''}
+                `;
+            }
+
+            // Gráfico de barras mensual (últimos 12 meses cronológicos)
+            const chartMonths = sortedMonthKeys.slice(-12);
+            const chartMax = Math.max(...chartMonths.map(k => monthlyMap[k].sum), 0.01);
+            const monthBarHTML = chartMonths.map(key => {
+                const m = monthlyMap[key];
+                const pct = Math.max((m.sum / chartMax) * 100, m.count > 0 ? 6 : 0);
+                const isCurrent = key === currentMonthKey;
+                const isBest = key === bestMonthKey && m.sum > 0;
+                const amountStr = m.sum > 0 ? (m.sum >= 1000 ? `$${(m.sum / 1000).toFixed(1)}k` : `$${m.sum.toFixed(0)}`) : '$0';
+                return `
+                    <div class="bar-col" title="${m.monthName}: $${m.sum.toFixed(2)} (${m.count} pedidos)">
+                        <div class="bar-amount">${amountStr}</div>
+                        <div class="bar-fill ${isCurrent ? 'current-month' : (isBest ? 'best-month' : '')}" style="height:${pct}%"></div>
+                        <div class="bar-label">${m.shortLabel}</div>
+                    </div>`;
+            }).join('');
+            
+            const monthBarChartEl = document.getElementById('monthly-bar-chart');
+            if (monthBarChartEl) {
+                monthBarChartEl.innerHTML = chartMonths.length > 0
+                    ? monthBarHTML
+                    : '<div class="text-gray-500 text-xs text-center w-full py-4">No hay datos mensuales registrados aún</div>';
+            }
+
+            // Desglose mensual detallado (orden descendente: más reciente primero)
+            const reverseMonthKeys = [...sortedMonthKeys].reverse();
+            const monthlyBreakdownHTML = reverseMonthKeys.map(key => {
+                const m = monthlyMap[key];
+                const isCurrent = key === currentMonthKey;
+                const isBest = key === bestMonthKey && m.sum > 0;
+                const avgTicket = m.count > 0 ? (m.sum / m.count) : 0;
+                const relativePct = maxMonthSum > 0 ? Math.min(100, (m.sum / maxMonthSum) * 100) : 0;
+
+                let growthHTML = '';
+                if (m.growth !== null) {
+                    if (m.growth > 0) {
+                        growthHTML = `<span class="text-green-400 font-semibold text-xs inline-flex items-center gap-0.5">▲ +${m.growth.toFixed(1)}%</span>`;
+                    } else if (m.growth < 0) {
+                        growthHTML = `<span class="text-red-400 font-semibold text-xs inline-flex items-center gap-0.5">▼ ${m.growth.toFixed(1)}%</span>`;
+                    } else {
+                        growthHTML = `<span class="text-gray-400 font-medium text-xs">0.0%</span>`;
+                    }
+                } else {
+                    growthHTML = `<span class="text-gray-500 text-xs">Inicio</span>`;
+                }
+
+                let badgeHTML = '';
+                if (isCurrent) {
+                    badgeHTML += `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30 uppercase tracking-wider">Mes actual</span>`;
+                }
+                if (isBest) {
+                    badgeHTML += `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase tracking-wider">🏆 Récord</span>`;
+                }
+
+                return `
+                    <div class="month-card-item ${isCurrent ? 'is-current' : ''} ${isBest && !isCurrent ? 'is-best' : ''}">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2.5">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="font-bold text-white text-sm md:text-base">${m.monthName}</span>
+                                ${badgeHTML}
+                            </div>
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-xs text-gray-400">Total Generado:</span>
+                                <span class="text-lg md:text-xl font-bold text-green-400">$${m.sum.toFixed(2)}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-2 py-2 border-t border-white/5 text-xs">
+                            <div>
+                                <span class="text-gray-400 block text-[10px] md:text-[11px] uppercase tracking-wider">Pedidos</span>
+                                <span class="text-white font-semibold">${m.count} orden${m.count !== 1 ? 'es' : ''}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400 block text-[10px] md:text-[11px] uppercase tracking-wider">Ticket Promedio</span>
+                                <span class="text-white font-semibold">$${avgTicket.toFixed(2)}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400 block text-[10px] md:text-[11px] uppercase tracking-wider">vs Mes Anterior</span>
+                                <div>${growthHTML}</div>
+                            </div>
+                        </div>
+
+                        <div class="w-full bg-white/5 rounded-full h-1.5 mt-2 overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-500 ${isCurrent ? 'bg-gradient-to-r from-green-500 to-emerald-400' : 'bg-gradient-to-r from-red-600 to-red-400'}" style="width: ${relativePct}%;"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const breakdownEl = document.getElementById('monthly-breakdown-list');
+            if (breakdownEl) {
+                breakdownEl.innerHTML = reverseMonthKeys.length > 0
+                    ? monthlyBreakdownHTML
+                    : '<div class="text-gray-500 text-xs text-center py-6">No hay pedidos registrados con fechas válidas.</div>';
+            }
 
             // --- KPIs secundarios ---
             document.getElementById('stat-total-orders').textContent = allOrders.length;

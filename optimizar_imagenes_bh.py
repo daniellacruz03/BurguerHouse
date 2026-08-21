@@ -18,8 +18,9 @@ def optimizar_todo(directorio_proyecto):
     optimizadas = 0
     ahorradas_kb = 0
 
+    EXCLUDED = ('node_modules', '.git', '.firebase', 'assets', 'videos_crudos', 'android', 'www', '.gradle', '.idea', '.kotlin', 'build')
     for raiz, dirs, archivos in os.walk(directorio_proyecto):
-        dirs[:] = [d for d in dirs if d not in ('node_modules', '.git', '.firebase', 'assets', 'videos_crudos')]
+        dirs[:] = [d for d in dirs if d not in EXCLUDED]
 
         for archivo in archivos:
             extension_actual = os.path.splitext(archivo)[1].lower()
@@ -79,7 +80,7 @@ def optimizar_todo(directorio_proyecto):
     if imagenes_convertidas:
         print("Actualizando referencias en codigo...")
         for raiz, dirs, archivos in os.walk(directorio_proyecto):
-            dirs[:] = [d for d in dirs if d not in ('node_modules', '.git', '.firebase')]
+            dirs[:] = [d for d in dirs if d not in EXCLUDED]
             for archivo in archivos:
                 if not archivo.lower().endswith(tuple(extensiones_codigo)):
                     continue
