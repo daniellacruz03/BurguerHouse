@@ -41,20 +41,22 @@
 
     <!-- Meta Pixel Code -->
     <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1762934141516291');
-    fbq('track', 'PageView');
+        !function (f, b, e, v, n, t, s) {
+            if (f.fbq) return; n = f.fbq = function () {
+                n.callMethod ?
+                n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+            };
+            if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+            n.queue = []; t = b.createElement(e); t.async = !0;
+            t.src = v; s = b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t, s)
+        }(window, document, 'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '1762934141516291');
+        fbq('track', 'PageView');
     </script>
     <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=1762934141516291&ev=PageView&noscript=1"
-    /></noscript>
+            src="https://www.facebook.com/tr?id=1762934141516291&ev=PageView&noscript=1" /></noscript>
     <!-- End Meta Pixel Code -->
 
     <link rel="preload" href="images/logobh.webp" as="image">
@@ -184,6 +186,42 @@
         <section id="hamburguesas"
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:max-w-6xl lg:mx-auto">
 
+            <!-- DUO SMASH -->
+            <div class="menu-item">
+                <img src="images/smash house.webp" class="item-img-bg ajuste-subir" alt="Duo Smash" decoding="async"
+                    loading="lazy" width="900" height="500">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="badge-new">NUEVA</span>
+                        <span class="item-name">Duo Smash</span>
+                        <p class="item-desc">2 Smash House (pan de papa, doble carne smash, doble queso americano,
+                            cebolla y salsa de la casa) con papas fritas.</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="images/smash house.webp">
+                        <span class="item-price">$14,99</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SMASH HOUSE -->
+            <div class="menu-item">
+                <img src="images/smash house.webp" class="item-img-bg ajuste-subir" alt="Smash House" decoding="async"
+                    loading="lazy" width="900" height="500">
+                <div class="item-info-split">
+                    <div class="item-info">
+                        <span class="badge-new">NUEVA</span>
+                        <span class="item-name">Smash House</span>
+                        <p class="item-desc">Pan de papa, doble carne smash, doble queso americano, cebolla y nuestra
+                            salsa de la casa. Y si le sumas pepinillos… la llevas a otro nivel</p>
+                    </div>
+                    <div class="item-price-wrapper" data-img-src="images/smash house.webp">
+                        <span class="item-price">$8,49</span>
+                        <span class="item-ref">REF</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- PROMO CHEESE HOUSE -->
             <div class="menu-item promo-item">
                 <img src="images/cheesepromo.webp" class="item-img-bg ajuste-subir" alt="PROMO Cheese House"
@@ -249,22 +287,6 @@
                     </div>
                     <div class="item-price-wrapper" data-img-src="images/crispydeluxe.webp">
                         <span class="item-price">$9,99</span>
-                        <span class="item-ref">REF</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="menu-item">
-                <img src="images/smash house.webp" class="item-img-bg ajuste-subir" alt="Smash House"
-                    decoding="async" loading="lazy" width="900" height="500">
-                <div class="item-info-split">
-                    <div class="item-info">
-                        <span class="badge-new">NUEVA</span>
-                        <span class="item-name">Smash House</span>
-                        <p class="item-desc">Pan, doble carne, doble queso americano, tocineta, cebolla y salsa de la casa.</p>
-                    </div>
-                    <div class="item-price-wrapper" data-img-src="images/smash house.webp">
-                        <span class="item-price">$8,49</span>
                         <span class="item-ref">REF</span>
                     </div>
                 </div>
@@ -649,7 +671,6 @@
                     <span class="item-ref">REF</span>
                 </div>
             </div>
-            <!-- Ocultado temporalmente por falta de stock
             <div class="menu-item">
                 <div class="item-info"><span class="item-name">Coca-Cola Bombita 355 ML</span></div>
                 <div class="item-price-wrapper" data-img-src="images/cocacolabombita.webp">
@@ -657,7 +678,6 @@
                     <span class="item-ref">REF</span>
                 </div>
             </div>
-            -->
             <!-- <div class="menu-item hidden">
                 <div class="item-info"><span class="item-name">Coca-Cola Bombita Light 355 ML</span></div>
                 <div class="item-price-wrapper" data-img-src="images/cocacolalight.webp">
@@ -804,7 +824,9 @@
             <div class="footer-credits">
                 <p>&copy; 2026 <b>Burger House</b>. Todos los derechos reservados.</p>
                 <p>Las mejores hamburguesas de la ciudad.</p>
-                <p style="margin-top: 10px;"><a href="privacidad.html" style="color: rgba(255, 255, 255, 0.85); text-decoration: underline; font-weight: 500; font-size: 0.82rem; transition: opacity 0.2s ease;">Política de Privacidad</a></p>
+                <p style="margin-top: 10px;"><a href="privacidad.html"
+                        style="color: rgba(255, 255, 255, 0.85); text-decoration: underline; font-weight: 500; font-size: 0.82rem; transition: opacity 0.2s ease;">Política
+                        de Privacidad</a></p>
                 <div
                     style="margin-top: 25px; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(255, 255, 255, 0.5); display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px;">
                     <span>Digital Experience by</span>
@@ -812,7 +834,8 @@
                         target="_blank" rel="noopener noreferrer"
                         style="text-decoration: none; cursor: pointer; opacity: 0.65; transition: opacity 0.3s ease;"
                         onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.65'">
-                        <span class="logo-text" style="font-size: 1rem;">lacrush<span class="logo-sub">engineering</span></span>
+                        <span class="logo-text" style="font-size: 1rem;">lacrush<span
+                                class="logo-sub">engineering</span></span>
                     </a>
                 </div>
             </div>
@@ -1975,8 +1998,11 @@
                         <p>Presiona "Enviar Pedido" para enviar tu orden directamente por WhatsApp.</p>
                     </div>
                 </div>
-                <div style="text-align:center; padding: 15px 0 5px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 20px;">
-                    <a href="privacidad.html" style="color: #ffb703; font-size: 0.85rem; font-weight: 500; text-decoration: underline;">🔒 Política de Privacidad y Cookies</a>
+                <div
+                    style="text-align:center; padding: 15px 0 5px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 20px;">
+                    <a href="privacidad.html"
+                        style="color: #ffb703; font-size: 0.85rem; font-weight: 500; text-decoration: underline;">🔒
+                        Política de Privacidad y Cookies</a>
                 </div>
             </div>
         </div>

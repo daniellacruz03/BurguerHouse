@@ -80,22 +80,31 @@
         ]
     };
 
-    // --- FUNCIONES DEL COMBO HOUSE ---
+    // --- FUNCIONES DEL COMBO HOUSE / COMBOS MULTI-BURGER ---
     function updateComboTabsUI() {
-        const tabs = document.querySelectorAll('.combo-tab');
-        const currentBurgerSpan = document.getElementById('combo-current-burger');
+        const tabsNav = document.querySelector('.combo-tabs-nav');
+        const comboProgress = document.querySelector('.combo-progress');
+        const total = comboHouseState.burgers.length;
 
-        if (currentBurgerSpan) {
-            currentBurgerSpan.textContent = comboHouseState.activeBurgerIndex + 1;
+        if (comboProgress) {
+            comboProgress.innerHTML = `Configurando Hamburguesa <span id="combo-current-burger">${comboHouseState.activeBurgerIndex + 1}</span> de ${total}`;
         }
 
-        tabs.forEach((tab, index) => {
-            if (index === comboHouseState.activeBurgerIndex) {
-                tab.classList.add('active');
-            } else {
-                tab.classList.remove('active');
-            }
-        });
+        if (tabsNav) {
+            tabsNav.innerHTML = comboHouseState.burgers.map((b, index) => `
+                <button type="button" class="combo-tab ${index === comboHouseState.activeBurgerIndex ? 'active' : ''}" data-burger="${b.id}">
+                    Burger ${b.id}
+                </button>
+            `).join('');
+
+            tabsNav.querySelectorAll('.combo-tab').forEach((tab, index) => {
+                tab.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    switchComboBurger(index);
+                });
+            });
+        }
     }
 
     function switchComboBurger(index) {
@@ -145,18 +154,18 @@
     // --- BASE DE DATOS DINÁMICA DE EXTRAS ---
     const EXTRAS_DB = [
         // EXTRAS CON COSTO (Hamburguesas)
-        { name: 'Extra Pollo', price: 2.50, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
-        { name: 'Extra Carne', price: 2.50, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
-        { name: 'Extra Pollo Crispy', price: 3.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
-        { name: 'Extra Chuleta', price: 3.50, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
-        { name: 'Huevo (proteína)', price: 1.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
-        { name: 'Extra Cheese', price: 1.20, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
-        { name: 'Extra Tocineta', price: 2.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
-        { name: 'Extra Salsa de la Casa', price: 1.20, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
-        { name: 'Extra Lechuga', price: 1.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
-        { name: 'Extra Cebolla', price: 1.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
-        { name: 'Extra Pepinillos', price: 1.20, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
-        { name: 'Extra Salsa BBQ', price: 1.00, type: 'cost', applies: c => c.esHamburguesa && !c.esCombo || c.esComboHouse },
+        { name: 'Extra Pollo', price: 2.50, type: 'cost', applies: c => (c.esHamburguesa && !c.esCombo) || c.esCombo },
+        { name: 'Extra Carne', price: 2.50, type: 'cost', applies: c => (c.esHamburguesa && !c.esCombo) || c.esCombo },
+        { name: 'Extra Pollo Crispy', price: 3.00, type: 'cost', applies: c => (c.esHamburguesa && !c.esCombo) || c.esCombo },
+        { name: 'Extra Chuleta', price: 3.50, type: 'cost', applies: c => (c.esHamburguesa && !c.esCombo) || c.esCombo },
+        { name: 'Huevo (proteína)', price: 1.00, type: 'cost', applies: c => (c.esHamburguesa && !c.esCombo) || c.esCombo },
+        { name: 'Extra Cheese', price: 1.20, type: 'cost', applies: c => (c.esHamburguesa && !c.esCombo) || c.esCombo },
+        { name: 'Extra Tocineta', price: 2.00, type: 'cost', applies: c => (c.esHamburguesa && !c.esCombo) || c.esCombo },
+        { name: 'Extra Salsa de la Casa', price: 1.20, type: 'cost', applies: c => (c.esHamburguesa && !c.esCombo) || c.esCombo },
+        { name: 'Extra Lechuga', price: 1.00, type: 'cost', applies: c => (c.esHamburguesa && !c.esCombo) || c.esCombo },
+        { name: 'Extra Cebolla', price: 1.00, type: 'cost', applies: c => (c.esHamburguesa && !c.esCombo) || c.esCombo },
+        { name: 'Extra Pepinillos', price: 1.20, type: 'cost', applies: c => (c.esHamburguesa && !c.esCombo) || c.esCombo },
+        { name: 'Extra Salsa BBQ', price: 1.00, type: 'cost', applies: c => (c.esHamburguesa && !c.esCombo) || c.esCombo },
 
         // EXTRAS CON COSTO (Menú Kids)
         { name: 'Extra Huevito Sorpresa', price: 1.00, type: 'cost', applies: c => (c.esHamburguesa && !c.esCombo) || c.esKids },
@@ -169,20 +178,20 @@
         // COMBO PROMO (Lata + Papitas) - Solo para tarjetas de promo
         { name: 'Papitas + Lata', price: CONFIG.PROMO_COMBO_EXTRA, type: 'cost', applies: c => c.nameLower.includes('promo') && !c.esCombo },
 
-        // INGREDIENTES BASE (Interruptores SÍ/NO) -> APLICAN ESTRICTAMENTE LEYENDO LA DESCRIPCIÓN
-        { name: 'Pan', type: 'toggle', applies: c => c.descLower.includes('pan') && !c.esCombo || c.esComboHouse, default: () => 'SÍ' },
-        { name: 'Carne', type: 'toggle', applies: c => c.descLower.includes('carne') && !c.esCombo || c.esComboHouse, default: () => 'SÍ' },
+        // INGREDIENTES BASE (Interruptores SÍ/NO) -> APLICAN ESTRICTAMENTE LEYENDO LA DESCRIPCIÓN O COMBOS
+        { name: 'Pan', type: 'toggle', applies: c => (c.descLower.includes('pan') && !c.esCombo) || c.esCombo, default: () => 'SÍ' },
+        { name: 'Carne', type: 'toggle', applies: c => (c.descLower.includes('carne') && !c.esCombo) || c.esCombo, default: () => 'SÍ' },
         { name: 'Pollo Crispy', type: 'toggle', applies: c => (c.descLower.includes('pollo crispy') || c.descLower.includes('pechuga crispy')) && !c.isNuggets && !c.esCombo, default: () => 'SÍ' },
         { name: 'Pollo a la plancha', type: 'toggle', applies: c => c.descLower.includes('pollo') && !c.descLower.includes('pollo crispy') && !c.descLower.includes('pechuga crispy') && !c.isNuggets && !c.esCombo, default: () => 'SÍ' },
         { name: 'Chuleta', type: 'toggle', applies: c => c.descLower.includes('chuleta') && !c.esCombo, default: () => 'SÍ' },
-        { name: 'Tocineta', type: 'toggle', applies: c => c.descLower.includes('tocineta') && !c.esCombo && !c.nameLower.includes('promo') || c.esComboHouse, default: () => 'SÍ' },
-        { name: 'Queso Americano', type: 'toggle', applies: c => (c.descLower.includes('queso') || c.descLower.includes('facilista')) && !c.esCombo && !c.isCrispyBowl, default: () => 'SÍ' },
-        { name: 'Queso Fundido', type: 'toggle', applies: c => c.descLower.includes('queso') && !c.esCombo && c.isCrispyBowl || c.esComboHouse, default: () => 'SÍ' },
-        { name: 'Cebolla', type: 'toggle', applies: c => c.descLower.includes('cebolla') && !c.esCombo, default: () => 'SÍ' },
-        { name: 'Pepinillos', type: 'toggle', applies: c => c.descLower.includes('pepinillo') && !c.esCombo, default: () => 'SÍ' },
-        { name: 'Lechuga', type: 'toggle', applies: c => c.descLower.includes('lechuga') && !c.esCombo || c.esComboHouse, default: () => 'SÍ' },
+        { name: 'Tocineta', type: 'toggle', applies: c => (c.descLower.includes('tocineta') && !c.nameLower.includes('promo') && !c.esCombo) || c.esComboHouse, default: () => 'SÍ' },
+        { name: 'Queso Americano', type: 'toggle', applies: c => ((c.descLower.includes('queso') || c.descLower.includes('facilista')) && !c.esCombo && !c.isCrispyBowl) || c.esCombo, default: () => 'SÍ' },
+        { name: 'Queso Fundido', type: 'toggle', applies: c => (c.descLower.includes('queso') && !c.esCombo && c.isCrispyBowl) || c.esComboHouse, default: () => 'SÍ' },
+        { name: 'Cebolla', type: 'toggle', applies: c => (c.descLower.includes('cebolla') && !c.esCombo) || c.isDuoSmash, default: () => 'SÍ' },
+        { name: 'Pepinillos', type: 'toggle', applies: c => c.descLower.includes('pepinillo') && !c.nameLower.includes('smash house') && !c.isDuoSmash && !c.esCombo, default: () => 'SÍ' },
+        { name: 'Lechuga', type: 'toggle', applies: c => (c.descLower.includes('lechuga') && !c.esCombo) || c.esComboHouse, default: () => 'SÍ' },
         { name: 'Mayonesa', type: 'toggle', applies: c => c.descLower.includes('mayonesa') && !c.esCombo, default: () => 'SÍ' },
-        { name: 'Salsa de la Casa', type: 'toggle', applies: c => c.descLower.includes('salsa de la casa') && !c.esCombo, default: () => 'SÍ' },
+        { name: 'Salsa de la Casa', type: 'toggle', applies: c => (c.descLower.includes('salsa de la casa') && !c.esCombo) || c.esCombo, default: () => 'SÍ' },
         { name: 'Salsa BBQ', type: 'toggle', applies: c => c.descLower.includes('barbecue') && !c.esCombo, default: () => 'SÍ' },
         { name: 'Huevito Sorpresa', type: 'toggle', applies: c => c.descLower.includes('huevito sorpresa') && !c.esCombo, default: () => 'SÍ' }
     ];
@@ -1016,7 +1025,10 @@
                 const descLower = desc.toLowerCase();
                 const esKids = !!item.closest('#kids');
                 esHamburguesa = !!item.closest('#hamburguesas') || !!item.closest('#ensaladas') || esKids || nameLower === 'crispy bowl';
-                esComboHouse = nameLower.includes('combo house');
+                const isComboHouse4 = nameLower.includes('combo house');
+                const isDuoSmash = nameLower.includes('duo smash') || nameLower.includes('dúo smash');
+                esComboHouse = isComboHouse4 || isDuoSmash;
+                const comboBurgerCount = isDuoSmash ? 2 : (isComboHouse4 ? 4 : 0);
                 const esBebida = !!item.closest('#bebidas');
 
                 modal?.querySelector('.modal-content')?.classList.toggle('food-modal', !esBebida);
@@ -1033,19 +1045,14 @@
                 if (esComboHouse) {
                     comboHouseState = {
                         activeBurgerIndex: 0,
-                        burgers: [
-                            { id: 1, ingredientes: {}, extras: {} },
-                            { id: 2, ingredientes: {}, extras: {} },
-                            { id: 3, ingredientes: {}, extras: {} },
-                            { id: 4, ingredientes: {}, extras: {} }
-                        ]
+                        burgers: Array.from({ length: comboBurgerCount }, (_, i) => ({ id: i + 1, ingredientes: {}, extras: {} }))
                     };
                     updateComboTabsUI();
                 }
 
                 // Generación Dinámica de Extras ESTRICTA basada en texto de descripción
                 if (extrasGrid) {
-                    // Mostrar pestañas si es combo house
+                    // Mostrar pestañas si es combo house o duo smash
                     const comboTabs = document.getElementById('combo-tabs');
                     if (comboTabs) {
                         if (esComboHouse) {
@@ -1056,7 +1063,7 @@
                     }
 
                     const ctx = {
-                        nameLower, descLower, esHamburguesa, esKids, esCombo: esComboHouse, esComboHouse,
+                        nameLower, descLower, esHamburguesa, esKids, esCombo: esComboHouse, esComboHouse: isComboHouse4, isDuoSmash,
                         isNuggets: nameLower.includes('nuggets'),
                         isCrispyBowl: nameLower === 'crispy bowl',
                         isPolloCrispy: descLower.includes('pollo crispy'),
@@ -1339,14 +1346,17 @@
                         extrasSeleccionados.push(...allBurgerModifications);
                     }
 
-                    // Agregar Pepsi por defecto (siempre presente para Combo House)
-                    extrasSeleccionados.push({
-                        nombre: '(+ Pepsi 1L)',
-                        qty: 1,
-                        val: '1',
-                        isToggle: false,
-                        precio: 0
-                    });
+                    // Agregar Pepsi por defecto (solo presente para Combo House)
+                    const currentProductName = modalTitle?.innerText?.toLowerCase() ?? '';
+                    if (currentProductName.includes('combo house')) {
+                        extrasSeleccionados.push({
+                            nombre: '(+ Pepsi 1L)',
+                            qty: 1,
+                            val: '1',
+                            isToggle: false,
+                            precio: 0
+                        });
+                    }
 
                     // El subtotal ahora debe usar totalExtrasCost
                     const subtotal = (basePrice + totalExtrasCost) * currentMainQty;
