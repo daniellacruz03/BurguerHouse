@@ -184,7 +184,7 @@
         { name: 'Pollo Crispy', type: 'toggle', applies: c => (c.descLower.includes('pollo crispy') || c.descLower.includes('pechuga crispy')) && !c.isNuggets && !c.esCombo, default: () => 'SÍ' },
         { name: 'Pollo a la plancha', type: 'toggle', applies: c => c.descLower.includes('pollo') && !c.descLower.includes('pollo crispy') && !c.descLower.includes('pechuga crispy') && !c.isNuggets && !c.esCombo, default: () => 'SÍ' },
         { name: 'Chuleta', type: 'toggle', applies: c => c.descLower.includes('chuleta') && !c.esCombo, default: () => 'SÍ' },
-        { name: 'Tocineta', type: 'toggle', applies: c => (c.descLower.includes('tocineta') && !c.nameLower.includes('promo') && !c.esCombo) || c.esComboHouse, default: () => 'SÍ' },
+        { name: 'Tocineta', type: 'toggle', applies: c => (c.descLower.includes('tocineta') && !c.nameLower.includes('promo') && !c.esCombo) || c.esComboHouse || c.isDuoSmash, default: () => 'SÍ' },
         { name: 'Queso Americano', type: 'toggle', applies: c => ((c.descLower.includes('queso') || c.descLower.includes('facilista')) && !c.esCombo && !c.isCrispyBowl) || c.esCombo, default: () => 'SÍ' },
         { name: 'Queso Fundido', type: 'toggle', applies: c => (c.descLower.includes('queso') && !c.esCombo && c.isCrispyBowl) || c.esComboHouse, default: () => 'SÍ' },
         { name: 'Cebolla', type: 'toggle', applies: c => (c.descLower.includes('cebolla') && !c.esCombo) || c.isDuoSmash, default: () => 'SÍ' },
