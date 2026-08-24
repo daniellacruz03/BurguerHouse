@@ -14,8 +14,8 @@
         WEEKDAY_CLOSE: 1350,
         WEEKEND_OPEN: 720,
         PROMO_BASE_PRICE: 6.5,
-        PROMO_COMBO_PRICE: 9.0,
-        PROMO_COMBO_EXTRA: 2.5
+        PROMO_COMBO_PRICE: 8.5,
+        PROMO_COMBO_EXTRA: 2.0
     };
 
     // Referencia mutable a updateTotal (se asigna dentro del DOMContentLoaded)
@@ -175,8 +175,8 @@
         { name: 'Servicio de Ketchup', type: 'toggle', applies: c => c.isNuggets, default: () => 'NO' }, // Por defecto NO
         { name: 'Servicio de Salsa de la Casa', type: 'toggle', applies: c => c.isNuggets, default: () => 'SÍ' }, // Por defecto SÍ
 
-        // COMBO PROMO (Lata + Papitas) - Solo para tarjetas de promo
-        { name: 'Papitas + Lata', price: CONFIG.PROMO_COMBO_EXTRA, type: 'cost', applies: c => c.nameLower.includes('promo') && !c.esCombo },
+        // COMBO PROMO (Bombita + Papitas) - Solo para tarjetas de promo
+        { name: 'Papitas + Bombita', price: CONFIG.PROMO_COMBO_EXTRA, type: 'cost', applies: c => c.nameLower.includes('promo') && !c.esCombo },
 
         // INGREDIENTES BASE (Interruptores SÍ/NO) -> APLICAN ESTRICTAMENTE LEYENDO LA DESCRIPCIÓN O COMBOS
         { name: 'Pan', type: 'toggle', applies: c => (c.descLower.includes('pan') && !c.esCombo) || c.esCombo, default: () => 'SÍ' },
@@ -548,11 +548,27 @@
         // Interruptor de combo
         document.getElementById('promo-combo-option')?.addEventListener('click', function () {
             this.classList.toggle('selected');
+            const isSelected = this.classList.contains('selected');
             const qtyVal = this.querySelector('.extra-qty-val');
             if (qtyVal) {
-                qtyVal.innerText = this.classList.contains('selected') ? 'SÍ' : 'NO';
+                qtyVal.innerText = isSelected ? 'SÍ' : 'NO';
+            }
+            const flavorContainer = document.getElementById('promo-bombita-flavor-container');
+            if (flavorContainer) {
+                flavorContainer.classList.toggle('hidden', !isSelected);
             }
             updatePromoPrice();
+        });
+
+        // Delegación de eventos para botones de selector de sabor de Bombita
+        document.addEventListener('click', (e) => {
+            const flavorBtn = e.target.closest('.promo-flavor-btn');
+            if (!flavorBtn) return;
+            const parentGrid = flavorBtn.closest('.promo-flavor-grid');
+            if (parentGrid) {
+                parentGrid.querySelectorAll('.promo-flavor-btn').forEach(btn => btn.classList.remove('active'));
+                flavorBtn.classList.add('active');
+            }
         });
 
         // Botón de cerrar modal de selección de promos
@@ -588,8 +604,10 @@
             // Extras para el combo
             const extras = [];
             if (isCombo) {
+                const activeFlavorBtn = document.querySelector('#promo-flavor-options .promo-flavor-btn.active');
+                const selectedFlavor = activeFlavorBtn ? (activeFlavorBtn.dataset.flavor || 'Coca-Cola Bombita') : 'Coca-Cola Bombita';
                 extras.push({
-                    nombre: 'Lata',
+                    nombre: `Papitas + ${selectedFlavor}`,
                     qty: 1,
                     val: '1',
                     isToggle: false,
@@ -1075,11 +1093,11 @@
                     const toggleExtras = applicableExtras.filter(ex => ex.type === 'toggle'); // Separa los toggles
                     const costExtras = applicableExtras.filter(ex => ex.type === 'cost'); // Separa los extras con costo
 
-                    // Para promos, poner "Papitas + Lata" primero
+                    // Para promos, poner "Papitas + Bombita" primero
                     let orderedExtras;
                     if (ctx.nameLower.includes('promo')) {
-                        const promoCombo = costExtras.find(ex => ex.name === 'Papitas + Lata');
-                        const otherCostExtras = costExtras.filter(ex => ex.name !== 'Papitas + Lata');
+                        const promoCombo = costExtras.find(ex => ex.name === 'Papitas + Bombita');
+                        const otherCostExtras = costExtras.filter(ex => ex.name !== 'Papitas + Bombita');
                         orderedExtras = promoCombo ? [promoCombo, ...toggleExtras, ...otherCostExtras] : [...toggleExtras, ...costExtras];
                     } else {
                         orderedExtras = [...toggleExtras, ...costExtras]; // Une, poniendo los toggles primero
@@ -1129,13 +1147,13 @@
                             </div>
                         `;
                     } else {
-                        // Para productos normales, renderizado estándar
+                        // Para productos normales y promos, renderizado estándar
                         extrasHTML = orderedExtras.map(ex => {
                             const isToggle = ex.type === 'toggle';
-                            const defaultVal = isToggle ? ((ex.default && typeof ex.default === 'function') ? ex.default(ctx) : 'SÍ') : '0'; // Manejar función default
+                            const defaultVal = isToggle ? ((ex.default && typeof ex.default === 'function') ? ex.default(ctx) : 'SÍ') : '0';
                             const isSelected = isToggle && defaultVal === 'SÍ';
 
-                            return `
+                            const cardHtml = `
                             <div class="extra-card ${isSelected ? 'selected' : ''}" data-extra-price="${isToggle ? 0 : ex.price}" data-is-toggle="${isToggle}" data-extra-name="${ex.name}">
                                 <div class="extra-info-text">
                                     <span class="extra-name">${ex.name}</span>
@@ -1155,6 +1173,32 @@
                                     </div>`
                                 }
                             </div>`;
+
+                            if (ex.name === 'Papitas + Bombita') {
+                                return cardHtml + `
+                                <div id="modal-burger-flavor-container" class="promo-bombita-container hidden">
+                                    <h4 class="promo-flavor-title">Sabor de tu Bombita</h4>
+                                    <div class="promo-flavor-grid" id="modal-burger-flavor-options">
+                                        <button type="button" class="promo-flavor-btn active" data-flavor="Coca-Cola Bombita">
+                                            <span class="flavor-dot red"></span>
+                                            <span class="flavor-name">Coca-Cola</span>
+                                        </button>
+                                        <button type="button" class="promo-flavor-btn" data-flavor="Coca-Cola Bombita Light">
+                                            <span class="flavor-dot silver"></span>
+                                            <span class="flavor-name">Light</span>
+                                        </button>
+                                        <button type="button" class="promo-flavor-btn" data-flavor="Bombita Frescolita">
+                                            <span class="flavor-dot orange"></span>
+                                            <span class="flavor-name">Frescolita</span>
+                                        </button>
+                                        <button type="button" class="promo-flavor-btn" data-flavor="Bombita Uva">
+                                            <span class="flavor-dot purple"></span>
+                                            <span class="flavor-name">Uva</span>
+                                        </button>
+                                    </div>
+                                </div>`;
+                            }
+                            return cardHtml;
                         }).join('');
                     }
 
@@ -1252,6 +1296,16 @@
                     }
                 });
             }
+
+            // Mostrar u ocultar selector de sabor de bombita en promo
+            if (card.dataset.extraName === 'Papitas + Bombita') {
+                const qty = parseInt(valSpan.innerText, 10) || 0;
+                const burgerFlavorContainer = document.getElementById('modal-burger-flavor-container');
+                if (burgerFlavorContainer) {
+                    burgerFlavorContainer.classList.toggle('hidden', qty === 0);
+                }
+            }
+
             updateTotal();
         });
 
@@ -1390,8 +1444,14 @@
                         }
 
                         if (isModified) {
+                            let extraFinalName = nombre;
+                            if (nombre === 'Papitas + Bombita') {
+                                const activeFlavorBtn = document.querySelector('#modal-burger-flavor-options .promo-flavor-btn.active');
+                                const selectedFlavor = activeFlavorBtn ? (activeFlavorBtn.dataset.flavor || 'Coca-Cola Bombita') : 'Coca-Cola Bombita';
+                                extraFinalName = `Papitas + ${selectedFlavor}`;
+                            }
                             extrasSeleccionados.push({
-                                nombre, qty, val: valText, isToggle,
+                                nombre: extraFinalName, qty, val: valText, isToggle,
                                 precio: (parseFloat(card.dataset.extraPrice || '0') * qty)
                             });
                         }
