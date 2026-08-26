@@ -1191,10 +1191,10 @@
                                             <span class="flavor-dot orange"></span>
                                             <span class="flavor-name">Frescolita</span>
                                         </button>
-                                        <button type="button" class="promo-flavor-btn" data-flavor="Bombita Uva">
+                                        <!-- <button type="button" class="promo-flavor-btn" data-flavor="Bombita Uva">
                                             <span class="flavor-dot purple"></span>
                                             <span class="flavor-name">Uva</span>
-                                        </button>
+                                        </button> -->
                                     </div>
                                 </div>`;
                             }
