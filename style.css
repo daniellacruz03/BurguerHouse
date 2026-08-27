@@ -2733,3 +2733,8 @@ section:not(#bebidas) .item-price-wrapper { display: flex !important; flex-direc
   font-weight: 400;
   color: #86868b;
 }
+
+#bebidas .menu-item.hidden,
+.menu-item.hidden {
+    display: none !important;
+}
