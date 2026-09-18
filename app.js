@@ -444,7 +444,9 @@
                 if (searchInput) searchInput.value = '';
 
                 document.querySelectorAll('#main-menu section').forEach((section) => {
-                    if (category === 'all' || section.id === category) {
+                    if (section.id === 'arma-tu-burger') {
+                        section.classList.toggle('hidden-search', category !== 'arma-tu-burger');
+                    } else if (category === 'all' || section.id === category) {
                         section.classList.remove('hidden-search');
                         section.querySelectorAll('.menu-item').forEach((item) => item.classList.remove('hidden-search'));
                     } else {
@@ -1824,6 +1826,292 @@
                 window.location.reload();
             }, 350);
         };
+        // ==========================================================================
+        // MÓDULO: ARMA TU PROPIA BURGER (ESTILO PAPA'S BURGERIA)
+        // ==========================================================================
+        function initCustomBurgerBuilder() {
+            const section = document.getElementById('arma-tu-burger');
+            if (!section) return;
+
+            const state = {
+                protein: 'carne',
+                proteinPrice: 6.50,
+                proteinName: 'Carne 100% Res Smash',
+                cheese: true,
+                cheesePrice: 0.00,
+                bacon: true,
+                baconPrice: 1.00,
+                lettuce: true,
+                lettucePrice: 0.00,
+                pickles: true,
+                picklesPrice: 0.00,
+                sauces: {
+                    casa: true,
+                    bbq: false,
+                    mayo: false
+                },
+                isCombo: false,
+                comboPrice: 2.00,
+                comboFlavor: 'Coca-Cola Bombita'
+            };
+
+            const priceDisplay = document.getElementById('builder-price-val');
+            const footerTotal = document.getElementById('builder-footer-total');
+            const layerText = document.getElementById('builder-layer-text');
+            const nameInput = document.getElementById('builder-burger-name');
+            const btnReset = document.getElementById('btn-builder-reset');
+            const btnAddOrder = document.getElementById('btn-add-custom-burger');
+            const comboFlavorBox = document.getElementById('builder-combo-flavor-box');
+            const conveyorTrack = document.getElementById('papas-conveyor-track');
+            const btnPrev = document.getElementById('conveyor-arrow-prev');
+            const btnNext = document.getElementById('conveyor-arrow-next');
+
+            // Mouse Drag-to-Scroll suave para PC y Laptops
+            if (conveyorTrack) {
+                let isDown = false;
+                let startX;
+                let scrollLeft;
+
+                conveyorTrack.addEventListener('mousedown', (e) => {
+                    isDown = true;
+                    startX = e.pageX - conveyorTrack.offsetLeft;
+                    scrollLeft = conveyorTrack.scrollLeft;
+                });
+                conveyorTrack.addEventListener('mouseleave', () => { isDown = false; });
+                conveyorTrack.addEventListener('mouseup', () => { isDown = false; });
+                conveyorTrack.addEventListener('mousemove', (e) => {
+                    if (!isDown) return;
+                    e.preventDefault();
+                    const x = e.pageX - conveyorTrack.offsetLeft;
+                    const walk = (x - startX) * 1.5;
+                    conveyorTrack.scrollLeft = scrollLeft - walk;
+                });
+            }
+
+            function updateUI() {
+                // 1. Capas visuales de proteína
+                ['carne', 'crispy', 'plancha', 'chuleta'].forEach(p => {
+                    const el = document.getElementById(`layer-protein-${p}`);
+                    if (el) el.classList.toggle('active', state.protein === p);
+                });
+
+                // 2. Capas visuales de salsas
+                const sCasa = document.getElementById('layer-sauce-casa');
+                const sBbq = document.getElementById('layer-sauce-bbq');
+                const sMayo = document.getElementById('layer-sauce-mayo');
+                if (sCasa) sCasa.classList.toggle('active', state.sauces.casa);
+                if (sBbq) sBbq.classList.toggle('active', state.sauces.bbq);
+                if (sMayo) sMayo.classList.toggle('active', state.sauces.mayo);
+
+                // 3. Capas visuales de toppings
+                const lCheese = document.getElementById('layer-cheese');
+                const lBacon = document.getElementById('layer-bacon');
+                const lPickles = document.getElementById('layer-pickles');
+                const lLettuce = document.getElementById('layer-lettuce');
+                if (lCheese) lCheese.classList.toggle('active', state.cheese);
+                if (lBacon) lBacon.classList.toggle('active', state.bacon);
+                if (lPickles) lPickles.classList.toggle('active', state.pickles);
+                if (lLettuce) lLettuce.classList.toggle('active', state.lettuce);
+
+                // 4. Actualizar estado visual de cada ingrediente en el riel
+                document.querySelectorAll('.ingredient-rail-item').forEach(item => {
+                    const type = item.dataset.type;
+
+                    if (type === 'protein') {
+                        const isSelected = state.protein === item.dataset.protein;
+                        item.classList.toggle('active', isSelected);
+                    } else if (type === 'toggle') {
+                        const key = item.dataset.key;
+                        const isSelected = !!state[key];
+                        item.classList.toggle('active', isSelected);
+                    } else if (type === 'sauce') {
+                        const sauceKey = item.dataset.sauce;
+                        const isSelected = !!state.sauces[sauceKey];
+                        item.classList.toggle('active', isSelected);
+                    }
+                });
+
+                // 5. Contar capas activas
+                let count = 2; // Pan base + Pan superior
+                count += 1; // Proteína
+                if (state.sauces.casa) count++;
+                if (state.sauces.bbq) count++;
+                if (state.sauces.mayo) count++;
+                if (state.cheese) count++;
+                if (state.bacon) count++;
+                if (state.pickles) count++;
+                if (state.lettuce) count++;
+
+                if (layerText) layerText.innerText = `${count} Ingredientes`;
+
+                // 6. Altura dinámica de la tapa de pan
+                const topBun = document.getElementById('layer-top-bun');
+                if (topBun) {
+                    let baseTopY = -68;
+                    if (state.protein === 'crispy') baseTopY -= 12;
+                    if (state.bacon) baseTopY -= 6;
+                    if (state.lettuce) baseTopY -= 8;
+                    if (state.cheese) baseTopY -= 4;
+                    topBun.style.setProperty('--top-bun-y', `${baseTopY}px`);
+                }
+
+                // 7. Calcular Precio Total
+                let total = state.proteinPrice;
+                if (state.cheese) total += state.cheesePrice;
+                if (state.bacon) total += state.baconPrice;
+                if (state.lettuce) total += state.lettucePrice;
+                if (state.pickles) total += state.picklesPrice;
+                if (state.isCombo) total += state.comboPrice;
+
+                const formattedPrice = `$${total.toFixed(2).replace('.', ',')}`;
+                if (priceDisplay) priceDisplay.innerText = formattedPrice;
+                if (footerTotal) footerTotal.innerHTML = `${formattedPrice} <span class="total-ref">REF</span>`;
+            }
+
+            // Click / Tap en las imágenes de ingredientes del riel
+            document.querySelectorAll('.ingredient-rail-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const type = item.dataset.type;
+
+                    if (type === 'protein') {
+                        state.protein = item.dataset.protein;
+                        state.proteinPrice = parseFloat(item.dataset.price) || 6.50;
+                        state.proteinName = item.dataset.name || 'Carne 100% Res Smash';
+                    } else if (type === 'toggle') {
+                        const key = item.dataset.key;
+                        state[key] = !state[key];
+                    } else if (type === 'sauce') {
+                        const sauceKey = item.dataset.sauce;
+                        state.sauces[sauceKey] = !state.sauces[sauceKey];
+                    }
+
+                    updateUI();
+                });
+            });
+
+            // Listener: Combo Card
+            const comboCard = document.getElementById('toggle-card-combo');
+            if (comboCard) {
+                comboCard.addEventListener('click', () => {
+                    state.isCombo = !state.isCombo;
+                    comboCard.classList.toggle('selected', state.isCombo);
+                    if (comboFlavorBox) comboFlavorBox.classList.toggle('hidden', !state.isCombo);
+                    updateUI();
+                });
+            }
+
+            // Listeners: Sabor Bombita Combo
+            document.querySelectorAll('#builder-flavor-options .promo-flavor-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    document.querySelectorAll('#builder-flavor-options .promo-flavor-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    state.comboFlavor = btn.dataset.flavor || 'Coca-Cola Bombita';
+                });
+            });
+
+            // Listener: Reset
+            btnReset?.addEventListener('click', () => {
+                state.protein = 'carne';
+                state.proteinPrice = 6.50;
+                state.proteinName = 'Carne 100% Res Smash';
+                state.cheese = true;
+                state.bacon = true;
+                state.lettuce = true;
+                state.pickles = true;
+                state.sauces = { casa: true, bbq: false, mayo: false };
+                state.isCombo = false;
+                state.comboFlavor = 'Coca-Cola Bombita';
+
+                comboCard?.classList.remove('selected');
+                if (comboFlavorBox) comboFlavorBox.classList.add('hidden');
+                if (nameInput) nameInput.value = '';
+
+                if (conveyorTrack) conveyorTrack.scrollTo({ left: 0, behavior: 'smooth' });
+
+                updateUI();
+                showToast('↺ Armado reiniciado', 'info');
+            });
+
+            // Listener: Añadir al Pedido
+            btnAddOrder?.addEventListener('click', () => {
+                const spinner = btnAddOrder.querySelector('.btn-spinner');
+                const textSpan = btnAddOrder.querySelector('.btn-text');
+                btnAddOrder.style.pointerEvents = 'none';
+                if (spinner) spinner.classList.add('active');
+                if (textSpan) textSpan.innerText = 'Añadiendo...';
+
+                triggerFlyToCart('burger-stack-canvas');
+
+                setTimeout(() => {
+                    const customTitle = nameInput?.value?.trim();
+                    const displayName = customTitle
+                        ? `Burger: "${customTitle}"`
+                        : `Arma tu Burger (${state.proteinName})`;
+
+                    // Calcular precio total
+                    let total = state.proteinPrice;
+                    if (state.cheese) total += state.cheesePrice;
+                    if (state.bacon) total += state.baconPrice;
+                    if (state.lettuce) total += state.lettucePrice;
+                    if (state.pickles) total += state.picklesPrice;
+                    if (state.isCombo) total += state.comboPrice;
+
+                    // Desglose de extras/ingredientes
+                    const extrasList = [];
+                    extrasList.push({ nombre: `Proteína: ${state.proteinName}`, qty: 1, val: 'SÍ', isToggle: false, precio: 0 });
+
+                    if (state.cheese) extrasList.push({ nombre: 'Queso Americano Fundido', qty: 1, val: 'SÍ', isToggle: false, precio: 0 });
+                    else extrasList.push({ nombre: 'Queso Americano Fundido', qty: 1, val: 'NO', isToggle: true, precio: 0 });
+
+                    if (state.bacon) extrasList.push({ nombre: 'Tocineta en Trozos (+$1.00)', qty: 1, val: 'SÍ', isToggle: false, precio: 1.00 });
+
+                    if (state.lettuce) extrasList.push({ nombre: 'Lechuga Fresca', qty: 1, val: 'SÍ', isToggle: false, precio: 0 });
+                    else extrasList.push({ nombre: 'Lechuga Fresca', qty: 1, val: 'NO', isToggle: true, precio: 0 });
+
+                    if (state.pickles) extrasList.push({ nombre: 'Pepinillos', qty: 1, val: 'SÍ', isToggle: false, precio: 0 });
+                    else extrasList.push({ nombre: 'Pepinillos', qty: 1, val: 'NO', isToggle: true, precio: 0 });
+
+                    const activeSauces = [];
+                    if (state.sauces.casa) activeSauces.push('Salsa Especial');
+                    if (state.sauces.bbq) activeSauces.push('BBQ');
+                    if (state.sauces.mayo) activeSauces.push('Mayonesa');
+                    if (activeSauces.length > 0) {
+                        extrasList.push({ nombre: `Salsas: ${activeSauces.join(', ')}`, qty: 1, val: 'SÍ', isToggle: false, precio: 0 });
+                    }
+
+                    if (state.isCombo) {
+                        extrasList.push({ nombre: `Combo: Papitas + ${state.comboFlavor} (+$2.00)`, qty: 1, val: 'SÍ', isToggle: false, precio: 2.00 });
+                    }
+
+                    carrito.push({
+                        id: `${Date.now()}${Math.random().toString(36).slice(2, 7)}`,
+                        nombre: displayName,
+                        precioUnitario: total,
+                        cantidad: 1,
+                        subtotal: total,
+                        extras: extrasList,
+                        imagen: 'images/person/TAPA_DE_PAN-.png',
+                        esPersonalizada: true
+                    });
+
+                    actualizarInterfazCarrito();
+                    abrirCarritoConFeedback();
+                    showToast('🔥 ¡Tu Burger fue añadida al pedido!', 'success');
+
+                    // Restaurar botón
+                    btnAddOrder.style.pointerEvents = 'auto';
+                    if (spinner) spinner.classList.remove('active');
+                    if (textSpan) textSpan.innerText = '¡Añadir al Pedido! 🛒';
+                }, 400);
+            });
+
+            // Inicializar UI con estado por defecto
+            updateUI();
+        }
+
+        initCustomBurgerBuilder();
+
         document.getElementById('btn-reminder-ok')?.addEventListener('click', reloadAfterOrder);
         document.getElementById('btn-new-order')?.addEventListener('click', reloadAfterOrder);
 

@@ -117,6 +117,13 @@
         <!-- Fila Inferior: Categorías horizontales -->
         <div class="category-bar">
             <button class="category-btn active" data-category="all">Todos</button>
+            <button class="category-btn" data-category="arma-tu-burger" style="display: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                Arma la Tuya
+            </button>
             <button class="category-btn" data-category="hamburguesas">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -182,6 +189,241 @@
                 <div class="tooltip-arrow"></div>
             </div>
         </div>
+
+        <!-- SECCIÓN: ARMA TU PROPIA BURGER (ESTILO PAPA'S BURGERIA) -->
+        <section id="arma-tu-burger" class="custom-builder-section hidden-search lg:max-w-6xl lg:mx-auto" style="display: none;">
+            <div class="papas-station-card">
+                
+                <!-- Encabezado Limpio -->
+                <div class="station-top-header">
+                    <h2 class="station-title">ARMA TU PROPIA BURGER</h2>
+                    <p class="station-subtitle">Desliza la cinta de ingredientes de derecha a izquierda y tócalos para apilar tu hamburguesa.</p>
+                </div>
+
+                <!-- 1. El Escenario Central de la Burger (The Burger Board) -->
+                <div class="papas-burger-stage">
+                    <div class="stage-info-floating">
+                        <div class="stage-badge-count" id="builder-layer-badge">
+                            <span class="fire-icon">🔥</span>
+                            <span id="builder-layer-text">6 Ingredientes</span>
+                        </div>
+                        <div class="stage-price-pill">
+                            <span id="builder-price-val">$7,50</span>
+                            <span class="stage-ref">REF</span>
+                        </div>
+                    </div>
+
+                    <!-- Canvas de Capas Apiladas -->
+                    <div class="burger-stack-canvas" id="burger-stack-canvas">
+                        <!-- Capa Pan Base -->
+                        <img src="images/person/TAPA_ABJO_PAN-.png" alt="Pan Base" class="burger-layer layer-bottom-bun active" id="layer-bottom-bun">
+                        <!-- Capas de Salsas -->
+                        <img src="images/person/SALSA_DE_LA_CASA-.png" alt="Salsa Especial" class="burger-layer layer-sauce active" id="layer-sauce-casa">
+                        <img src="images/person/BBQ-.png" alt="Salsa BBQ" class="burger-layer layer-sauce" id="layer-sauce-bbq">
+                        <img src="images/person/MAYONESA.png" alt="Mayonesa" class="burger-layer layer-sauce" id="layer-sauce-mayo">
+                        <!-- Capa Proteína -->
+                        <img src="images/person/CARNE-.png" alt="Carne Res" class="burger-layer layer-protein active" id="layer-protein-carne">
+                        <img src="images/person/POLLO_CRISPY_Y_TOCINETA-.png" alt="Pollo Crispy" class="burger-layer layer-protein" id="layer-protein-crispy">
+                        <img src="images/person/POLLO_A_LA_PLANCHA-.png" alt="Pollo Plancha" class="burger-layer layer-protein" id="layer-protein-plancha">
+                        <img src="images/person/CHULETA-.png" alt="Chuleta" class="burger-layer layer-protein" id="layer-protein-chuleta">
+                        <!-- Capa Queso -->
+                        <img src="images/person/QUESO.png" alt="Queso" class="burger-layer layer-cheese active" id="layer-cheese">
+                        <!-- Capa Toppings -->
+                        <img src="images/person/TOCINETA_EN_TROZOS-.png" alt="Tocineta" class="burger-layer layer-bacon active" id="layer-bacon">
+                        <img src="images/person/PEPINILLOS.png" alt="Pepinillos" class="burger-layer layer-pickles active" id="layer-pickles">
+                        <img src="images/person/LECHUGA.png" alt="Lechuga" class="burger-layer layer-lettuce active" id="layer-lettuce">
+                        <!-- Capa Pan Superior -->
+                        <img src="images/person/TAPA_DE_PAN-.png" alt="Pan Superior" class="burger-layer layer-top-bun active" id="layer-top-bun">
+                    </div>
+
+                    <div class="stage-reset-wrap">
+                        <button type="button" class="btn-stage-reset" id="btn-builder-reset">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                            <span>Reiniciar Armado</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. Riel Deslizable de Ingredientes (Estilo Papa's Burgeria) -->
+                <div class="ingredients-rail-container">
+                    <div class="ingredients-rail-hint">
+                        <span class="swipe-hand-icon">👈 Desliza los ingredientes y tócalos para apilar 👉</span>
+                    </div>
+
+                    <div class="ingredients-rail" id="papas-conveyor-track">
+                        
+                        <!-- 1. CARNE SMASH -->
+                        <div class="ingredient-rail-item active" data-type="protein" data-protein="carne" data-price="6.50" data-name="Carne 100% Res Smash">
+                            <div class="rail-img-wrap">
+                                <img src="images/person/CARNE-.png" alt="Carne Smash" class="rail-ingredient-img">
+                                <div class="rail-check-indicator">✓</div>
+                            </div>
+                            <span class="rail-name">Carne Smash</span>
+                            <span class="rail-price-tag included">Incluida</span>
+                        </div>
+
+                        <!-- 2. POLLO CRISPY -->
+                        <div class="ingredient-rail-item" data-type="protein" data-protein="crispy" data-price="7.50" data-name="Pollo Crispy & Tocineta">
+                            <div class="rail-img-wrap">
+                                <img src="images/person/POLLO_CRISPY_Y_TOCINETA-.png" alt="Pollo Crispy" class="rail-ingredient-img">
+                                <div class="rail-check-indicator">✓</div>
+                            </div>
+                            <span class="rail-name">Pollo Crispy</span>
+                            <span class="rail-price-tag cost">+$1.00</span>
+                        </div>
+
+                        <!-- 3. POLLO PLANCHA -->
+                        <div class="ingredient-rail-item" data-type="protein" data-protein="plancha" data-price="7.00" data-name="Pollo a la Plancha">
+                            <div class="rail-img-wrap">
+                                <img src="images/person/POLLO_A_LA_PLANCHA-.png" alt="Pollo Plancha" class="rail-ingredient-img">
+                                <div class="rail-check-indicator">✓</div>
+                            </div>
+                            <span class="rail-name">Pollo Plancha</span>
+                            <span class="rail-price-tag cost">+$0.50</span>
+                        </div>
+
+                        <!-- 4. CHULETA -->
+                        <div class="ingredient-rail-item" data-type="protein" data-protein="chuleta" data-price="7.50" data-name="Chuleta Ahumada">
+                            <div class="rail-img-wrap">
+                                <img src="images/person/CHULETA-.png" alt="Chuleta" class="rail-ingredient-img">
+                                <div class="rail-check-indicator">✓</div>
+                            </div>
+                            <span class="rail-name">Chuleta</span>
+                            <span class="rail-price-tag cost">+$1.00</span>
+                        </div>
+
+                        <!-- 5. QUESO AMERICANO -->
+                        <div class="ingredient-rail-item active" data-type="toggle" data-key="cheese" data-price="0.00" data-name="Queso Americano">
+                            <div class="rail-img-wrap">
+                                <img src="images/person/QUESO.png" alt="Queso Americano" class="rail-ingredient-img">
+                                <div class="rail-check-indicator">✓</div>
+                            </div>
+                            <span class="rail-name">Queso Fundido</span>
+                            <span class="rail-price-tag included">Incluido</span>
+                        </div>
+
+                        <!-- 6. TOCINETA EN TROZOS -->
+                        <div class="ingredient-rail-item active" data-type="toggle" data-key="bacon" data-price="1.00" data-name="Tocineta en Trozos">
+                            <div class="rail-img-wrap">
+                                <img src="images/person/TOCINETA_EN_TROZOS-.png" alt="Tocineta" class="rail-ingredient-img">
+                                <div class="rail-check-indicator">✓</div>
+                            </div>
+                            <span class="rail-name">Tocineta Trozos</span>
+                            <span class="rail-price-tag cost">+$1.00</span>
+                        </div>
+
+                        <!-- 7. LECHUGA -->
+                        <div class="ingredient-rail-item active" data-type="toggle" data-key="lettuce" data-price="0.00" data-name="Lechuga Fresca">
+                            <div class="rail-img-wrap">
+                                <img src="images/person/LECHUGA.png" alt="Lechuga" class="rail-ingredient-img">
+                                <div class="rail-check-indicator">✓</div>
+                            </div>
+                            <span class="rail-name">Lechuga Fresca</span>
+                            <span class="rail-price-tag included">Incluida</span>
+                        </div>
+
+                        <!-- 8. PEPINILLOS -->
+                        <div class="ingredient-rail-item active" data-type="toggle" data-key="pickles" data-price="0.00" data-name="Pepinillos">
+                            <div class="rail-img-wrap">
+                                <img src="images/person/PEPINILLOS.png" alt="Pepinillos" class="rail-ingredient-img">
+                                <div class="rail-check-indicator">✓</div>
+                            </div>
+                            <span class="rail-name">Pepinillos</span>
+                            <span class="rail-price-tag included">Incluidos</span>
+                        </div>
+
+                        <!-- 9. SALSA DE LA CASA -->
+                        <div class="ingredient-rail-item active" data-type="sauce" data-sauce="casa" data-name="Salsa Especial BH">
+                            <div class="rail-img-wrap">
+                                <img src="images/person/SALSA_DE_LA_CASA-.png" alt="Salsa Especial" class="rail-ingredient-img">
+                                <div class="rail-check-indicator">✓</div>
+                            </div>
+                            <span class="rail-name">Salsa Especial</span>
+                            <span class="rail-price-tag included">Gratis</span>
+                        </div>
+
+                        <!-- 10. BBQ -->
+                        <div class="ingredient-rail-item" data-type="sauce" data-sauce="bbq" data-name="Salsa BBQ">
+                            <div class="rail-img-wrap">
+                                <img src="images/person/BBQ-.png" alt="Salsa BBQ" class="rail-ingredient-img">
+                                <div class="rail-check-indicator">✓</div>
+                            </div>
+                            <span class="rail-name">Salsa BBQ</span>
+                            <span class="rail-price-tag included">Gratis</span>
+                        </div>
+
+                        <!-- 11. MAYONESA -->
+                        <div class="ingredient-rail-item" data-type="sauce" data-sauce="mayo" data-name="Mayonesa">
+                            <div class="rail-img-wrap">
+                                <img src="images/person/MAYONESA.png" alt="Mayonesa" class="rail-ingredient-img">
+                                <div class="rail-check-indicator">✓</div>
+                            </div>
+                            <span class="rail-name">Mayonesa</span>
+                            <span class="rail-price-tag included">Gratis</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 3. Zona Inferior: Bautizo, Combo y Checkout -->
+                <div class="papas-station-footer">
+                    <div class="footer-custom-row">
+                        <div class="builder-custom-name-box">
+                            <label for="builder-burger-name" class="builder-name-label">🏷️ Bautiza tu creación (Opcional):</label>
+                            <input type="text" id="builder-burger-name" class="builder-name-input" placeholder="Ej: La Bestia Smash, La Daniel Special..." maxlength="35">
+                        </div>
+
+                        <div class="builder-toggle-card builder-combo-card" id="toggle-card-combo" data-price="2.00">
+                            <div class="toggle-card-left">
+                                <div class="combo-badge-icon">🍟🥤</div>
+                                <div class="toggle-card-text">
+                                    <span class="toggle-name">¿Hacerlo Combo?</span>
+                                    <span class="toggle-sub">Añade Papitas + Refresco Bombita</span>
+                                    <span class="toggle-badge cost">+$2.00 REF</span>
+                                </div>
+                            </div>
+                            <div class="promo-toggle-switch">
+                                <span class="promo-switch-indicator"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Selector sabor bombita si activa combo -->
+                    <div id="builder-combo-flavor-box" class="promo-bombita-container hidden">
+                        <h4 class="promo-flavor-title">Sabor de tu Bombita</h4>
+                        <div class="promo-flavor-grid" id="builder-flavor-options">
+                            <button type="button" class="promo-flavor-btn active" data-flavor="Coca-Cola Bombita">
+                                <span class="flavor-dot red"></span>
+                                <span class="flavor-name">Coca-Cola</span>
+                            </button>
+                            <button type="button" class="promo-flavor-btn" data-flavor="Coca-Cola Bombita Light">
+                                <span class="flavor-dot silver"></span>
+                                <span class="flavor-name">Light</span>
+                            </button>
+                            <button type="button" class="promo-flavor-btn" data-flavor="Bombita Frescolita">
+                                <span class="flavor-dot orange"></span>
+                                <span class="flavor-name">Frescolita</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Botón de Orden -->
+                    <div class="builder-cta-box">
+                        <div class="builder-total-summary">
+                            <span class="total-label">Total de tu Burger:</span>
+                            <span class="total-amount" id="builder-footer-total">$7,50 <span class="total-ref">REF</span></span>
+                        </div>
+                        <button type="button" class="btn-add-order btn-with-spinner" id="btn-add-custom-burger">
+                            <svg class="btn-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                            </svg>
+                            <span class="btn-text">¡Añadir al Pedido! 🛒</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
 
         <section id="hamburguesas"
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:max-w-6xl lg:mx-auto">
@@ -716,7 +958,7 @@
                     <span class="item-ref">REF</span>
                 </div>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" style="display: none;">
                 <div class="item-info"><span class="item-name">Coca-Cola 1L Zero</span></div>
                 <div class="item-price-wrapper" data-img-src="images/cocacolalitrozero.webp">
                     <span class="item-price">$2</span>
