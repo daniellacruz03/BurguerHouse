@@ -1189,9 +1189,9 @@
                                             <span class="flavor-dot silver"></span>
                                             <span class="flavor-name">Light</span>
                                         </button>
-                                        <button type="button" class="promo-flavor-btn" data-flavor="Bombita Frescolita">
+                                        <button type="button" class="promo-flavor-btn" data-flavor="Bombita Naranja">
                                             <span class="flavor-dot orange"></span>
-                                            <span class="flavor-name">Frescolita</span>
+                                            <span class="flavor-name">Naranja</span>
                                         </button>
                                         <button type="button" class="promo-flavor-btn" data-flavor="Bombita Uva">
                                             <span class="flavor-dot purple"></span>
