@@ -3231,4 +3231,263 @@ section:not(#bebidas) .item-price-wrapper { display: flex !important; flex-direc
     font-weight: 700;
 }
 
+/* ==========================================================================
+   HOUSE LUNCH: SELECTOR DINÁMICO DE PROTEÍNA Y MODAL
+   ========================================================================== */
+/* ── Contenedor de imagen específico para House Lunch ── */
+.modal-image-container.house-lunch-img-container {
+    height: 200px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border-radius: 0;
+    background: radial-gradient(circle, #2a1a00 0%, #080808 100%) !important;
+    position: relative;
+}
+.modal-image-container.house-lunch-img-container img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center 40% !important;
+    filter: brightness(0.92) drop-shadow(0 8px 24px rgba(0,0,0,0.7)) !important;
+    transform: none !important;
+    max-width: unset !important;
+    max-height: unset !important;
+    transition: opacity 0.25s ease !important;
+}
+
+.house-lunch-protein-container {
+    margin: 14px 0 18px;
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.house-lunch-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.house-lunch-badge {
+    font-size: 0.82rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: rgba(255,255,255,0.9);
+    font-family: 'Montserrat', sans-serif;
+}
+
+.house-lunch-note {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.1);
+    border: 1px solid rgba(74, 222, 128, 0.25);
+    padding: 3px 9px;
+    border-radius: 999px;
+    letter-spacing: 0.3px;
+}
+
+/* ── Grid de 3 columnas para proteínas ── */
+.house-lunch-protein-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+/* ── Card de proteína – estilo premium ── */
+.protein-option-btn {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 14px 8px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1.5px solid rgba(255, 255, 255, 0.09);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+    user-select: none;
+    text-align: center;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Glare sutil al hover */
+.protein-option-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+.protein-option-btn:hover::before { opacity: 1; }
+
+.protein-option-btn:hover {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(230, 0, 0, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+.protein-option-btn:active {
+    transform: scale(0.96);
+}
+
+.protein-option-btn.active {
+    background: linear-gradient(145deg, rgba(200, 0, 0, 0.22) 0%, rgba(230, 0, 0, 0.10) 100%);
+    border-color: #e60000;
+    box-shadow: 0 0 20px rgba(230, 0, 0, 0.30), inset 0 1px 0 rgba(255,100,100,0.15);
+    transform: translateY(-1px);
+}
+
+/* Checkmark de selección ── top-right ── */
+.protein-option-btn .protein-check {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1.5px solid rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-size: 0;
+}
+.protein-option-btn.active .protein-check {
+    background: #e60000;
+    border-color: #e60000;
+    font-size: 8px;
+    color: #fff;
+    box-shadow: 0 0 8px rgba(230,0,0,0.7);
+}
+.protein-option-btn.active .protein-check::after {
+    content: '✓';
+    font-size: 9px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+}
+
+/* Emoji grande */
+.protein-emoji {
+    font-size: 2rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+    transition: transform 0.25s cubic-bezier(0.2,0.8,0.2,1);
+}
+.protein-option-btn:hover .protein-emoji,
+.protein-option-btn.active .protein-emoji {
+    transform: scale(1.15);
+}
+
+/* Nombre en la card */
+.protein-name {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #ffffff;
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 0.2px;
+    line-height: 1.2;
+    margin: 0;
+}
+
+/* Tag badge debajo del nombre */
+.protein-tag {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.4px;
+}
+.protein-option-btn.active .protein-tag {
+    background: rgba(230, 0, 0, 0.3);
+    color: #ff8888;
+}
+
+/* Desc subtle ── oculta en el grid de 3 cols, se mueve abajo ── */
+.protein-desc {
+    display: none;
+}
+
+/* Ocultar radio indicator antiguo (ya no se usa) */
+.protein-radio-indicator,
+.protein-radio-dot {
+    display: none;
+}
+.protein-info { display: contents; }
+.protein-header-row { display: contents; }
+
+/* ── Descripción de la proteína seleccionada (área debajo del grid) ── */
+.protein-selected-desc {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: rgba(230, 0, 0, 0.08);
+    border: 1px solid rgba(230, 0, 0, 0.2);
+    border-radius: 10px;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.8);
+    font-family: 'Montserrat', sans-serif;
+    line-height: 1.4;
+    text-align: center;
+    min-height: 36px;
+    transition: opacity 0.2s ease;
+    display: none;
+}
+
+/* Modal img specific for House Lunch */
+#modal-img.modal-img-house-lunch {
+    object-position: center 40% !important;
+    object-fit: cover !important;
+    transform: none !important;
+    width: 100% !important;
+    height: 100% !important;
+    transition: opacity 0.25s ease;
+}
+
+@media (max-width: 768px) {
+    .modal-image-container.house-lunch-img-container {
+        height: 170px !important;
+    }
+    .house-lunch-protein-container {
+        padding: 10px;
+        margin: 10px 0 14px;
+    }
+    .house-lunch-protein-list {
+        gap: 6px;
+    }
+    .protein-option-btn {
+        padding: 12px 6px 10px;
+    }
+    .protein-emoji {
+        font-size: 1.7rem;
+    }
+    .protein-name {
+        font-size: 0.68rem;
+    }
+}
+
+
+
+
+.img-plato { aspect-ratio: 900 / 500 !important; object-fit: cover !important; object-position: center 80% !important; width: 100% !important; height: auto !important; max-height: 250px !important; }
+
+
+#modal-img.modal-img-house-lunch-full { transform: scale(1) !important; object-fit: contain !important; object-position: center !important; }
 

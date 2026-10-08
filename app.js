@@ -1043,8 +1043,9 @@
 
                 const nameLower = name.toLowerCase();
                 const descLower = desc.toLowerCase();
+                const isHouseLunch = nameLower.includes('house lunch');
                 const esKids = !!item.closest('#kids');
-                esHamburguesa = !!item.closest('#hamburguesas') || !!item.closest('#ensaladas') || esKids || nameLower === 'crispy bowl';
+                esHamburguesa = !!item.closest('#hamburguesas') || !!item.closest('#ensaladas') || esKids || nameLower === 'crispy bowl' || isHouseLunch;
                 const isComboHouse4 = nameLower.includes('combo house');
                 const isDuoSmash = nameLower.includes('duo smash') || nameLower.includes('dúo smash');
                 esComboHouse = isComboHouse4 || isDuoSmash;
@@ -1086,6 +1087,7 @@
                         nameLower, descLower, esHamburguesa, esKids, esCombo: esComboHouse, esComboHouse: isComboHouse4, isDuoSmash,
                         isNuggets: nameLower.includes('nuggets'),
                         isCrispyBowl: nameLower === 'crispy bowl',
+                        isHouseLunch,
                         isPolloCrispy: descLower.includes('pollo crispy'),
                         isPolloNormal: descLower.includes('pollo') && !descLower.includes('pollo crispy'),
                         hasChuleta: descLower.includes('chuleta')
@@ -1219,6 +1221,7 @@
                     if (esKids || name === 'Pork House' || name === 'Servicio de Papas con Topping' || nameLower.includes('nuggets')) modalImg.classList.add('modal-img-bottom-aligned');
                     if (name === 'Crispy House' || name === 'House Tower') modalImg.classList.add('modal-img-alejar');
                     if (name === 'Junior Crispy') modalImg.classList.add('modal-img-junior-crispy-lower');
+                    if (nameLower.includes('house lunch')) modalImg.classList.add('modal-img-house-lunch-full');
                 }
 
                 modal?.classList.add('active');
@@ -1230,6 +1233,32 @@
                     if (modal) modal.scrollTop = 0;
                 }, 50);
             });
+        });
+
+        // Event Listener para el Selector Dinámico de Proteína (House Lunch)
+        document.getElementById('modal-house-lunch-protein-container')?.addEventListener('click', (e) => {
+            const btn = e.target.closest('.protein-option-btn');
+            if (!btn) return;
+            const container = document.getElementById('modal-house-lunch-protein-container');
+            container?.querySelectorAll('.protein-option-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const newImg = btn.dataset.imgSrc;
+            if (modalImg && newImg) {
+                modalImg.style.opacity = '0.35';
+                modalImg.src = newImg;
+                if (modalImg.complete) {
+                    modalImg.style.opacity = '1';
+                } else {
+                    modalImg.onload = () => { modalImg.style.opacity = '1'; };
+                }
+            }
+            // Update protein description
+            const descEl = document.getElementById('protein-selected-desc');
+            if (descEl) {
+                descEl.textContent = btn.dataset.desc || '';
+                descEl.style.display = btn.dataset.desc ? 'block' : 'none';
+            }
         });
 
         // Event Delegation para botones + y - de los Extras Dinámicos
@@ -1459,11 +1488,13 @@
                         }
                     });
 
+                    const productName = modalTitle?.innerText ?? 'Producto';
+
                     const subtotal = (basePrice + extrasSeleccionados.reduce((acc, e) => acc + e.precio, 0)) * currentMainQty;
 
                     carrito.push({
                         id: `${Date.now()}${Math.random().toString(36).slice(2, 7)}`,
-                        nombre: modalTitle?.innerText ?? 'Producto',
+                        nombre: productName,
                         cantidad: currentMainQty,
                         precioUnitario: basePrice,
                         extras: extrasSeleccionados,
@@ -1667,22 +1698,21 @@
                     } else {
                         // --- FORMATO NORMAL ---
                         const isNuggetsItem = item.nombre.toLowerCase().includes('nuggets');
+                            // Filtrar lo que se quitó (Toggles en NO)
+                            const sin = item.extras?.filter(ex => ex.isToggle && ex.val === 'NO')
+                                .map(ex => ex.nombre.toUpperCase().replace(/^EXTRA\s+/i, ''));
 
-                        // Filtrar lo que se quitó (Toggles en NO)
-                        const sin = item.extras?.filter(ex => ex.isToggle && ex.val === 'NO')
-                            .map(ex => ex.nombre.toUpperCase().replace(/^EXTRA\s+/i, ''));
+                            // Extras agregados o activados
+                            const extrasAgregados = item.extras?.filter(ex => {
+                                if (!ex.isToggle) return ex.qty > 0;
+                                return ex.val === 'SÍ';
+                            }).map(ex => {
+                                let cleanName = ex.nombre.replace(/^Extra\s+/i, '').replace('Servicio de ', '');
+                                return `${cleanName}${ex.qty > 1 ? ` (${ex.qty})` : ''}`;
+                            });
 
-                        // Extras agregados o activados
-                        const extrasAgregados = item.extras?.filter(ex => {
-                            if (!ex.isToggle) return ex.qty > 0;
-                            return ex.val === 'SÍ';
-                        }).map(ex => {
-                            let cleanName = ex.nombre.replace(/^Extra\s+/i, '').replace('Servicio de ', '');
-                            return `${cleanName}${ex.qty > 1 ? ` (${ex.qty})` : ''}`;
-                        });
-
-                        if (extrasAgregados?.length > 0) mensaje += `   EXTRAS:\n     - ${extrasAgregados.join('\n     - ')}\n`;
-                        if (sin?.length > 0) mensaje += `   SIN:\n     - ${sin.join('\n     - ')}\n`;
+                            if (extrasAgregados?.length > 0) mensaje += `   EXTRAS:\n     - ${extrasAgregados.join('\n     - ')}\n`;
+                            if (sin?.length > 0) mensaje += `   SIN:\n     - ${sin.join('\n     - ')}\n`;
                     }
                 });
 
@@ -2127,6 +2157,36 @@
         });
 
         window.addEventListener('beforeunload', (e) => { if (!pedidoConfirmado) e.preventDefault(); });
+
+        // Lógica de horario para House Lunch
+        const checkHouseLunchSchedule = () => {
+            const now = new Date();
+            const day = now.getDay(); // 0 is Sunday, 1 is Monday... 5 is Friday
+            const hour = now.getHours();
+            
+            // Lunes a Viernes de 12:00 PM a 16:59 PM
+            const isWeekDay = day >= 1 && day <= 5;
+            const isLunchTime = hour >= 12 && hour < 17;
+            
+            const pollo = document.getElementById('item-house-lunch-pollo');
+            const crispy = document.getElementById('item-house-lunch-crispy');
+            const cerdo = document.getElementById('item-house-lunch-cerdo');
+            const hamburguesasSection = document.getElementById('hamburguesas');
+            const serviciosSection = document.getElementById('servicios');
+            
+            if (pollo && crispy && cerdo && hamburguesasSection && serviciosSection) {
+                if (isWeekDay && isLunchTime) {
+                    hamburguesasSection.prepend(cerdo);
+                    hamburguesasSection.prepend(crispy);
+                    hamburguesasSection.prepend(pollo);
+                } else {
+                    serviciosSection.prepend(cerdo);
+                    serviciosSection.prepend(crispy);
+                    serviciosSection.prepend(pollo);
+                }
+            }
+        };
+        checkHouseLunchSchedule();
 
         // Precargar imágenes de los modales para que se abran instantáneamente
         window.addEventListener('load', () => {
