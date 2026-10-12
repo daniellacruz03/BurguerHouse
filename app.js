@@ -421,6 +421,10 @@
             }
 
             document.querySelectorAll('.menu-item').forEach((item) => {
+                if (item.classList.contains('hidden') || item.style.display.includes('none')) {
+                    item.classList.add('hidden-search');
+                    return;
+                }
                 const name = item.querySelector('.item-name')?.innerText.toLowerCase() ?? '';
                 const desc = item.querySelector('.item-desc')?.innerText.toLowerCase() ?? '';
                 item.classList.toggle('hidden-search', !(name.includes(term) || desc.includes(term)));
@@ -607,7 +611,7 @@
             const extras = [];
             if (isCombo) {
                 const activeFlavorBtn = document.querySelector('#promo-flavor-options .promo-flavor-btn.active');
-                const selectedFlavor = activeFlavorBtn ? (activeFlavorBtn.dataset.flavor || 'Coca-Cola Bombita') : 'Coca-Cola Bombita';
+                const selectedFlavor = activeFlavorBtn ? (activeFlavorBtn.dataset.flavor || 'Coca-Cola Bombita Light') : 'Coca-Cola Bombita Light';
                 extras.push({
                     nombre: `Papitas + ${selectedFlavor}`,
                     qty: 1,
@@ -1183,11 +1187,11 @@
                                 <div id="modal-burger-flavor-container" class="promo-bombita-container hidden">
                                     <h4 class="promo-flavor-title">Sabor de tu Bombita</h4>
                                     <div class="promo-flavor-grid" id="modal-burger-flavor-options">
-                                        <button type="button" class="promo-flavor-btn active" data-flavor="Coca-Cola Bombita">
+                                        <button type="button" class="promo-flavor-btn hidden" data-flavor="Coca-Cola Bombita" style="display: none !important;">
                                             <span class="flavor-dot red"></span>
                                             <span class="flavor-name">Coca-Cola</span>
                                         </button>
-                                        <button type="button" class="promo-flavor-btn" data-flavor="Coca-Cola Bombita Light">
+                                        <button type="button" class="promo-flavor-btn active" data-flavor="Coca-Cola Bombita Light">
                                             <span class="flavor-dot silver"></span>
                                             <span class="flavor-name">Light</span>
                                         </button>
@@ -1478,7 +1482,7 @@
                             let extraFinalName = nombre;
                             if (nombre === 'Papitas + Bombita') {
                                 const activeFlavorBtn = document.querySelector('#modal-burger-flavor-options .promo-flavor-btn.active');
-                                const selectedFlavor = activeFlavorBtn ? (activeFlavorBtn.dataset.flavor || 'Coca-Cola Bombita') : 'Coca-Cola Bombita';
+                                const selectedFlavor = activeFlavorBtn ? (activeFlavorBtn.dataset.flavor || 'Coca-Cola Bombita Light') : 'Coca-Cola Bombita Light';
                                 extraFinalName = `Papitas + ${selectedFlavor}`;
                             }
                             extrasSeleccionados.push({
@@ -1882,7 +1886,7 @@
                 },
                 isCombo: false,
                 comboPrice: 2.00,
-                comboFlavor: 'Coca-Cola Bombita'
+                comboFlavor: 'Coca-Cola Bombita Light'
             };
 
             const priceDisplay = document.getElementById('builder-price-val');
@@ -2036,7 +2040,7 @@
                     e.stopPropagation();
                     document.querySelectorAll('#builder-flavor-options .promo-flavor-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    state.comboFlavor = btn.dataset.flavor || 'Coca-Cola Bombita';
+                    state.comboFlavor = btn.dataset.flavor || 'Coca-Cola Bombita Light';
                 });
             });
 
@@ -2051,7 +2055,7 @@
                 state.pickles = true;
                 state.sauces = { casa: true, bbq: false, mayo: false };
                 state.isCombo = false;
-                state.comboFlavor = 'Coca-Cola Bombita';
+                state.comboFlavor = 'Coca-Cola Bombita Light';
 
                 comboCard?.classList.remove('selected');
                 if (comboFlavorBox) comboFlavorBox.classList.add('hidden');
@@ -2121,7 +2125,7 @@
                         cantidad: 1,
                         subtotal: total,
                         extras: extrasList,
-                        imagen: 'images/person/TAPA_DE_PAN-.png',
+                        imagen: 'images/person/TAPA_DE_PAN-.webp',
                         esPersonalizada: true
                     });
 
