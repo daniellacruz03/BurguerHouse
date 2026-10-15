@@ -396,11 +396,11 @@
                                 <span class="flavor-dot red"></span>
                                 <span class="flavor-name">Coca-Cola</span>
                             </button>
-                            <button type="button" class="promo-flavor-btn active" data-flavor="Coca-Cola Bombita Light">
+                            <button type="button" class="promo-flavor-btn hidden" data-flavor="Coca-Cola Bombita Light" style="display: none !important;">
                                 <span class="flavor-dot silver"></span>
                                 <span class="flavor-name">Light</span>
                             </button>
-                            <button type="button" class="promo-flavor-btn" data-flavor="Bombita Naranja">
+                            <button type="button" class="promo-flavor-btn active" data-flavor="Bombita Naranja">
                                 <span class="flavor-dot orange"></span>
                                 <span class="flavor-name">Naranja</span>
                             </button>
@@ -944,13 +944,6 @@
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:max-w-6xl lg:mx-auto">
             <!-- COCA-COLA & BOMBITAS -->
             <div class="menu-item">
-                <div class="item-info"><span class="item-name">Bombita Coca-Cola Light 355 ML</span></div>
-                <div class="item-price-wrapper" data-img-src="images/cocacolalight.webp">
-                    <span class="item-price">$1</span>
-                    <span class="item-ref">REF</span>
-                </div>
-            </div>
-            <div class="menu-item">
                 <div class="item-info"><span class="item-name">Bombita Naranja 355 ML</span></div>
                 <div class="item-price-wrapper" data-img-src="images/gaseosa.webp">
                     <span class="item-price">$1</span>
@@ -1023,6 +1016,13 @@
 
             <!-- OTROS REFRESCOS 1L -->
             <div class="menu-item">
+                <div class="item-info"><span class="item-name">7Up 1L</span></div>
+                <div class="item-price-wrapper" data-img-src="images/7up.webp">
+                    <span class="item-price">$1,5</span>
+                    <span class="item-ref">REF</span>
+                </div>
+            </div>
+            <div class="menu-item">
                 <div class="item-info"><span class="item-name">Pepsi 1L</span></div>
                 <div class="item-price-wrapper" data-img-src="images/pepsi1l.webp">
                     <span class="item-price">$1,5</span>
@@ -1046,6 +1046,20 @@
                 </div>
             </div>
             <div class="menu-item">
+                <div class="item-info"><span class="item-name">Lipton Limón</span></div>
+                <div class="item-price-wrapper" data-img-src="images/lipton.webp">
+                    <span class="item-price">$2,5</span>
+                    <span class="item-ref">REF</span>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info"><span class="item-name">Lipton Durazno</span></div>
+                <div class="item-price-wrapper" data-img-src="images/lipton.webp">
+                    <span class="item-price">$2,5</span>
+                    <span class="item-ref">REF</span>
+                </div>
+            </div>
+            <div class="menu-item">
                 <div class="item-info"><span class="item-name">Agua 600ml</span></div>
                 <div class="item-price-wrapper" data-img-src="images/gaseosa.webp">
                     <span class="item-price">$1</span>
@@ -1055,15 +1069,15 @@
 
             <!-- PRODUCTOS NO DISPONIBLES (OCULTOS - SIN STOCK) -->
             <div class="menu-item hidden" style="display: none !important;">
-                <div class="item-info"><span class="item-name">7Up 1L</span></div>
-                <div class="item-price-wrapper" data-img-src="images/7up.webp">
-                    <span class="item-price">$1,5</span>
+                <div class="item-info"><span class="item-name">Bombita Coca-Cola 355 ML</span></div>
+                <div class="item-price-wrapper" data-img-src="images/cocacolabombita.webp">
+                    <span class="item-price">$1</span>
                     <span class="item-ref">REF</span>
                 </div>
             </div>
             <div class="menu-item hidden" style="display: none !important;">
-                <div class="item-info"><span class="item-name">Bombita Coca-Cola 355 ML</span></div>
-                <div class="item-price-wrapper" data-img-src="images/cocacolabombita.webp">
+                <div class="item-info"><span class="item-name">Bombita Coca-Cola Light 355 ML</span></div>
+                <div class="item-price-wrapper" data-img-src="images/cocacolalight.webp">
                     <span class="item-price">$1</span>
                     <span class="item-ref">REF</span>
                 </div>
@@ -1072,20 +1086,6 @@
                 <div class="item-info"><span class="item-name">Bombita Frescolita 355 ML</span></div>
                 <div class="item-price-wrapper" data-img-src="images/gaseosa.webp">
                     <span class="item-price">$1</span>
-                    <span class="item-ref">REF</span>
-                </div>
-            </div>
-            <div class="menu-item hidden" style="display: none !important;">
-                <div class="item-info"><span class="item-name">Lipton Limón</span></div>
-                <div class="item-price-wrapper" data-img-src="images/lipton.webp">
-                    <span class="item-price">$2,5</span>
-                    <span class="item-ref">REF</span>
-                </div>
-            </div>
-            <div class="menu-item hidden" style="display: none !important;">
-                <div class="item-info"><span class="item-name">Lipton Durazno</span></div>
-                <div class="item-price-wrapper" data-img-src="images/lipton.webp">
-                    <span class="item-price">$2,5</span>
                     <span class="item-ref">REF</span>
                 </div>
             </div>
@@ -1818,11 +1818,11 @@
                                 <span class="flavor-dot red"></span>
                                 <span class="flavor-name">Coca-Cola</span>
                             </button>
-                            <button type="button" class="promo-flavor-btn active" data-flavor="Coca-Cola Bombita Light">
+                            <button type="button" class="promo-flavor-btn hidden" data-flavor="Coca-Cola Bombita Light" style="display: none !important;">
                                 <span class="flavor-dot silver"></span>
                                 <span class="flavor-name">Light</span>
                             </button>
-                            <button type="button" class="promo-flavor-btn" data-flavor="Bombita Naranja">
+                            <button type="button" class="promo-flavor-btn active" data-flavor="Bombita Naranja">
                                 <span class="flavor-dot orange"></span>
                                 <span class="flavor-name">Naranja</span>
                             </button>
