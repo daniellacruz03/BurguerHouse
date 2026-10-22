@@ -611,7 +611,7 @@
             const extras = [];
             if (isCombo) {
                 const activeFlavorBtn = document.querySelector('#promo-flavor-options .promo-flavor-btn.active');
-                const selectedFlavor = activeFlavorBtn ? (activeFlavorBtn.dataset.flavor || 'Bombita Naranja') : 'Bombita Naranja';
+                const selectedFlavor = activeFlavorBtn ? (activeFlavorBtn.dataset.flavor || 'Bombita Uva') : 'Bombita Uva';
                 extras.push({
                     nombre: `Papitas + ${selectedFlavor}`,
                     qty: 1,
@@ -1195,11 +1195,11 @@
                                             <span class="flavor-dot silver"></span>
                                             <span class="flavor-name">Light</span>
                                         </button>
-                                        <button type="button" class="promo-flavor-btn active" data-flavor="Bombita Naranja">
+                                        <button type="button" class="promo-flavor-btn hidden" data-flavor="Bombita Naranja" style="display: none !important;">
                                             <span class="flavor-dot orange"></span>
                                             <span class="flavor-name">Naranja</span>
                                         </button>
-                                        <button type="button" class="promo-flavor-btn" data-flavor="Bombita Uva">
+                                        <button type="button" class="promo-flavor-btn active" data-flavor="Bombita Uva">
                                             <span class="flavor-dot purple"></span>
                                             <span class="flavor-name">Uva</span>
                                         </button>
@@ -1482,7 +1482,7 @@
                             let extraFinalName = nombre;
                             if (nombre === 'Papitas + Bombita') {
                                 const activeFlavorBtn = document.querySelector('#modal-burger-flavor-options .promo-flavor-btn.active');
-                                const selectedFlavor = activeFlavorBtn ? (activeFlavorBtn.dataset.flavor || 'Bombita Naranja') : 'Bombita Naranja';
+                                const selectedFlavor = activeFlavorBtn ? (activeFlavorBtn.dataset.flavor || 'Bombita Uva') : 'Bombita Uva';
                                 extraFinalName = `Papitas + ${selectedFlavor}`;
                             }
                             extrasSeleccionados.push({
@@ -1886,7 +1886,7 @@
                 },
                 isCombo: false,
                 comboPrice: 2.00,
-                comboFlavor: 'Bombita Naranja'
+                comboFlavor: 'Bombita Uva'
             };
 
             const priceDisplay = document.getElementById('builder-price-val');
@@ -2040,7 +2040,7 @@
                     e.stopPropagation();
                     document.querySelectorAll('#builder-flavor-options .promo-flavor-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    state.comboFlavor = btn.dataset.flavor || 'Bombita Naranja';
+                    state.comboFlavor = btn.dataset.flavor || 'Bombita Uva';
                 });
             });
 
@@ -2055,7 +2055,7 @@
                 state.pickles = true;
                 state.sauces = { casa: true, bbq: false, mayo: false };
                 state.isCombo = false;
-                state.comboFlavor = 'Bombita Naranja';
+                state.comboFlavor = 'Bombita Uva';
 
                 comboCard?.classList.remove('selected');
                 if (comboFlavorBox) comboFlavorBox.classList.add('hidden');
