@@ -28,7 +28,16 @@
     t.src=v;s=b.getElementsByTagName(e)[0];
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1762934141516291');
+    var _bhUserData = { ct: 'merida', country: 've' };
+    try {
+        var _savedName = (localStorage.getItem('bh_customer_name') || '').trim().toLowerCase();
+        if (_savedName) {
+            var _parts = _savedName.split(/\s+/);
+            if (_parts[0]) _bhUserData.fn = _parts[0];
+            if (_parts.length > 1) _bhUserData.ln = _parts.slice(1).join(' ');
+        }
+    } catch (e) {}
+    fbq('init', '1762934141516291', _bhUserData);
     fbq('track', 'PageView');
     </script>
     <noscript><img height="1" width="1" style="display:none"

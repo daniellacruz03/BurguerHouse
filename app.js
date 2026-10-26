@@ -1785,6 +1785,20 @@
 
                 const url = `https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
 
+                // Meta Pixel: Actualizar coincidencias avanzadas con los datos del cliente
+                if (typeof window.fbq === 'function' && nombre) {
+                    try {
+                        const parts = nombre.trim().toLowerCase().split(/\s+/);
+                        const fn = parts[0] || '';
+                        const ln = parts.slice(1).join(' ') || '';
+                        const userData = { ct: 'merida', country: 've' };
+                        if (fn) userData.fn = fn;
+                        if (ln) userData.ln = ln;
+                        window.fbq('init', '1762934141516291', userData);
+                        localStorage.setItem('bh_customer_name', nombre.trim());
+                    } catch (e) {}
+                }
+
                 // Meta Pixel: Purchase — valor real del pedido, una sola vez
                 const pedidoId = 'BH-' + Date.now();
                 trackMetaEvent('Purchase', {
