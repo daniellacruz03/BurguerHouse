@@ -22,14 +22,14 @@
     let _updateTotal = null;
 
     // --- META PIXEL INTEGRATION HELPER ---
-    const trackMetaEvent = (eventName, params = {}) => {
-        if (typeof window.fbq === 'function') {
-            try {
-                window.fbq('track', eventName, params);
-                console.log(`[Meta Pixel] Evento '${eventName}' enviado:`, params);
-            } catch (err) {
-                console.warn(`[Meta Pixel] Error al enviar evento '${eventName}':`, err);
-            }
+    const trackMetaEvent = (eventName, params = {}, eventId) => {
+        if (typeof window.fbq !== 'function') return;
+        try {
+            if (eventId) window.fbq('track', eventName, params, { eventID: eventId });
+            else window.fbq('track', eventName, params);
+            console.log(`[Meta Pixel] ${eventName}`, params, eventId || '');
+        } catch (err) {
+            console.warn(`[Meta Pixel] Error en ${eventName}:`, err);
         }
     };
 
@@ -637,6 +637,15 @@
                     precioUnitario: basePrice,
                     extras: extras,
                     subtotal: basePrice
+                });
+
+                // Meta Pixel: AddToCart (promo)
+                trackMetaEvent('AddToCart', {
+                    value: Number(basePrice),
+                    currency: 'USD',
+                    content_name: burgerName + (isCombo ? ' (Promo Combo)' : ' (Promo)'),
+                    content_type: 'product',
+                    contents: [{ id: burgerName, quantity: 1 }]
                 });
 
                 actualizarInterfazCarrito();
@@ -1458,6 +1467,15 @@
                         extras: extrasSeleccionados,
                         subtotal: Number(subtotal.toFixed(2))
                     });
+
+                    // Meta Pixel: AddToCart (combo house / hamburguesa con extras)
+                    trackMetaEvent('AddToCart', {
+                        value: Number(subtotal.toFixed(2)),
+                        currency: 'USD',
+                        content_name: modalTitle?.innerText ?? 'Producto',
+                        content_type: 'product',
+                        contents: [{ id: modalTitle?.innerText ?? 'Producto', quantity: currentMainQty }]
+                    });
                 } else {
                     // LÓGICA NORMAL PARA OTROS PRODUCTOS
                     modal.querySelectorAll('.extra-card').forEach((card) => {
@@ -1504,6 +1522,15 @@
                         extras: extrasSeleccionados,
                         subtotal: Number(subtotal.toFixed(2))
                     });
+
+                    // Meta Pixel: AddToCart (producto normal)
+                    trackMetaEvent('AddToCart', {
+                        value: Number(subtotal.toFixed(2)),
+                        currency: 'USD',
+                        content_name: productName,
+                        content_type: 'product',
+                        contents: [{ id: productName, quantity: currentMainQty }]
+                    });
                 }
 
                 actualizarInterfazCarrito();
@@ -1530,6 +1557,14 @@
             setTimeout(() => {
                 history.pushState({ ui: 'checkout' }, '');
                 syncUIWithState();
+
+                // Meta Pixel: InitiateCheckout
+                const totalCarrito = carrito.reduce((sum, item) => sum + (item.subtotal || 0), 0);
+                trackMetaEvent('InitiateCheckout', {
+                    value: Number(totalCarrito.toFixed(2)),
+                    currency: 'USD',
+                    num_items: carrito.reduce((n, i) => n + i.cantidad, 0)
+                });
 
                 btn.style.pointerEvents = 'auto';
                 if (spinner) spinner.classList.remove('active');
@@ -1749,6 +1784,15 @@
                 if (isPreOrder) mensaje += '\n\nPROCESAR AL ABRIR';
 
                 const url = `https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
+
+                // Meta Pixel: Purchase — valor real del pedido, una sola vez
+                const pedidoId = 'BH-' + Date.now();
+                trackMetaEvent('Purchase', {
+                    value: Number(totalConDescuento.toFixed(2)),
+                    currency: 'USD',
+                    num_items: carrito.reduce((n, i) => n + i.cantidad, 0),
+                    contents: carrito.map(i => ({ id: i.id || i.nombre, quantity: i.cantidad, item_price: Number(i.precioUnitario) }))
+                }, pedidoId);
 
                 // 2. GUARDADO EN BASES DE DATOS (Manejo de Errores Aislado)
                 // Usamos un bloque interno para que si Firebase falla, NO se bloquee el WhatsApp
@@ -2127,6 +2171,15 @@
                         extras: extrasList,
                         imagen: 'images/person/TAPA_DE_PAN-.webp',
                         esPersonalizada: true
+                    });
+
+                    // Meta Pixel: AddToCart (burger personalizada)
+                    trackMetaEvent('AddToCart', {
+                        value: Number(total),
+                        currency: 'USD',
+                        content_name: displayName,
+                        content_type: 'product',
+                        contents: [{ id: displayName, quantity: 1 }]
                     });
 
                     actualizarInterfazCarrito();

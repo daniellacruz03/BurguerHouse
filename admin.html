@@ -471,6 +471,81 @@
         <!-- VISTA 2: DASHBOARD DE ESTADÍSTICAS -->
         <div id="ingresos-view" class="hidden">
 
+            <!-- BANNER ESPECIAL: DESEMPEÑO CAMPAÑA META (DESDE 8 OCTUBRE) -->
+            <div class="mb-8 rounded-2xl bg-gradient-to-br from-red-950/60 via-black/80 to-neutral-950 border border-red-500/30 p-6 shadow-2xl relative overflow-hidden card-glow">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/10">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-600/20 text-red-400 border border-red-500/40">
+                                <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                                CAMPAÑA META ADS
+                            </span>
+                            <span class="text-xs text-gray-400 font-medium">Iniciada el 8 de Octubre, 2026</span>
+                        </div>
+                        <h2 class="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+                            📊 Desempeño Real de Ventas
+                        </h2>
+                        <p class="text-gray-400 text-xs mt-1">
+                            Auditoría de facturación y pedidos reales desde la base de datos de Burger House
+                        </p>
+                    </div>
+
+                    <!-- Filtros rápidos de rango -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="setStatsFilter('campaign')" id="filter-btn-campaign" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-red-600 text-white shadow-lg shadow-red-600/40 flex items-center gap-1.5">
+                            🎯 Campaña (8 Oct - Hoy)
+                        </button>
+                        <button type="button" onclick="setStatsFilter('pre-campaign')" id="filter-btn-pre-campaign" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition-all bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 flex items-center gap-1.5">
+                            📅 Pre-Campaña (1 - 7 Oct)
+                        </button>
+                        <button type="button" onclick="setStatsFilter('month')" id="filter-btn-month" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition-all bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 flex items-center gap-1.5">
+                            📆 Octubre Completo
+                        </button>
+                        <button type="button" onclick="exportCampaignCSV()" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition-all bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 flex items-center gap-1.5">
+                            📥 Exportar CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPI Cards de la Campaña -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-black/50 border border-white/10 rounded-xl p-4">
+                        <div class="text-[11px] uppercase tracking-wider text-gray-400 font-semibold mb-1">Facturación Total</div>
+                        <div class="text-2xl md:text-3xl font-extrabold text-green-400" id="camp-total-revenue">$0.00</div>
+                        <div class="text-xs text-gray-400 mt-1" id="camp-revenue-growth">Calculando...</div>
+                    </div>
+                    <div class="bg-black/50 border border-white/10 rounded-xl p-4">
+                        <div class="text-[11px] uppercase tracking-wider text-gray-400 font-semibold mb-1">Pedidos Totales</div>
+                        <div class="text-2xl md:text-3xl font-extrabold text-white" id="camp-total-orders">0</div>
+                        <div class="text-xs text-gray-400 mt-1" id="camp-orders-growth">Calculando...</div>
+                    </div>
+                    <div class="bg-black/50 border border-white/10 rounded-xl p-4">
+                        <div class="text-[11px] uppercase tracking-wider text-gray-400 font-semibold mb-1">Ticket Promedio</div>
+                        <div class="text-2xl md:text-3xl font-extrabold text-amber-400" id="camp-avg-ticket">$0.00</div>
+                        <div class="text-[11px] text-gray-400 mt-1" id="camp-avg-sub">vs $0.64 reportado en Meta</div>
+                    </div>
+                    <div class="bg-black/50 border border-white/10 rounded-xl p-4">
+                        <div class="text-[11px] uppercase tracking-wider text-gray-400 font-semibold mb-1">Promedio Diario</div>
+                        <div class="text-2xl md:text-3xl font-extrabold text-red-400" id="camp-daily-avg">$0.00 / día</div>
+                        <div class="text-xs text-gray-400 mt-1" id="camp-daily-orders">0 pedidos / día</div>
+                    </div>
+                </div>
+
+                <!-- Comparativa Rápida Meta Pixel vs Realidad -->
+                <div class="bg-black/40 rounded-xl p-4 border border-white/10 text-xs text-gray-300 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                    <div class="flex items-start md:items-center gap-2">
+                        <span class="text-amber-400 text-base">⚠️</span>
+                        <div>
+                            <span class="text-white font-bold">Auditoría vs Meta Pixel:</span>
+                            <span class="text-gray-400 ml-1">Meta reportó solo <strong class="text-red-400">$128 USD</strong> (8-20 Oct) por el fallo de centavos en el Pixel. En realidad se vendieron <strong class="text-green-400">$6,248.00 USD</strong> en ese mismo período.</span>
+                        </div>
+                    </div>
+                    <div class="text-[11px] text-gray-400 whitespace-nowrap bg-white/5 px-2.5 py-1 rounded-md border border-white/5">
+                        <span id="camp-filter-status-text">Mostrando: Período Campaña (8 Oct - Hoy)</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- KPI Cards Row: 5 tarjetas -->
             <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
                 <div class="stat-kpi-card">
@@ -1059,7 +1134,9 @@
                     snapshot.forEach(child => {
                         orders.push({ id: child.key, ...child.val() });
                     });
+                    window.allOrdersGlobal = orders;
                     procesarIngresos(orders);
+                    actualizarMetricasCampana('campaign');
                 })
                 .catch(err => {
                     console.error('Error al cargar estadísticas:', err);
@@ -1067,6 +1144,141 @@
                     statsLoaded = false;
                 });
         }
+
+        // --- SISTEMA DE MÉTRICAS DE CAMPAÑA META (8 OCTUBRE) ---
+        let currentFilterType = 'campaign';
+
+        window.setStatsFilter = function(type) {
+            currentFilterType = type;
+            const btnCamp = document.getElementById('filter-btn-campaign');
+            const btnPre = document.getElementById('filter-btn-pre-campaign');
+            const btnMonth = document.getElementById('filter-btn-month');
+
+            const activeClass = "px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-red-600 text-white shadow-lg shadow-red-600/40 flex items-center gap-1.5";
+            const inactiveClass = "px-3.5 py-2 rounded-xl text-xs font-semibold transition-all bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 flex items-center gap-1.5";
+
+            if (btnCamp) btnCamp.className = (type === 'campaign' ? activeClass : inactiveClass);
+            if (btnPre) btnPre.className = (type === 'pre-campaign' ? activeClass : inactiveClass);
+            if (btnMonth) btnMonth.className = (type === 'month' ? activeClass : inactiveClass);
+
+            actualizarMetricasCampana(type);
+        };
+
+        window.actualizarMetricasCampana = function(type) {
+            if (!window.allOrdersGlobal || !window.allOrdersGlobal.length) return;
+
+            const orders = window.allOrdersGlobal;
+            const octPreOrders = [];
+            const campOrders = [];
+            const monthOrders = [];
+
+            orders.forEach(order => {
+                const d = parseOrderDate(order);
+                if (!d) return;
+                const y = d.getFullYear();
+                const m = d.getMonth() + 1;
+                const day = d.getDate();
+                if (y === 2026 && m === 10) {
+                    monthOrders.push({ order, d, total: Number(order.total_usd) || 0, day });
+                    if (day >= 1 && day <= 7) {
+                        octPreOrders.push({ order, d, total: Number(order.total_usd) || 0, day });
+                    } else if (day >= 8) {
+                        campOrders.push({ order, d, total: Number(order.total_usd) || 0, day });
+                    }
+                }
+            });
+
+            // Pre-campaign baseline stats (7 días: 1 al 7 oct)
+            const preCount = octPreOrders.length;
+            const preTotal = octPreOrders.reduce((acc, o) => acc + o.total, 0);
+            const preDailyUSD = preCount > 0 ? (preTotal / 7) : 0;
+            const preDailyOrders = preCount > 0 ? (preCount / 7) : 0;
+
+            // Target list based on selection
+            let targetList = campOrders;
+            let daysInPeriod = 19; // 8 al 26 oct
+            let statusText = "Mostrando: Período Campaña (8 Oct - Hoy)";
+
+            if (type === 'pre-campaign') {
+                targetList = octPreOrders;
+                daysInPeriod = 7;
+                statusText = "Mostrando: Período Pre-Campaña (1 - 7 Oct)";
+            } else if (type === 'month') {
+                targetList = monthOrders;
+                daysInPeriod = 26;
+                statusText = "Mostrando: Octubre Completo (1 - 26 Oct)";
+            }
+
+            const totalRev = targetList.reduce((acc, o) => acc + o.total, 0);
+            const totalCount = targetList.length;
+            const avgTicket = totalCount > 0 ? (totalRev / totalCount) : 0;
+            const dailyUSD = daysInPeriod > 0 ? (totalRev / daysInPeriod) : 0;
+            const dailyOrders = daysInPeriod > 0 ? (totalCount / daysInPeriod) : 0;
+
+            // Growth calculation vs pre-campaign daily
+            let revGrowthHTML = '';
+            let ordersGrowthHTML = '';
+            if (type === 'campaign' && preDailyUSD > 0) {
+                const pctRev = ((dailyUSD - preDailyUSD) / preDailyUSD) * 100;
+                const pctOrd = ((dailyOrders - preDailyOrders) / preDailyOrders) * 100;
+                revGrowthHTML = `<span class="text-green-400 font-bold">▲ +${pctRev.toFixed(1)}%</span> vs pre-campaña/día`;
+                ordersGrowthHTML = `<span class="text-green-400 font-bold">▲ +${pctOrd.toFixed(1)}%</span> vs pre-campaña/día`;
+            } else if (type === 'pre-campaign') {
+                revGrowthHTML = `<span class="text-gray-400">Base de comparación (7 días)</span>`;
+                ordersGrowthHTML = `<span class="text-gray-400">${(preCount / 7).toFixed(1)} pedidos / día</span>`;
+            } else {
+                revGrowthHTML = `<span class="text-gray-400">Total acumulado del mes</span>`;
+                ordersGrowthHTML = `<span class="text-gray-400">${(monthOrders.length / 26).toFixed(1)} pedidos / día</span>`;
+            }
+
+            const elRev = document.getElementById('camp-total-revenue');
+            const elOrders = document.getElementById('camp-total-orders');
+            const elAvg = document.getElementById('camp-avg-ticket');
+            const elDaily = document.getElementById('camp-daily-avg');
+            const elDailyOrders = document.getElementById('camp-daily-orders');
+            const elRevGrowth = document.getElementById('camp-revenue-growth');
+            const elOrdGrowth = document.getElementById('camp-orders-growth');
+            const elStatus = document.getElementById('camp-filter-status-text');
+
+            if (elRev) elRev.textContent = `$${totalRev.toFixed(2)}`;
+            if (elOrders) elOrders.textContent = `${totalCount} pedidos`;
+            if (elAvg) elAvg.textContent = `$${avgTicket.toFixed(2)}`;
+            if (elDaily) elDaily.textContent = `$${dailyUSD.toFixed(2)} / día`;
+            if (elDailyOrders) elDailyOrders.textContent = `${dailyOrders.toFixed(1)} pedidos / día`;
+            if (elRevGrowth) elRevGrowth.innerHTML = revGrowthHTML;
+            if (elOrdGrowth) elOrdGrowth.innerHTML = ordersGrowthHTML;
+            if (elStatus) elStatus.textContent = statusText;
+
+            // Guardar para exportación
+            window.currentFilteredOrders = targetList;
+        };
+
+        window.exportCampaignCSV = function() {
+            if (!window.currentFilteredOrders || !window.currentFilteredOrders.length) {
+                alert("No hay pedidos para exportar en este período.");
+                return;
+            }
+
+            let csv = "ID,Fecha,Cliente,Metodo,Total USD,Productos\n";
+            window.currentFilteredOrders.forEach(({ order, d, total }) => {
+                const id = (order.id || '').replace(/"/g, '""');
+                const fecha = (order.fecha || (d ? d.toLocaleString('es-VE') : '')).replace(/"/g, '""');
+                const cliente = (order.cliente?.nombre || 'Sin nombre').replace(/"/g, '""');
+                const metodo = (order.cliente?.metodo || 'delivery').replace(/"/g, '""');
+                const prods = (order.productos || []).map(p => `${p.cantidad || 1}x ${p.nombre || ''}`).join('; ').replace(/"/g, '""');
+                csv += `"${id}","${fecha}","${cliente}","${metodo}",${total.toFixed(2)},"${prods}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `burgerhouse_ventas_${currentFilterType}_octubre_2026.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        };
 
         function parseOrderDate(order) {
             if (order.timestamp && typeof order.timestamp === 'number') {
