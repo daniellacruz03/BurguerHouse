@@ -3,6 +3,100 @@
  * Arquitectura Data-Driven para extras, corrección en Firebase y automatización de procesos.
  * V2: Flujo anti-crash, comanda estricta y GPS optimizado.
  */
+
+/* =====================================================================
+   META PIXEL + CONVERSIONS API — Corrección de atribución
+   · Captura fbclid como _fbc en cookie (90 días) + localStorage.
+   · bhTrackPurchase dispara Píxel + CAPI con el MISMO event_id
+     para que Meta deduplique y cuente UNA sola compra.
+   · Espera 400 ms antes de redirigir a WhatsApp para que el beacon salga.
+   ===================================================================== */
+
+// 1) Guardar fbclid como _fbc al entrar a la web
+(function bhCaptureFbclid() {
+    var fbclid = new URLSearchParams(window.location.search).get('fbclid');
+    if (!fbclid) return;
+    var fbc = 'fb.1.' + Date.now() + '.' + fbclid;
+    if (!/(^|;\s*)_fbc=/.test(document.cookie)) {
+        document.cookie = '_fbc=' + fbc + '; path=/; max-age=' + (90 * 24 * 3600) + '; SameSite=Lax';
+    }
+    try { localStorage.setItem('bh_fbc', fbc); } catch (e) {}
+})();
+
+function bhGetCookie(name) {
+    var m = document.cookie.match('(^|;\\s*)' + name + '=([^;]*)');
+    return m ? decodeURIComponent(m[2]) : null;
+}
+
+function bhGetFbc() {
+    var c = bhGetCookie('_fbc');
+    if (c) return c;
+    try { return localStorage.getItem('bh_fbc'); } catch (e) { return null; }
+}
+
+/**
+ * 2) Registrar la compra en Píxel + CAPI con el MISMO event_id.
+ * @param {object} order  - { total, items:[{id,qty,price}], cliente:{nombre,telefono} }
+ * @param {Function} done - callback que abre WhatsApp
+ */
+function bhTrackPurchase(order, done) {
+    var eventId = 'bh_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+
+    var customData = {
+        value: Number(order.total) || 0,
+        currency: 'USD',
+        content_type: 'product',
+        contents: (order.items || []).map(function (i) {
+            return { id: String(i.id), quantity: Number(i.qty) || 1, item_price: Number(i.price) || 0 };
+        }),
+        num_items: (order.items || []).reduce(function (n, i) { return n + (Number(i.qty) || 1); }, 0),
+        order_id: eventId
+    };
+
+    // Píxel (navegador) — con eventID para deduplicación
+    if (typeof window.fbq === 'function') {
+        try {
+            window.fbq('track', 'Purchase', customData, { eventID: eventId });
+            console.log('[Meta Pixel] Purchase', customData, eventId);
+        } catch (err) {
+            console.warn('[Meta Pixel] Error en Purchase:', err);
+        }
+    }
+
+    // Separar nombre y apellido SOLO si el usuario los escribió (no relleno)
+    var nombreCompleto = (order.cliente && order.cliente.nombre) || '';
+    var parts = nombreCompleto.trim().toLowerCase().split(/\s+/);
+    var fn = parts[0] || null;
+    var ln = parts.length > 1 ? parts.slice(1).join(' ') : null; // apellido real, no relleno
+
+    // CAPI (servidor) — mismo event_id para que Meta deduplique
+    var payload = {
+        event_id: eventId,
+        event_source_url: window.location.href.split('?')[0],
+        fbc: bhGetFbc(),
+        fbp: bhGetCookie('_fbp'),
+        custom_data: customData,
+        user: { fn: fn, ln: ln, ph: (order.cliente && order.cliente.telefono) || null }
+    };
+
+    try {
+        navigator.sendBeacon(
+            '/api/meta-capi',
+            new Blob([JSON.stringify(payload)], { type: 'application/json' })
+        );
+    } catch (e) {
+        fetch('/api/meta-capi', {
+            method: 'POST',
+            keepalive: true,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).catch(function () {});
+    }
+
+    // 4) Dar 400 ms para que el beacon salga antes de ir a WhatsApp
+    setTimeout(done, 400);
+}
+
 (function () {
     'use strict';
 
@@ -1786,27 +1880,25 @@
                 const url = `https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
 
                 // Meta Pixel: Actualizar coincidencias avanzadas con los datos del cliente
+                // Solo enviar ln (apellido) si el usuario escribió más de una palabra
                 if (typeof window.fbq === 'function' && nombre) {
                     try {
                         const parts = nombre.trim().toLowerCase().split(/\s+/);
-                        const fn = parts[0] || '';
-                        const ln = parts.slice(1).join(' ') || '';
                         const userData = { ct: 'merida', country: 've' };
-                        if (fn) userData.fn = fn;
-                        if (ln) userData.ln = ln;
+                        if (parts[0]) userData.fn = parts[0];
+                        if (parts.length > 1) userData.ln = parts.slice(1).join(' '); // apellido real
                         window.fbq('init', '1762934141516291', userData);
                         localStorage.setItem('bh_customer_name', nombre.trim());
                     } catch (e) {}
                 }
 
-                // Meta Pixel: Purchase — valor real del pedido, una sola vez
-                const pedidoId = 'BH-' + Date.now();
-                trackMetaEvent('Purchase', {
-                    value: Number(totalConDescuento.toFixed(2)),
-                    currency: 'USD',
-                    num_items: carrito.reduce((n, i) => n + i.cantidad, 0),
-                    contents: carrito.map(i => ({ id: i.id || i.nombre, quantity: i.cantidad, item_price: Number(i.precioUnitario) }))
-                }, pedidoId);
+                // Meta Pixel + CAPI: Purchase con event_id compartido y fbc
+                // bhTrackPurchase dispara Píxel + servidor con el MISMO id → Meta deduplica
+                const clienteOrder = {
+                    total: totalConDescuento,
+                    items: carrito.map(i => ({ id: i.id || i.nombre, qty: i.cantidad, price: Number(i.precioUnitario) })),
+                    cliente: { nombre: nombre, telefono: null } // teléfono no se recoge en el form
+                };
 
                 // 2. GUARDADO EN BASES DE DATOS (Manejo de Errores Aislado)
                 // Usamos un bloque interno para que si Firebase falla, NO se bloquee el WhatsApp
@@ -1867,7 +1959,7 @@
                 // Ejecutamos en paralelo sin bloquear la redirección
                 registrarEnBasesDeDatos();
 
-                // 3. FINALIZAR ORDEN Y REDIRIGIR
+                // 3. FINALIZAR ORDEN — Purchase Píxel + CAPI y redirigir a WhatsApp
                 try { localStorage.removeItem('bh_cart'); } catch (e) { }
 
                 pedidoConfirmado = true;
@@ -1877,18 +1969,19 @@
                 const form = document.getElementById('form-delivery');
                 if (form) form.reset();
 
-                // Asegurar redirección a WhatsApp siempre sin mensaje de advertencia
-                try {
-                    window.location.replace(url);
-                } catch (e) {
-                    // Fallback si window.location.replace falla
-                    window.open(url, '_self');
-                }
-
-                // Actualizar Interfaz
+                // Actualizar Interfaz antes de salir
                 cartSidebar?.classList.add('cart-closed');
                 document.getElementById('modal-reminder')?.classList.add('active');
                 if (stickyNav) stickyNav.style.display = 'none';
+
+                // bhTrackPurchase: Píxel + CAPI con el mismo event_id → 400 ms → WhatsApp
+                bhTrackPurchase(clienteOrder, function () {
+                    try {
+                        window.location.replace(url);
+                    } catch (e) {
+                        window.location.href = url;
+                    }
+                });
 
             } catch (error) {
                 // Captura de Errores Fatales (ej. variables nulas)

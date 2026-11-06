@@ -1,4 +1,11 @@
 {
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": ["node_modules", ".git"]
+    }
+  ],
   "hosting": {
     "public": ".",
     "ignore": [
@@ -22,7 +29,15 @@
       "**/package*.json",
       "**/capacitor.config.json",
       "**/images/*.png",
-      "**/*.png"
+      "**/*.png",
+      "functions/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/api/meta-capi",
+        "function": "metaCapi",
+        "region": "us-central1"
+      }
     ],
     "headers": [
       {
