@@ -2082,7 +2082,8 @@ function bhTrackPurchase(order, done) {
                 // bhTrackPurchase dispara Píxel + servidor con el MISMO id → Meta deduplica
                 const clienteOrder = {
                     total: totalConDescuento,
-                    items: carrito.map(i => ({ id: i.id || i.nombre, qty: i.cantidad, price: Number(i.precioUnitario) })),
+                    // id = nombre del producto (igual que en AddToCart) para que Meta pueda relacionar los eventos
+                    items: carrito.map(i => ({ id: i.nombre || i.id, qty: i.cantidad, price: Number(i.precioUnitario) })),
                     cliente: { nombre: nombre, telefono: null } // teléfono no se recoge en el form
                 };
 
