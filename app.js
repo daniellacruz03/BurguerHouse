@@ -12,89 +12,271 @@
    · Espera 400 ms antes de redirigir a WhatsApp para que el beacon salga.
    ===================================================================== */
 
-// 1) Guardar fbclid como _fbc al entrar a la web
+// 1) Guardar fbclid como _fbc al entrar a la web (dominio raíz con y sin www, 90 días + localStorage)
+function bhSetFbcCookie(fbcValue) {
+    try {
+        if (!fbcValue || typeof fbcValue !== 'string' || !/^fb\.\d+\.\d+\..+/.test(fbcValue)) return;
+        var maxAge = 90 * 24 * 3600; // 90 días
+        var host = (window.location.hostname || '').toLowerCase();
+        var rootDomain = '';
+        if (host && host !== 'localhost' && !/^\d+\.\d+\.\d+\.\d+$/.test(host)) {
+            var parts = host.replace(/^www\./, '').split('.');
+            if (parts.length >= 2) {
+                rootDomain = '.' + parts.slice(-2).join('.');
+            }
+        }
+        var baseCookie = '_fbc=' + fbcValue + '; path=/; max-age=' + maxAge + '; SameSite=Lax';
+        if (rootDomain) {
+            document.cookie = baseCookie + '; domain=' + rootDomain;
+        }
+        if (!bhGetCookie('_fbc')) {
+            document.cookie = baseCookie;
+        }
+    } catch (e) {}
+}
+
 (function bhCaptureFbclid() {
-    var fbclid = new URLSearchParams(window.location.search).get('fbclid');
-    if (!fbclid) return;
-    var fbc = 'fb.1.' + Date.now() + '.' + fbclid;
-    if (!/(^|;\s*)_fbc=/.test(document.cookie)) {
-        document.cookie = '_fbc=' + fbc + '; path=/; max-age=' + (90 * 24 * 3600) + '; SameSite=Lax';
-    }
-    try { localStorage.setItem('bh_fbc', fbc); } catch (e) {}
+    try {
+        var fbclid = (new URLSearchParams(window.location.search).get('fbclid') || '').trim();
+        var existing = bhGetCookie('_fbc');
+        if (!existing) {
+            try { existing = (localStorage.getItem('bh_fbc') || localStorage.getItem('_fbc') || '').trim(); } catch (e) {}
+        }
+        if (fbclid) {
+            var fbc = (existing && existing.slice(-fbclid.length - 1) === '.' + fbclid)
+                ? existing
+                : ('fb.1.' + Date.now() + '.' + fbclid);
+            bhSetFbcCookie(fbc);
+            try {
+                localStorage.setItem('bh_fbc', fbc);
+                localStorage.setItem('_fbc', fbc);
+            } catch (e) {}
+        } else if (existing && /^fb\.\d+\.\d+\..+/.test(existing)) {
+            if (!bhGetCookie('_fbc')) bhSetFbcCookie(existing);
+            try {
+                if (!localStorage.getItem('bh_fbc')) localStorage.setItem('bh_fbc', existing);
+            } catch (e) {}
+        }
+    } catch (e) {}
 })();
 
 function bhGetCookie(name) {
-    var m = document.cookie.match('(^|;\\s*)' + name + '=([^;]*)');
-    return m ? decodeURIComponent(m[2]) : null;
+    try {
+        var m = document.cookie.match('(^|;\\s*)' + name + '=([^;]*)');
+        var val = m ? decodeURIComponent(m[2]).trim() : '';
+        return val || null;
+    } catch (e) {
+        return null;
+    }
 }
 
 function bhGetFbc() {
-    var c = bhGetCookie('_fbc');
-    if (c) return c;
-    try { return localStorage.getItem('bh_fbc'); } catch (e) { return null; }
+    try {
+        var c = bhGetCookie('_fbc');
+        if (c && /^fb\.\d+\.\d+\..+/.test(c)) return c;
+        var stored = (localStorage.getItem('bh_fbc') || localStorage.getItem('_fbc') || '').trim();
+        if (stored && /^fb\.\d+\.\d+\..+/.test(stored)) {
+            bhSetFbcCookie(stored);
+            return stored;
+        }
+    } catch (e) {}
+    return null;
 }
+
+function bhGetFbp() {
+    try {
+        var c = bhGetCookie('_fbp');
+        return (c && c.length > 0) ? c : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function bhNormEmail(email) {
+    try {
+        if (!email) return null;
+        var clean = String(email).trim().toLowerCase().replace(/\s+/g, '');
+        return clean.indexOf('@') > 0 ? clean : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function bhNormPhone(phone) {
+    try {
+        if (!phone) return null;
+        var digits = String(phone).replace(/\D/g, '');
+        if (!digits) return null;
+        if (digits.indexOf('580') === 0) digits = '58' + digits.slice(3);
+        else if (digits.charAt(0) === '0') digits = '58' + digits.slice(1);
+        else if (digits.indexOf('58') !== 0) digits = '58' + digits;
+        return digits.length >= 11 ? digits : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function bhSha256Hex(str) {
+    try {
+        if (!str || typeof window.crypto === 'undefined' || !window.crypto.subtle || typeof TextEncoder === 'undefined') {
+            return Promise.resolve(null);
+        }
+        var buf = new TextEncoder().encode(String(str));
+        return window.crypto.subtle.digest('SHA-256', buf).then(function (hashBuffer) {
+            var hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+        }).catch(function () { return null; });
+    } catch (e) {
+        return Promise.resolve(null);
+    }
+}
+
+function bhSendCapiEvent(eventName, customData, eventId, userObj, useBeacon) {
+    try {
+        var fbc = bhGetFbc();
+        var fbp = bhGetFbp();
+        var user = userObj ? Object.assign({}, userObj) : {};
+        if (!user.fn) {
+            try {
+                var savedName = (localStorage.getItem('bh_customer_name') || '').trim().toLowerCase();
+                if (savedName) {
+                    var parts = savedName.split(/\s+/);
+                    if (parts[0]) user.fn = parts[0];
+                    if (parts.length > 1) user.ln = parts.slice(1).join(' ');
+                }
+            } catch (e) {}
+        }
+
+        var payload = {
+            event_name: eventName,
+            event_id: eventId,
+            event_source_url: window.location.href.split('?')[0],
+            custom_data: customData || {},
+            user: user
+        };
+        if (fbc) payload.fbc = fbc;
+        if (fbp) payload.fbp = fbp;
+
+        var bodyStr = JSON.stringify(payload);
+        var sent = false;
+        if (useBeacon && typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+            try {
+                sent = navigator.sendBeacon(
+                    '/api/meta-capi',
+                    new Blob([bodyStr], { type: 'application/json' })
+                );
+            } catch (e) {
+                sent = false;
+            }
+        }
+        if (!sent && typeof fetch === 'function') {
+            fetch('/api/meta-capi', {
+                method: 'POST',
+                keepalive: true,
+                headers: { 'Content-Type': 'application/json' },
+                body: bodyStr
+            }).catch(function () {});
+        }
+    } catch (e) {}
+}
+
+var _bhLastPurchaseSig = '';
+var _bhLastPurchaseTs = 0;
 
 /**
  * 2) Registrar la compra en Píxel + CAPI con el MISMO event_id.
- * @param {object} order  - { total, items:[{id,qty,price}], cliente:{nombre,telefono} }
+ * @param {object} order  - { total, items:[{id,qty,price}], cliente:{nombre,telefono,email} }
  * @param {Function} done - callback que abre WhatsApp
  */
 function bhTrackPurchase(order, done) {
-    var eventId = 'bh_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
-
-    var customData = {
-        value: Number(order.total) || 0,
-        currency: 'USD',
-        content_type: 'product',
-        contents: (order.items || []).map(function (i) {
-            return { id: String(i.id), quantity: Number(i.qty) || 1, item_price: Number(i.price) || 0 };
-        }),
-        num_items: (order.items || []).reduce(function (n, i) { return n + (Number(i.qty) || 1); }, 0),
-        order_id: eventId
-    };
-
-    // Píxel (navegador) — con eventID para deduplicación
-    if (typeof window.fbq === 'function') {
-        try {
-            window.fbq('track', 'Purchase', customData, { eventID: eventId });
-            console.log('[Meta Pixel] Purchase', customData, eventId);
-        } catch (err) {
-            console.warn('[Meta Pixel] Error en Purchase:', err);
+    var doneCalled = false;
+    var safeDone = function () {
+        if (doneCalled) return;
+        doneCalled = true;
+        if (typeof done === 'function') {
+            try { done(); } catch (e) {}
         }
-    }
-
-    // Separar nombre y apellido SOLO si el usuario los escribió (no relleno)
-    var nombreCompleto = (order.cliente && order.cliente.nombre) || '';
-    var parts = nombreCompleto.trim().toLowerCase().split(/\s+/);
-    var fn = parts[0] || null;
-    var ln = parts.length > 1 ? parts.slice(1).join(' ') : null; // apellido real, no relleno
-
-    // CAPI (servidor) — mismo event_id para que Meta deduplique
-    var payload = {
-        event_id: eventId,
-        event_source_url: window.location.href.split('?')[0],
-        fbc: bhGetFbc(),
-        fbp: bhGetCookie('_fbp'),
-        custom_data: customData,
-        user: { fn: fn, ln: ln, ph: (order.cliente && order.cliente.telefono) || null }
     };
 
     try {
-        navigator.sendBeacon(
-            '/api/meta-capi',
-            new Blob([JSON.stringify(payload)], { type: 'application/json' })
-        );
-    } catch (e) {
-        fetch('/api/meta-capi', {
-            method: 'POST',
-            keepalive: true,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        }).catch(function () {});
+        var numericTotal = Math.round((Number(order && order.total) || 0) * 100) / 100;
+        var itemsList = (order && Array.isArray(order.items)) ? order.items : [];
+        var sig = numericTotal + '|' + itemsList.map(function (i) { return (i.id || '') + ':' + (i.qty || 1); }).join(',');
+        var now = Date.now();
+
+        // Evitar compras duplicadas si se intenta disparar dos veces el mismo pedido
+        if ((order && order._purchaseTracked) || (sig === _bhLastPurchaseSig && (now - _bhLastPurchaseTs) < 5000)) {
+            setTimeout(safeDone, 400);
+            return;
+        }
+        if (order && typeof order === 'object') order._purchaseTracked = true;
+        _bhLastPurchaseSig = sig;
+        _bhLastPurchaseTs = now;
+
+        var eventId = (order && order.eventId)
+            ? String(order.eventId)
+            : ('bh_' + now + '_' + Math.random().toString(36).slice(2, 10));
+
+        var customData = {
+            value: numericTotal,
+            currency: 'USD',
+            content_type: 'product',
+            contents: itemsList.map(function (i) {
+                return { id: String(i.id), quantity: Number(i.qty) || 1, item_price: Number(i.price) || 0 };
+            }),
+            num_items: itemsList.reduce(function (n, i) { return n + (Number(i.qty) || 1); }, 0),
+            order_id: eventId
+        };
+
+        // Píxel (navegador) — con eventID para deduplicación
+        if (typeof window.fbq === 'function') {
+            try {
+                window.fbq('track', 'Purchase', customData, { eventID: eventId });
+                console.log('[Meta Pixel] Purchase', customData, eventId);
+            } catch (err) {
+                console.warn('[Meta Pixel] Error en Purchase:', err);
+            }
+        }
+
+        // Separar nombre y apellido SOLO si el usuario los escribió (no relleno)
+        var nombreCompleto = (order && order.cliente && order.cliente.nombre) || '';
+        var parts = nombreCompleto.trim().toLowerCase().split(/\s+/);
+        var fn = parts[0] || null;
+        var ln = parts.length > 1 ? parts.slice(1).join(' ') : null;
+
+        var rawEmail = (order && order.cliente && (order.cliente.email || order.cliente.correo)) || null;
+        var rawPhone = (order && order.cliente && (order.cliente.telefono || order.cliente.phone)) || null;
+        var normEm = bhNormEmail(rawEmail);
+        var normPh = bhNormPhone(rawPhone);
+
+        var userPayload = { fn: fn, ln: ln };
+        if (normEm) userPayload.em = normEm;
+        if (normPh) userPayload.ph = normPh;
+
+        // Si existen em o ph, hashearlos en SHA-256 antes de enviar (con fallback inmediato si falla Web Crypto)
+        if (normEm || normPh) {
+            Promise.all([
+                normEm ? bhSha256Hex(normEm) : Promise.resolve(null),
+                normPh ? bhSha256Hex(normPh) : Promise.resolve(null)
+            ]).then(function (hashes) {
+                try {
+                    if (hashes[0]) userPayload.em = hashes[0];
+                    if (hashes[1]) userPayload.ph = hashes[1];
+                } catch (e) {}
+                bhSendCapiEvent('Purchase', customData, eventId, userPayload, true);
+            }).catch(function () {
+                bhSendCapiEvent('Purchase', customData, eventId, userPayload, true);
+            });
+        } else {
+            // CAPI (servidor) — mismo event_id para que Meta deduplique
+            bhSendCapiEvent('Purchase', customData, eventId, userPayload, true);
+        }
+    } catch (err) {
+        console.warn('[Meta Tracking] Error controlado en bhTrackPurchase:', err);
     }
 
     // 4) Dar 400 ms para que el beacon salga antes de ir a WhatsApp
-    setTimeout(done, 400);
+    setTimeout(safeDone, 400);
 }
 
 (function () {
@@ -117,11 +299,15 @@ function bhTrackPurchase(order, done) {
 
     // --- META PIXEL INTEGRATION HELPER ---
     const trackMetaEvent = (eventName, params = {}, eventId) => {
-        if (typeof window.fbq !== 'function') return;
         try {
-            if (eventId) window.fbq('track', eventName, params, { eventID: eventId });
-            else window.fbq('track', eventName, params);
-            console.log(`[Meta Pixel] ${eventName}`, params, eventId || '');
+            const evtId = eventId || ('bh_' + String(eventName || 'evt').toLowerCase() + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10));
+            // Solo Píxel. El envío por servidor de AddToCart/InitiateCheckout lo hace una
+            // integración externa de Meta que replica el evento del Píxel con este mismo eventID.
+            // No se envían desde aquí a /api/meta-capi para no duplicar.
+            if (typeof window.fbq === 'function') {
+                window.fbq('track', eventName, params, { eventID: evtId });
+                console.log(`[Meta Pixel] ${eventName}`, params, evtId);
+            }
         } catch (err) {
             console.warn(`[Meta Pixel] Error en ${eventName}:`, err);
         }

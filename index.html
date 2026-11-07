@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -9,6 +9,52 @@
     <link rel="icon" href="images/logobh.webp" type="image/webp">
     <link rel="apple-touch-icon" href="images/logobh.webp">
     <!-- Precarga del logo para evitar que desaparezca durante la carga -->
+
+    <!-- Captura temprana de fbclid (_fbc en cookie de dominio raíz + localStorage) antes de limpiar URL o iniciar Pixel -->
+    <script>
+        (function () {
+            try {
+                var params = new URLSearchParams(window.location.search);
+                var fbclid = (params.get('fbclid') || '').trim();
+                var getCookie = function (name) {
+                    var m = document.cookie.match(new RegExp('(^|;\\s*)' + name + '=([^;]*)'));
+                    return m ? decodeURIComponent(m[2]).trim() : '';
+                };
+                var setFbcCookie = function (val) {
+                    if (!val || !/^fb\.\d+\.\d+\..+/.test(val)) return;
+                    var maxAge = 90 * 24 * 60 * 60;
+                    var host = (window.location.hostname || '').toLowerCase();
+                    var rootDomain = '';
+                    if (host && host !== 'localhost' && !/^\d+\.\d+\.\d+\.\d+$/.test(host)) {
+                        var parts = host.replace(/^www\./, '').split('.');
+                        if (parts.length >= 2) rootDomain = '.' + parts.slice(-2).join('.');
+                    }
+                    var base = '_fbc=' + val + '; path=/; max-age=' + maxAge + '; SameSite=Lax';
+                    if (rootDomain) document.cookie = base + '; domain=' + rootDomain;
+                    if (!getCookie('_fbc')) document.cookie = base;
+                };
+                var existing = getCookie('_fbc');
+                if (!existing) {
+                    try { existing = (localStorage.getItem('bh_fbc') || localStorage.getItem('_fbc') || '').trim(); } catch (e) {}
+                }
+                if (fbclid) {
+                    var fbc = (existing && existing.slice(-fbclid.length - 1) === '.' + fbclid)
+                        ? existing
+                        : ('fb.1.' + Date.now() + '.' + fbclid);
+                    setFbcCookie(fbc);
+                    try {
+                        localStorage.setItem('bh_fbc', fbc);
+                        localStorage.setItem('_fbc', fbc);
+                    } catch (e) {}
+                } else if (existing && /^fb\.\d+\.\d+\..+/.test(existing)) {
+                    if (!getCookie('_fbc')) setFbcCookie(existing);
+                    try {
+                        if (!localStorage.getItem('bh_fbc')) localStorage.setItem('bh_fbc', existing);
+                    } catch (e) {}
+                }
+            } catch (e) {}
+        })();
+    </script>
 
     <!-- Limpieza automática de la URL (Remueve /index.html dejando solo la raíz del dominio) -->
     <script>
