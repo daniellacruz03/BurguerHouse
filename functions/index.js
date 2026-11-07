@@ -24,27 +24,69 @@ const PIXEL_ID     = '1762934141516291';
 const GRAPH_VER    = 'v23.0';
 const CAPI_URL     = `https://graph.facebook.com/${GRAPH_VER}/${PIXEL_ID}/events`;
 
-/** SHA-256 de un string limpio; retorna undefined si el valor es falsy */
-const sha256 = (v) =>
-    v ? crypto.createHash('sha256').update(String(v).trim().toLowerCase()).digest('hex') : undefined;
+/** SHA-256 de un string limpio (si ya viene en SHA-256 de 64 hex, lo conserva); retorna undefined si el valor es falsy */
+const isSha256 = (v) => typeof v === 'string' && /^[a-f0-9]{64}$/i.test(v.trim());
+const sha256 = (v) => {
+    if (!v) return undefined;
+    const cleanStr = String(v).trim().toLowerCase();
+    if (!cleanStr) return undefined;
+    if (isSha256(cleanStr)) return cleanStr;
+    return crypto.createHash('sha256').update(cleanStr).digest('hex');
+};
+
+/** Normaliza un correo electrónico: minúsculas y sin espacios */
+const normEmail = (e) => {
+    if (!e) return null;
+    const s = String(e).trim().toLowerCase().replace(/\s+/g, '');
+    if (isSha256(s)) return s;
+    return s.includes('@') ? s : null;
+};
 
 /**
- * Normaliza un teléfono venezolano a formato E.164: 58XXXXXXXXXX
- * Acepta: 04141234567 / 4141234567 / +584141234567
+ * Normaliza un teléfono venezolano a solo dígitos con código 58 (sin 0 inicial): 58XXXXXXXXXX
+ * Acepta: 04141234567 / 4141234567 / +584141234567 / +58 0414-1234567
  */
 const normPhone = (p) => {
     if (!p) return null;
-    let d = String(p).replace(/\D/g, '');
-    if (d.startsWith('0'))  d = '58' + d.slice(1);
-    if (!d.startsWith('58')) d = '58' + d;
-    return d.length >= 10 ? d : null;
+    const raw = String(p).trim();
+    if (isSha256(raw)) return raw.toLowerCase();
+    let d = raw.replace(/\D/g, '');
+    if (!d) return null;
+    if (d.startsWith('580')) d = '58' + d.slice(3);
+    else if (d.startsWith('0')) d = '58' + d.slice(1);
+    else if (!d.startsWith('58')) d = '58' + d;
+    return d.length >= 11 ? d : null;
 };
 
-/** Elimina claves undefined de un objeto (Meta rechaza campos vacíos) */
+/** Valida que fbc sea real (formato fb.1.<ts>.<fbclid>) y nunca vacío ni inventado */
+const validFbc = (v) => {
+    if (!v || typeof v !== 'string') return undefined;
+    const s = v.trim();
+    return /^fb\.\d+\.\d+\..+/.test(s) ? s : undefined;
+};
+
+/** Valida que fbp no sea vacío */
+const validFbp = (v) => {
+    if (!v || typeof v !== 'string') return undefined;
+    const s = v.trim();
+    return s.length > 0 ? s : undefined;
+};
+
+/** Extrae una cookie de la cabecera Cookie como respaldo */
+const getHeaderCookie = (cookieHeader, name) => {
+    if (!cookieHeader || typeof cookieHeader !== 'string') return undefined;
+    const m = cookieHeader.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]).trim() : undefined;
+};
+
+/** Elimina claves undefined, null o vacías de un objeto (Meta rechaza campos vacíos) */
 const clean = (obj) => {
-    Object.keys(obj).forEach(k => obj[k] === undefined && delete obj[k]);
+    Object.keys(obj).forEach(k => (obj[k] === undefined || obj[k] === null || obj[k] === '') && delete obj[k]);
     return obj;
 };
+
+// Solo Purchase: AddToCart/InitiateCheckout ya llegan por servidor desde una integración externa de Meta.
+const ALLOWED_EVENTS = new Set(['Purchase']);
 
 exports.metaCapi = onRequest(
     { secrets: [metaCapiToken], cors: true },
@@ -58,36 +100,62 @@ exports.metaCapi = onRequest(
         try {
             const b = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
 
-            // IP real del cliente (Firebase pone el proxy de Google en la cabecera)
+            // IP real del cliente (Firebase / proxies)
             const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim()
+                     || (req.headers['fastly-client-ip'] || '').trim()
+                     || (req.headers['x-real-ip'] || '').trim()
+                     || req.ip
                      || req.socket?.remoteAddress
-                     || null;
+                     || undefined;
+
+            const cookieHeader = req.headers['cookie'] || '';
+            const fbcVal = validFbc(b.fbc) || validFbc(getHeaderCookie(cookieHeader, '_fbc'));
+            const fbpVal = validFbp(b.fbp) || validFbp(getHeaderCookie(cookieHeader, '_fbp'));
+
+            const rawEm = b.user?.em || b.user?.email || null;
+            const rawPh = b.user?.ph || b.user?.phone || b.user?.telefono || null;
 
             const userData = clean({
                 client_ip_address : ip,
                 client_user_agent : req.headers['user-agent'] || undefined,
-                fbc               : b.fbc  || undefined,   // ← clave para atribución
-                fbp               : b.fbp  || undefined,
+                fbc               : fbcVal,                 // ← clave para atribución (nunca vacío ni inventado)
+                fbp               : fbpVal,
+                em                : sha256(normEmail(rawEm)),
+                ph                : sha256(normPhone(rawPh)),
                 fn                : sha256(b.user?.fn),
                 ln                : sha256(b.user?.ln),
-                ph                : sha256(normPhone(b.user?.ph)),
                 ct                : sha256('merida'),
                 country           : sha256('ve'),
             });
 
+            const requestedEvent = String(b.event_name || 'Purchase').trim();
+            if (!ALLOWED_EVENTS.has(requestedEvent)) {
+                // Nunca reetiquetar otro evento como Purchase
+                return res.status(400).json({ error: 'Evento no permitido: ' + requestedEvent });
+            }
+            const eventName = requestedEvent;
+
+            const customData = Object.assign({}, b.custom_data || {});
+            if (eventName === 'Purchase' || customData.value !== undefined) {
+                customData.value = Math.round((Number(customData.value) || 0) * 100) / 100;
+                customData.currency = customData.currency || 'USD';
+            }
+
             const event = clean({
-                event_name       : 'Purchase',
+                event_name       : eventName,
                 event_time       : Math.floor(Date.now() / 1000),
-                event_id         : b.event_id,              // ← mismo que eventID del Píxel
+                event_id         : b.event_id ? String(b.event_id) : undefined, // ← mismo que eventID del Píxel
                 action_source    : 'website',
                 event_source_url : b.event_source_url || undefined,
                 user_data        : userData,
-                custom_data      : b.custom_data || {},     // value + currency obligatorios
+                custom_data      : customData,              // value (Number) + currency ('USD')
             });
 
             const payload = { data: [event] };
-            // Descomenta la siguiente línea para probar en Events Manager sin afectar datos reales:
-            // payload.test_event_code = 'TEST00000';
+            const testEventCode = (process.env.META_TEST_EVENT_CODE || '').trim();
+            if (testEventCode) {
+                payload.test_event_code = testEventCode;
+            }
 
             const token = metaCapiToken.value();
             const response = await fetch(`${CAPI_URL}?access_token=${token}`, {
