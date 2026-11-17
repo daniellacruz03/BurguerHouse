@@ -269,8 +269,8 @@ function bhTrackPurchase(order, done) {
         { name: 'Servicio de Ketchup', type: 'toggle', applies: c => c.isNuggets, default: () => 'NO' }, // Por defecto NO
         { name: 'Servicio de Salsa de la Casa', type: 'toggle', applies: c => c.isNuggets, default: () => 'SÍ' }, // Por defecto SÍ
 
-        // COMBO PROMO (Bombita + Papitas) - Solo para tarjetas de promo
-        { name: 'Papitas + Bombita', price: CONFIG.PROMO_COMBO_EXTRA, type: 'cost', applies: c => c.nameLower.includes('promo') && !c.esCombo },
+        // COMBO PROMO (Papitas) - Solo para tarjetas de promo
+        { name: 'Papitas', price: CONFIG.PROMO_COMBO_EXTRA, type: 'cost', applies: c => c.nameLower.includes('promo') && !c.esCombo },
 
         // INGREDIENTES BASE (Interruptores SÍ/NO) -> APLICAN ESTRICTAMENTE LEYENDO LA DESCRIPCIÓN O COMBOS
         { name: 'Pan', type: 'toggle', applies: c => (c.descLower.includes('pan') && !c.esCombo) || c.esCombo, default: () => 'SÍ' },
@@ -655,7 +655,7 @@ function bhTrackPurchase(order, done) {
             }
             const flavorContainer = document.getElementById('promo-bombita-flavor-container');
             if (flavorContainer) {
-                flavorContainer.classList.toggle('hidden', !isSelected);
+                // Selector de bombita deshabilitado - no mostrar
             }
             updatePromoPrice();
         });
@@ -704,10 +704,8 @@ function bhTrackPurchase(order, done) {
             // Extras para el combo
             const extras = [];
             if (isCombo) {
-                const activeFlavorBtn = document.querySelector('#promo-flavor-options .promo-flavor-btn.active');
-                const selectedFlavor = activeFlavorBtn ? (activeFlavorBtn.dataset.flavor || 'Bombita Uva') : 'Bombita Uva';
                 extras.push({
-                    nombre: `Papitas + ${selectedFlavor}`,
+                    nombre: 'Papitas',
                     qty: 1,
                     val: '1',
                     isToggle: false,
@@ -1204,11 +1202,11 @@ function bhTrackPurchase(order, done) {
                     const toggleExtras = applicableExtras.filter(ex => ex.type === 'toggle'); // Separa los toggles
                     const costExtras = applicableExtras.filter(ex => ex.type === 'cost'); // Separa los extras con costo
 
-                    // Para promos, poner "Papitas + Bombita" primero
+                    // Para promos, poner "Papitas" primero
                     let orderedExtras;
                     if (ctx.nameLower.includes('promo')) {
-                        const promoCombo = costExtras.find(ex => ex.name === 'Papitas + Bombita');
-                        const otherCostExtras = costExtras.filter(ex => ex.name !== 'Papitas + Bombita');
+                        const promoCombo = costExtras.find(ex => ex.name === 'Papitas');
+                        const otherCostExtras = costExtras.filter(ex => ex.name !== 'Papitas');
                         orderedExtras = promoCombo ? [promoCombo, ...toggleExtras, ...otherCostExtras] : [...toggleExtras, ...costExtras];
                     } else {
                         orderedExtras = [...toggleExtras, ...costExtras]; // Une, poniendo los toggles primero
@@ -1285,29 +1283,8 @@ function bhTrackPurchase(order, done) {
                                 }
                             </div>`;
 
-                            if (ex.name === 'Papitas + Bombita') {
-                                return cardHtml + `
-                                <div id="modal-burger-flavor-container" class="promo-bombita-container hidden">
-                                    <h4 class="promo-flavor-title">Sabor de tu Bombita</h4>
-                                    <div class="promo-flavor-grid" id="modal-burger-flavor-options">
-                                        <button type="button" class="promo-flavor-btn hidden" data-flavor="Coca-Cola Bombita" style="display: none !important;">
-                                            <span class="flavor-dot red"></span>
-                                            <span class="flavor-name">Coca-Cola</span>
-                                        </button>
-                                        <button type="button" class="promo-flavor-btn hidden" data-flavor="Coca-Cola Bombita Light" style="display: none !important;">
-                                            <span class="flavor-dot silver"></span>
-                                            <span class="flavor-name">Light</span>
-                                        </button>
-                                        <button type="button" class="promo-flavor-btn hidden" data-flavor="Bombita Naranja" style="display: none !important;">
-                                            <span class="flavor-dot orange"></span>
-                                            <span class="flavor-name">Naranja</span>
-                                        </button>
-                                        <button type="button" class="promo-flavor-btn active" data-flavor="Bombita Uva">
-                                            <span class="flavor-dot purple"></span>
-                                            <span class="flavor-name">Uva</span>
-                                        </button>
-                                    </div>
-                                </div>`;
+                            if (ex.name === 'Papitas') {
+                                return cardHtml;
                             }
                             return cardHtml;
                         }).join('');
@@ -1435,13 +1412,9 @@ function bhTrackPurchase(order, done) {
                 });
             }
 
-            // Mostrar u ocultar selector de sabor de bombita en promo
-            if (card.dataset.extraName === 'Papitas + Bombita') {
-                const qty = parseInt(valSpan.innerText, 10) || 0;
-                const burgerFlavorContainer = document.getElementById('modal-burger-flavor-container');
-                if (burgerFlavorContainer) {
-                    burgerFlavorContainer.classList.toggle('hidden', qty === 0);
-                }
+            // Mostrar u ocultar selector de sabor de bombita en promo (deshabilitado)
+            if (card.dataset.extraName === 'Papitas') {
+                // Sin selector de sabor
             }
 
             updateTotal();
@@ -1592,10 +1565,8 @@ function bhTrackPurchase(order, done) {
 
                         if (isModified) {
                             let extraFinalName = nombre;
-                            if (nombre === 'Papitas + Bombita') {
-                                const activeFlavorBtn = document.querySelector('#modal-burger-flavor-options .promo-flavor-btn.active');
-                                const selectedFlavor = activeFlavorBtn ? (activeFlavorBtn.dataset.flavor || 'Bombita Uva') : 'Bombita Uva';
-                                extraFinalName = `Papitas + ${selectedFlavor}`;
+                            if (nombre === 'Papitas') {
+                                extraFinalName = 'Papitas';
                             }
                             extrasSeleccionados.push({
                                 nombre: extraFinalName, qty, val: valText, isToggle,
