@@ -1,16 +1,16 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Burger House Merida</title>
-    <!-- Favicon e Icono de AplicaciÃ³n -->
+    <!-- Favicon e Icono de Aplicación -->
     <link rel="icon" href="images/logobh.webp" type="image/webp">
     <link rel="apple-touch-icon" href="images/logobh.webp">
     <!-- Precarga del logo para evitar que desaparezca durante la carga -->
 
-    <!-- Limpieza automÃ¡tica de la URL (Remueve /index.html dejando solo la raÃ­z del dominio) -->
+    <!-- Limpieza automática de la URL (Remueve /index.html dejando solo la raíz del dominio) -->
     <script>
         if (window.location.pathname.endsWith('/index.html')) {
             const cleanPath = window.location.pathname.replace(/\/index\.html$/, '/') + window.location.search + window.location.hash;
@@ -19,7 +19,7 @@
     </script>
 
     <!-- Meta Tags para Redes Sociales (Open Graph) -->
-    <meta property="og:title" content="Burger House | MenÃº Digital">
+    <meta property="og:title" content="Burger House | Menú Digital">
     <meta property="og:description" content="Explora nuestras hamburguesas y haz tu pedido directamente por WhatsApp.">
     <meta property="og:image" content="images/logobh.webp">
     <meta property="og:type" content="website">
@@ -36,7 +36,7 @@
         gtag('config', 'G-YBR4MCPDXQ');
     </script>
 
-    <!-- Meta Domain Verification (Reemplazar con cÃ³digo de Meta Business cuando estÃ© disponible) -->
+    <!-- Meta Domain Verification (Reemplazar con código de Meta Business cuando esté disponible) -->
     <!-- <meta name="facebook-domain-verification" content="TU_CODIGO_DE_VERIFICACION" /> -->
 
     <!-- Meta Pixel Code -->
@@ -74,7 +74,7 @@
     <link rel="preload" href="images/logobh.webp" as="image">
     <link rel="preload" href="images/promolunesmiercoles.webp" as="image">
     <link rel="preload" href="images/promopapa.webp" as="image">
-    <!-- OptimizaciÃ³n de fuentes: Preconectar y cargar vÃ­a link es mÃ¡s rÃ¡pido que @import -->
+    <!-- Optimización de fuentes: Preconectar y cargar vía link es más rápido que @import -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;800&display=swap" rel="stylesheet">
@@ -99,7 +99,7 @@
         </div>
     </div>
 
-    <!-- MenÃº fijo fuera del contenedor principal -->
+    <!-- Menú fijo fuera del contenedor principal -->
     <div class="sticky-nav">
         <!-- Fila Superior: Logo (izquierda) y Carrito (derecha) -->
         <div class="header-top-row">
@@ -111,7 +111,7 @@
             </div>
         </div>
 
-        <!-- Fila Central: Barra de bÃºsqueda -->
+        <!-- Fila Central: Barra de búsqueda -->
         <div class="header-search-row">
             <div class="search-container-full">
                 <div class="search-icon">
@@ -121,12 +121,12 @@
                         <path d="m21 21-4.3-4.3" />
                     </svg>
                 </div>
-                <input type="text" id="menu-search" class="search-input" placeholder="Busca aquÃ­ tu producto..."
+                <input type="text" id="menu-search" class="search-input" placeholder="Busca aquí tu producto..."
                     aria-label="Buscar productos">
             </div>
         </div>
 
-        <!-- Fila Inferior: CategorÃ­as horizontales -->
+        <!-- Fila Inferior: Categorías horizontales -->
         <div class="category-bar">
             <button class="category-btn active" data-category="all">Todos</button>
             <button class="category-btn" data-category="arma-tu-burger" style="display: none;">
@@ -160,7 +160,7 @@
                     <line x1="9" y1="9" x2="9.01" y2="9" />
                     <line x1="15" y1="9" x2="15.01" y2="9" />
                 </svg>
-                MenÃº Kids
+                Menú Kids
             </button>
             <button class="category-btn" data-category="servicios">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -190,33 +190,33 @@
         <!-- Carrusel de Historias Minimalista -->
         <div id="bh-video-feed-scroll" class="bh-video-feed-scroll lg:max-w-6xl lg:mx-auto"></div>
 
-        <!-- Texto de instrucciÃ³n para clientes -->
+        <!-- Texto de instrucción para clientes -->
         <div class="start-order-text lg:max-w-6xl lg:mx-auto lg:mt-12">
             <span>Empieza a Pedir</span>
-            <button class="help-btn" id="help-btn" data-tooltip="Â¿CÃ³mo pedir?">
+            <button class="help-btn" id="help-btn" data-tooltip="¿Cómo pedir?">
                 <span>!</span>
             </button>
             <div class="help-tooltip" id="help-tooltip">
-                <span class="tooltip-text">Â¿CÃ³mo pedir?</span>
+                <span class="tooltip-text">¿Cómo pedir?</span>
                 <div class="tooltip-arrow"></div>
             </div>
         </div>
 
-        <!-- SECCIÃ“N: ARMA TU PROPIA BURGER (ESTILO PAPA'S BURGERIA) -->
+        <!-- SECCI�?N: ARMA TU PROPIA BURGER (ESTILO PAPA'S BURGERIA) -->
         <section id="arma-tu-burger" class="custom-builder-section hidden-search lg:max-w-6xl lg:mx-auto" style="display: none !important;">
             <div class="papas-station-card">
                 
                 <!-- Encabezado Limpio -->
                 <div class="station-top-header">
                     <h2 class="station-title">ARMA TU PROPIA BURGER</h2>
-                    <p class="station-subtitle">Desliza la cinta de ingredientes de derecha a izquierda y tÃ³calos para apilar tu hamburguesa.</p>
+                    <p class="station-subtitle">Desliza la cinta de ingredientes de derecha a izquierda y tócalos para apilar tu hamburguesa.</p>
                 </div>
 
                 <!-- 1. El Escenario Central de la Burger (The Burger Board) -->
                 <div class="papas-burger-stage">
                     <div class="stage-info-floating">
                         <div class="stage-badge-count" id="builder-layer-badge">
-                            <span class="fire-icon">ðŸ”¥</span>
+                            <span class="fire-icon">�??�</span>
                             <span id="builder-layer-text">6 Ingredientes</span>
                         </div>
                         <div class="stage-price-pill">
@@ -233,7 +233,7 @@
                         <img src="images/person/SALSA_DE_LA_CASA-.webp" alt="Salsa Especial" class="burger-layer layer-sauce active" id="layer-sauce-casa">
                         <img src="images/person/BBQ-.webp" alt="Salsa BBQ" class="burger-layer layer-sauce" id="layer-sauce-bbq">
                         <img src="images/person/MAYONESA.webp" alt="Mayonesa" class="burger-layer layer-sauce" id="layer-sauce-mayo">
-                        <!-- Capa ProteÃ­na -->
+                        <!-- Capa Proteína -->
                         <img src="images/person/CARNE-.webp" alt="Carne Res" class="burger-layer layer-protein active" id="layer-protein-carne">
                         <img src="images/person/POLLO_CRISPY_Y_TOCINETA-.webp" alt="Pollo Crispy" class="burger-layer layer-protein" id="layer-protein-crispy">
                         <img src="images/person/POLLO_A_LA_PLANCHA-.webp" alt="Pollo Plancha" class="burger-layer layer-protein" id="layer-protein-plancha">
@@ -259,7 +259,7 @@
                 <!-- 2. Riel Deslizable de Ingredientes (Estilo Papa's Burgeria) -->
                 <div class="ingredients-rail-container">
                     <div class="ingredients-rail-hint">
-                        <span class="swipe-hand-icon">ðŸ‘ˆ Desliza los ingredientes y tÃ³calos para apilar ðŸ‘‰</span>
+                        <span class="swipe-hand-icon">�??? Desliza los ingredientes y tócalos para apilar �???</span>
                     </div>
 
                     <div class="ingredients-rail" id="papas-conveyor-track">
@@ -268,7 +268,7 @@
                         <div class="ingredient-rail-item active" data-type="protein" data-protein="carne" data-price="6.50" data-name="Carne 100% Res Smash">
                             <div class="rail-img-wrap">
                                 <img src="images/person/CARNE-.webp" alt="Carne Smash" class="rail-ingredient-img">
-                                <div class="rail-check-indicator">âœ“</div>
+                                <div class="rail-check-indicator">�??</div>
                             </div>
                             <span class="rail-name">Carne Smash</span>
                             <span class="rail-price-tag included">Incluida</span>
@@ -278,7 +278,7 @@
                         <div class="ingredient-rail-item" data-type="protein" data-protein="crispy" data-price="7.50" data-name="Pollo Crispy & Tocineta">
                             <div class="rail-img-wrap">
                                 <img src="images/person/POLLO_CRISPY_Y_TOCINETA-.webp" alt="Pollo Crispy" class="rail-ingredient-img">
-                                <div class="rail-check-indicator">âœ“</div>
+                                <div class="rail-check-indicator">�??</div>
                             </div>
                             <span class="rail-name">Pollo Crispy</span>
                             <span class="rail-price-tag cost">+$1.00</span>
@@ -288,7 +288,7 @@
                         <div class="ingredient-rail-item" data-type="protein" data-protein="plancha" data-price="7.00" data-name="Pollo a la Plancha">
                             <div class="rail-img-wrap">
                                 <img src="images/person/POLLO_A_LA_PLANCHA-.webp" alt="Pollo Plancha" class="rail-ingredient-img">
-                                <div class="rail-check-indicator">âœ“</div>
+                                <div class="rail-check-indicator">�??</div>
                             </div>
                             <span class="rail-name">Pollo Plancha</span>
                             <span class="rail-price-tag cost">+$0.50</span>
@@ -298,7 +298,7 @@
                         <div class="ingredient-rail-item" data-type="protein" data-protein="chuleta" data-price="7.50" data-name="Chuleta Ahumada">
                             <div class="rail-img-wrap">
                                 <img src="images/person/CHULETA-.webp" alt="Chuleta" class="rail-ingredient-img">
-                                <div class="rail-check-indicator">âœ“</div>
+                                <div class="rail-check-indicator">�??</div>
                             </div>
                             <span class="rail-name">Chuleta</span>
                             <span class="rail-price-tag cost">+$1.00</span>
@@ -308,7 +308,7 @@
                         <div class="ingredient-rail-item active" data-type="toggle" data-key="cheese" data-price="0.00" data-name="Queso Americano">
                             <div class="rail-img-wrap">
                                 <img src="images/person/QUESO.webp" alt="Queso Americano" class="rail-ingredient-img">
-                                <div class="rail-check-indicator">âœ“</div>
+                                <div class="rail-check-indicator">�??</div>
                             </div>
                             <span class="rail-name">Queso Fundido</span>
                             <span class="rail-price-tag included">Incluido</span>
@@ -318,7 +318,7 @@
                         <div class="ingredient-rail-item active" data-type="toggle" data-key="bacon" data-price="1.00" data-name="Tocineta en Trozos">
                             <div class="rail-img-wrap">
                                 <img src="images/person/TOCINETA_EN_TROZOS-.webp" alt="Tocineta" class="rail-ingredient-img">
-                                <div class="rail-check-indicator">âœ“</div>
+                                <div class="rail-check-indicator">�??</div>
                             </div>
                             <span class="rail-name">Tocineta Trozos</span>
                             <span class="rail-price-tag cost">+$1.00</span>
@@ -328,7 +328,7 @@
                         <div class="ingredient-rail-item active" data-type="toggle" data-key="lettuce" data-price="0.00" data-name="Lechuga Fresca">
                             <div class="rail-img-wrap">
                                 <img src="images/person/LECHUGA.webp" alt="Lechuga" class="rail-ingredient-img">
-                                <div class="rail-check-indicator">âœ“</div>
+                                <div class="rail-check-indicator">�??</div>
                             </div>
                             <span class="rail-name">Lechuga Fresca</span>
                             <span class="rail-price-tag included">Incluida</span>
@@ -338,7 +338,7 @@
                         <div class="ingredient-rail-item active" data-type="toggle" data-key="pickles" data-price="0.00" data-name="Pepinillos">
                             <div class="rail-img-wrap">
                                 <img src="images/person/PEPINILLOS.webp" alt="Pepinillos" class="rail-ingredient-img">
-                                <div class="rail-check-indicator">âœ“</div>
+                                <div class="rail-check-indicator">�??</div>
                             </div>
                             <span class="rail-name">Pepinillos</span>
                             <span class="rail-price-tag included">Incluidos</span>
@@ -348,7 +348,7 @@
                         <div class="ingredient-rail-item active" data-type="sauce" data-sauce="casa" data-name="Salsa Especial BH">
                             <div class="rail-img-wrap">
                                 <img src="images/person/SALSA_DE_LA_CASA-.webp" alt="Salsa Especial" class="rail-ingredient-img">
-                                <div class="rail-check-indicator">âœ“</div>
+                                <div class="rail-check-indicator">�??</div>
                             </div>
                             <span class="rail-name">Salsa Especial</span>
                             <span class="rail-price-tag included">Gratis</span>
@@ -358,7 +358,7 @@
                         <div class="ingredient-rail-item" data-type="sauce" data-sauce="bbq" data-name="Salsa BBQ">
                             <div class="rail-img-wrap">
                                 <img src="images/person/BBQ-.webp" alt="Salsa BBQ" class="rail-ingredient-img">
-                                <div class="rail-check-indicator">âœ“</div>
+                                <div class="rail-check-indicator">�??</div>
                             </div>
                             <span class="rail-name">Salsa BBQ</span>
                             <span class="rail-price-tag included">Gratis</span>
@@ -368,7 +368,7 @@
                         <div class="ingredient-rail-item" data-type="sauce" data-sauce="mayo" data-name="Mayonesa">
                             <div class="rail-img-wrap">
                                 <img src="images/person/MAYONESA.webp" alt="Mayonesa" class="rail-ingredient-img">
-                                <div class="rail-check-indicator">âœ“</div>
+                                <div class="rail-check-indicator">�??</div>
                             </div>
                             <span class="rail-name">Mayonesa</span>
                             <span class="rail-price-tag included">Gratis</span>
@@ -381,16 +381,16 @@
                 <div class="papas-station-footer">
                     <div class="footer-custom-row">
                         <div class="builder-custom-name-box">
-                            <label for="builder-burger-name" class="builder-name-label">ðŸ·ï¸ Bautiza tu creaciÃ³n (Opcional):</label>
+                            <label for="builder-burger-name" class="builder-name-label">�?��️ Bautiza tu creación (Opcional):</label>
                             <input type="text" id="builder-burger-name" class="builder-name-input" placeholder="Ej: La Bestia Smash, La Daniel Special..." maxlength="35">
                         </div>
 
                         <div class="builder-toggle-card builder-combo-card" id="toggle-card-combo" data-price="2.00">
                             <div class="toggle-card-left">
-                                <div class="combo-badge-icon">ðŸŸðŸ¥¤</div>
+                                <div class="combo-badge-icon">�?�?�?��</div>
                                 <div class="toggle-card-text">
-                                    <span class="toggle-name">Â¿Hacerlo Combo?</span>
-                                    <span class="toggle-sub">AÃ±ade Papitas + Refresco Bombita</span>
+                                    <span class="toggle-name">¿Hacerlo Combo?</span>
+                                    <span class="toggle-sub">Añade Papitas + Refresco Bombita</span>
                                     <span class="toggle-badge cost">+$2.00 REF</span>
                                 </div>
                             </div>
@@ -423,7 +423,7 @@
                         </div>
                     </div>
 
-                    <!-- BotÃ³n de Orden -->
+                    <!-- Botón de Orden -->
                     <div class="builder-cta-box">
                         <div class="builder-total-summary">
                             <span class="total-label">Total de tu Burger:</span>
@@ -433,7 +433,7 @@
                             <svg class="btn-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
                             </svg>
-                            <span class="btn-text">Â¡AÃ±adir al Pedido! ðŸ›’</span>
+                            <span class="btn-text">¡Añadir al Pedido! �???</span>
                         </button>
                     </div>
                 </div>
@@ -471,8 +471,8 @@
                         <span class="badge-new">NUEVA</span>
                         <span class="item-name">Smash House</span>
                         <p class="item-desc">Pan de papa, doble carne smash, doble queso americano, cebolla, salsa de la casa, papas fritas.
-                            Y si le sumas pepinillosâ€¦
-                            la llevas a otro nivelðŸ˜ŽðŸ”¥</p>
+                            Y si le sumas pepinillos�?�
+                            la llevas a otro nivel�???�??�</p>
                     </div>
                     <div class="item-price-wrapper" data-img-src="images/smash house.webp">
                         <span class="item-price">$8,49</span>
@@ -556,7 +556,7 @@
                     loading="lazy" width="900" height="500">
                 <div class="item-info-split">
                     <div class="item-info">
-                        <span class="badge-best">LAS MÃS VENDIDAS</span>
+                        <span class="badge-best">LAS MÁS VENDIDAS</span>
                         <span class="item-name">Cheese House</span>
                         <p class="item-desc">Pan de papa, carne, tocineta, triple queso americano, salsa de la casa,
                             papas fritas.</p>
@@ -573,7 +573,7 @@
                     decoding="async" loading="lazy" width="900" height="500">
                 <div class="item-info-split">
                     <div class="item-info">
-                        <span class="badge-best">LAS MÃS VENDIDAS</span>
+                        <span class="badge-best">LAS MÁS VENDIDAS</span>
                         <span class="item-name">House Classics</span>
                         <p class="item-desc">Pan de papa, carne, pepinillo, tocineta, queso americano, lechuga, salsa de
                             la casa, papas fritas.</p>
@@ -900,7 +900,7 @@
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="item-name">Servicio de Papas (Sin Toppings)</span>
-                        <p class="item-desc">RaciÃ³n generosa de papas fritas clÃ¡sicas.</p>
+                        <p class="item-desc">Ración generosa de papas fritas clásicas.</p>
                     </div>
                     <div class="item-price-wrapper" data-img-src="images/papassintopping.webp">
                         <span class="item-price">$4,5</span>
@@ -914,7 +914,7 @@
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="item-name">Cajita Papas (115g)</span>
-                        <p class="item-desc">PorciÃ³n individual de papas fritas crujientes.</p>
+                        <p class="item-desc">Porción individual de papas fritas crujientes.</p>
                     </div>
                     <div class="item-price-wrapper" data-img-src="images/papascajita.webp">
                         <span class="item-price">$2,49</span>
@@ -923,14 +923,14 @@
                 </div>
             </div>
             <div class="menu-item">
-                <img src="images/tequeÃ±os.webp" class="item-img-bg" alt="TequeÃ±os" decoding="async" loading="lazy"
+                <img src="images/tequeños.webp" class="item-img-bg" alt="Tequeños" decoding="async" loading="lazy"
                     width="400" height="220">
                 <div class="item-info-split">
                     <div class="item-info">
-                        <span class="item-name">Servicio de TequeÃ±os</span>
-                        <p class="item-desc">TequeÃ±os (6 unidades).</p>
+                        <span class="item-name">Servicio de Tequeños</span>
+                        <p class="item-desc">Tequeños (6 unidades).</p>
                     </div>
-                    <div class="item-price-wrapper" data-img-src="images/tequeÃ±os.webp">
+                    <div class="item-price-wrapper" data-img-src="images/tequeños.webp">
                         <span class="item-price">$5,99</span>
                         <span class="item-ref">REF</span>
                     </div>
@@ -942,7 +942,7 @@
                 <div class="item-info-split">
                     <div class="item-info">
                         <span class="item-name">Servicio de Nuggets</span>
-                        <p class="item-desc">Nuggets de pollo sÃºper crujientes.</p>
+                        <p class="item-desc">Nuggets de pollo súper crujientes.</p>
                     </div>
                     <div class="item-price-wrapper" data-img-src="images/nuggetsmenu.webp">
                         <span class="item-price">$7,99</span>
@@ -1021,7 +1021,7 @@
                 </div>
             </div>
             <div class="menu-item">
-                <div class="item-info"><span class="item-name">Lata PiÃ±a Golden 355 ML</span></div>
+                <div class="item-info"><span class="item-name">Lata Piña Golden 355 ML</span></div>
                 <div class="item-price-wrapper" data-img-src="images/gaseosa.webp">
                     <span class="item-price">$1,5</span>
                     <span class="item-ref">REF</span>
@@ -1064,7 +1064,7 @@
                 </div>
             </div>
 
-            <!-- JUGOS, TÃ‰ Y AGUA EN STOCK -->
+            <!-- JUGOS, T�? Y AGUA EN STOCK -->
             <div class="menu-item">
                 <div class="item-info"><span class="item-name">Juguito Yuky-Pak</span></div>
                 <div class="item-price-wrapper" data-img-src="images/juguito.webp">
@@ -1080,7 +1080,7 @@
                 </div>
             </div>
             <div class="menu-item hidden" style="display: none !important;">
-                <div class="item-info"><span class="item-name">Lipton Limón</span></div>
+                <div class="item-info"><span class="item-name">Lipton Lim�n</span></div>
                 <div class="item-price-wrapper" data-img-src="images/lipton.webp">
                     <span class="item-price">$2,5</span>
                     <span class="item-ref">REF</span>
@@ -1170,7 +1170,7 @@
         <!-- --- FOOTER (REDES Y PAGOS) --- -->
         <footer class="bh-footer">
             <div class="footer-section">
-                <p class="footer-label">SÃGUENOS EN REDES</p>
+                <p class="footer-label">SÍGUENOS EN REDES</p>
                 <div class="footer-social-links">
                     <a href="https://www.instagram.com/burgerhouse.merida?igsh=M2lwZXk3djJtbTdh" target="_blank"
                         aria-label="Instagram">
@@ -1198,10 +1198,10 @@
             </div>
 
             <div class="footer-section">
-                <p class="footer-label">MÃ‰TODOS DE PAGO</p>
+                <p class="footer-label">M�?TODOS DE PAGO</p>
                 <div class="payment-grid">
                     <div class="payment-item">Efectivo</div>
-                    <div class="payment-item">Pago MÃ³vil</div>
+                    <div class="payment-item">Pago Móvil</div>
                     <div class="payment-item">Zelle</div>
                     <div class="payment-item">Binance</div>
                     <div class="payment-item">Bancolombia</div>
@@ -1212,7 +1212,7 @@
                 <p>&copy; 2026 <b>Burger House</b>. Todos los derechos reservados.</p>
                 <p>Las mejores hamburguesas de la ciudad.</p>
                 <p style="margin-top: 10px;"><a href="privacidad.html"
-                        style="color: rgba(255, 255, 255, 0.85); text-decoration: underline; font-weight: 500; font-size: 0.82rem; transition: opacity 0.2s ease;">PolÃ­tica
+                        style="color: rgba(255, 255, 255, 0.85); text-decoration: underline; font-weight: 500; font-size: 0.82rem; transition: opacity 0.2s ease;">Política
                         de Privacidad</a></p>
                 <div
                     style="margin-top: 25px; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(255, 255, 255, 0.5); display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px;">
@@ -1265,7 +1265,7 @@
                             </div>
                         </div>
                         <div class="flex items-center justify-between text-xs">
-                            <span class="text-gray-400">CupÃ³n:</span>
+                            <span class="text-gray-400">Cupón:</span>
                             <div class="flex items-center gap-2">
                                 <span id="coupon-code-display"
                                     class="text-white font-semibold bg-green-500/20 px-2 py-1 rounded-md border border-green-500/30">-</span>
@@ -1293,7 +1293,7 @@
                         <span class="btn-text">Confirmar Pedido</span>
                     </button>
                     <div class="sugerencia-bebida">
-                        <span>Â¿Deseas aÃ±adir una bebida?</span>
+                        <span>¿Deseas añadir una bebida?</span>
                         <button id="btn-ver-bebidas" class="btn-sugerencia-outline">Ver Bebidas</button>
                     </div>
                     <div class="coupon-section mt-4">
@@ -1305,11 +1305,11 @@
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
                                 </svg>
-                                <span class="text-red-400 font-semibold text-sm uppercase tracking-wider">CupÃ³n de
+                                <span class="text-red-400 font-semibold text-sm uppercase tracking-wider">Cupón de
                                     Descuento</span>
                             </div>
                             <div class="flex gap-2">
-                                <input type="text" id="coupon-input" placeholder="Ingresa tu cÃ³digo"
+                                <input type="text" id="coupon-input" placeholder="Ingresa tu código"
                                     class="flex-1 bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all text-sm uppercase tracking-wider">
                                 <button id="btn-apply-coupon"
                                     class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold px-5 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 text-sm uppercase tracking-wider shadow-lg shadow-red-600/30">
@@ -1318,7 +1318,7 @@
                             </div>
                         </div>
                         <button id="btn-volver-menu" class="btn-volver-menu">
-                            <span class="btn-text">Volver al MenÃº</span>
+                            <span class="btn-text">Volver al Menú</span>
                         </button>
                     </div>
                 </div>
@@ -1348,22 +1348,22 @@
                         <div class="delivery-notice-content">
                             <span class="delivery-notice-main">Si cancelas en divisas el delivery es gratis en el casco
                                 central de la ciudad</span>
-                            <span class="delivery-notice-sub">El costo del delivery varÃ­a segÃºn la zona de
+                            <span class="delivery-notice-sub">El costo del delivery varía según la zona de
                                 entrega</span>
-                            <span class="delivery-notice-sub" style="color: #ff6b6b; font-weight: 500;">âš ï¸ Por favor
-                                confirma que estÃ¡s en el casco central para delivery gratuito</span>
+                            <span class="delivery-notice-sub" style="color: #ff6b6b; font-weight: 500;">�?�️ Por favor
+                                confirma que estás en el casco central para delivery gratuito</span>
                         </div>
                     </div>
                     <input type="text" id="full-name" name="full-name" placeholder="Tu nombre completo" required
                         autocomplete="name" enterkeyhint="next">
                     <textarea id="additional-notes" name="additional-notes"
-                        placeholder="Notas adicionales / Punto de referencia (Ej: PortÃ³n blanco, llamar al llegar...)"
+                        placeholder="Notas adicionales / Punto de referencia (Ej: Portón blanco, llamar al llegar...)"
                         enterkeyhint="done"></textarea>
                     <input type="hidden" id="maps" name="maps">
 
                     <div id="pickup-location-info" class="hidden">
-                        <p><b>DirecciÃ³n de retiro:</b><br>Urb. La Mara, Calle Principal, 3ra. calle izq. Final de calle
-                            junto a quiosco azul. Townhouse beige/marrÃ³n #3 (izquierda).</p>
+                        <p><b>Dirección de retiro:</b><br>Urb. La Mara, Calle Principal, 3ra. calle izq. Final de calle
+                            junto a quiosco azul. Townhouse beige/marrón #3 (izquierda).</p>
                         <a href="https://maps.google.com/?q=8.553563,-71.205238" target="_blank"
                             class="btn-maps-pickup">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1371,12 +1371,12 @@
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                                 <circle cx="12" cy="10" r="3"></circle>
                             </svg>
-                            Ver ubicaciÃ³n en Maps
+                            Ver ubicación en Maps
                         </a>
                     </div>
 
                     <div class="checkout-grid" id="delivery-tools">
-                        <button type="button" id="btn-get-location" title="Obtener ubicaciÃ³n"
+                        <button type="button" id="btn-get-location" title="Obtener ubicación"
                             style="width: 100%; margin: 0;" class="btn-with-spinner">
                             <svg class="location-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
@@ -1392,7 +1392,7 @@
                                 <path
                                     d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
                             </svg>
-                            <span class="btn-text">Enviar direcciÃ³n</span>
+                            <span class="btn-text">Enviar dirección</span>
                         </button>
                     </div>
 
@@ -1415,7 +1415,7 @@
             </div>
             <div class="modal-details">
                 <h2 class="modal-title">Nombre de la Hamburguesa</h2>
-                <p class="modal-description">Una explosiÃ³n de sabor con los mejores ingredientes seleccionados para ti.
+                <p class="modal-description">Una explosión de sabor con los mejores ingredientes seleccionados para ti.
                 </p>
 
                 <div class="modal-main-qty">
@@ -1433,7 +1433,7 @@
                 </div>
 
                 <div class="modal-extras-container">
-                    <!-- Sistema de pestaÃ±as para Combo House -->
+                    <!-- Sistema de pestañas para Combo House -->
                     <div id="combo-tabs" class="combo-tabs hidden">
                         <div class="combo-progress">Configurando Hamburguesa <span id="combo-current-burger">1</span> de
                             4</div>
@@ -1490,7 +1490,7 @@
                         </div>
                         <div class="extra-card" data-extra-price="1.00">
                             <div class="extra-info-text">
-                                <span class="extra-name">Huevo (proteÃ­na)</span> <span class="extra-cost">+$1.00</span>
+                                <span class="extra-name">Huevo (proteína)</span> <span class="extra-cost">+$1.00</span>
                             </div>
                             <div class="extra-counter">
                                 <button class="extra-qty-btn minus">-</button>
@@ -1536,7 +1536,7 @@
                             </div>
                             <div class="extra-counter">
                                 <button class="extra-qty-btn minus">-</button>
-                                <span class="extra-qty-val">SÃ</span>
+                                <span class="extra-qty-val">SÍ</span>
                                 <button class="extra-qty-btn plus">+</button>
                             </div>
                         </div>
@@ -1547,7 +1547,7 @@
                             </div>
                             <div class="extra-counter">
                                 <button class="extra-qty-btn minus">-</button>
-                                <span class="extra-qty-val">SÃ</span>
+                                <span class="extra-qty-val">SÍ</span>
                                 <button class="extra-qty-btn plus">+</button>
                             </div>
                         </div>
@@ -1558,7 +1558,7 @@
                             </div>
                             <div class="extra-counter">
                                 <button class="extra-qty-btn minus">-</button>
-                                <span class="extra-qty-val">SÃ</span>
+                                <span class="extra-qty-val">SÍ</span>
                                 <button class="extra-qty-btn plus">+</button>
                             </div>
                         </div>
@@ -1568,7 +1568,7 @@
                             </div>
                             <div class="extra-counter">
                                 <button class="extra-qty-btn minus">-</button>
-                                <span class="extra-qty-val">SÃ</span>
+                                <span class="extra-qty-val">SÍ</span>
                                 <button class="extra-qty-btn plus">+</button>
                             </div>
                         </div>
@@ -1578,7 +1578,7 @@
                             </div>
                             <div class="extra-counter">
                                 <button class="extra-qty-btn minus">-</button>
-                                <span class="extra-qty-val">SÃ</span>
+                                <span class="extra-qty-val">SÍ</span>
                                 <button class="extra-qty-btn plus">+</button>
                             </div>
                         </div>
@@ -1588,7 +1588,7 @@
                             </div>
                             <div class="extra-counter">
                                 <button class="extra-qty-btn minus">-</button>
-                                <span class="extra-qty-val">SÃ</span>
+                                <span class="extra-qty-val">SÍ</span>
                                 <button class="extra-qty-btn plus">+</button>
                             </div>
                         </div>
@@ -1598,7 +1598,7 @@
                             </div>
                             <div class="extra-counter">
                                 <button class="extra-qty-btn minus">-</button>
-                                <span class="extra-qty-val">SÃ</span>
+                                <span class="extra-qty-val">SÍ</span>
                                 <button class="extra-qty-btn plus">+</button>
                             </div>
                         </div>
@@ -1608,7 +1608,7 @@
                             </div>
                             <div class="extra-counter">
                                 <button class="extra-qty-btn minus">-</button>
-                                <span class="extra-qty-val">SÃ</span>
+                                <span class="extra-qty-val">SÍ</span>
                                 <button class="extra-qty-btn plus">+</button>
                             </div>
                         </div>
@@ -1684,7 +1684,7 @@
                             </div>
                             <div class="extra-counter">
                                 <button class="extra-qty-btn minus">-</button>
-                                <span class="extra-qty-val">SÃ</span>
+                                <span class="extra-qty-val">SÍ</span>
                                 <button class="extra-qty-btn plus">+</button>
                             </div>
                         </div>
@@ -1694,7 +1694,7 @@
                             </div>
                             <div class="extra-counter">
                                 <button class="extra-qty-btn minus">-</button>
-                                <span class="extra-qty-val">SÃ</span>
+                                <span class="extra-qty-val">SÍ</span>
                                 <button class="extra-qty-btn plus">+</button>
                             </div>
                         </div>
@@ -1725,7 +1725,7 @@
                             </div>
                             <div class="extra-counter">
                                 <button class="extra-qty-btn minus">-</button>
-                                <span class="extra-qty-val">SÃ</span>
+                                <span class="extra-qty-val">SÍ</span>
                                 <button class="extra-qty-btn plus">+</button>
                             </div>
                         </div>
@@ -1735,7 +1735,7 @@
                             </div>
                             <div class="extra-counter">
                                 <button class="extra-qty-btn minus">-</button>
-                                <span class="extra-qty-val">SÃ</span>
+                                <span class="extra-qty-val">SÍ</span>
                                 <button class="extra-qty-btn plus">+</button>
                             </div>
                         </div>
@@ -1745,7 +1745,7 @@
                             </div>
                             <div class="extra-counter">
                                 <button class="extra-qty-btn minus">-</button>
-                                <span class="extra-qty-val">SÃ</span>
+                                <span class="extra-qty-val">SÍ</span>
                                 <button class="extra-qty-btn plus">+</button>
                             </div>
                         </div>
@@ -1755,7 +1755,7 @@
                             </div>
                             <div class="extra-counter">
                                 <button class="extra-qty-btn minus">-</button>
-                                <span class="extra-qty-val">SÃ</span>
+                                <span class="extra-qty-val">SÍ</span>
                                 <button class="extra-qty-btn plus">+</button>
                             </div>
                         </div>
@@ -1779,20 +1779,20 @@
                         <path
                             d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
                     </svg>
-                    <span class="btn-text">AÃ±adir al pedido</span>
+                    <span class="btn-text">Añadir al pedido</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Modal Publicitario Lunes a MiÃ©rcoles -->
+    <!-- Modal Publicitario Lunes a Miércoles -->
     <div id="modal-promo-lunes-miercoles" class="modal">
         <div class="modal-content promo-modal-content">
             <button class="close-promo" id="btn-close-promo">&times;</button>
             <div class="promo-img-container">
-                <img src="images/promolunesmiercoles.webp" alt="PromociÃ³n Especial" decoding="async">
+                <img src="images/promolunesmiercoles.webp" alt="Promoción Especial" decoding="async">
                 <button id="btn-promo-ordenar" class="btn-promo-premium">
-                    Â¡ORDENAR AHORA!
+                    ¡ORDENAR AHORA!
                 </button>
             </div>
         </div>
@@ -1803,25 +1803,25 @@
         <div class="modal-content promo-modal-content">
             <button class="close-promo" id="btn-close-promo-papa">&times;</button>
             <div class="promo-img-container">
-                <img src="images/promopapa.webp" alt="PromociÃ³n Papa" decoding="async">
+                <img src="images/promopapa.webp" alt="Promoción Papa" decoding="async">
                 <button id="btn-promo-papa-ordenar" class="btn-promo-premium">
-                    Â¡ORDENAR AHORA!
+                    ¡ORDENAR AHORA!
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Modal de SelecciÃ³n de Promo -->
+    <!-- Modal de Selección de Promo -->
     <div id="modal-promo-selection" class="modal">
         <div class="modal-content">
             <button class="close-modal" id="close-promo-selection">&times;</button>
             <div class="modal-image-container">
-                <img src="images/houseclasic.webp" alt="PromociÃ³n" id="modal-promo-img"
+                <img src="images/houseclasic.webp" alt="Promoción" id="modal-promo-img"
                     style="object-fit: cover; width: 100%; height: 100%;">
             </div>
             <div class="modal-details">
                 <h2 class="modal-title">Elige tu Promo</h2>
-                <p class="modal-description">Selecciona una de nuestras burgers en promociÃ³n por solo $6.50 REF.</p>
+                <p class="modal-description">Selecciona una de nuestras burgers en promoción por solo $6.50 REF.</p>
 
                 <div class="modal-extras-container">
                     <h3 class="extras-title">Selecciona tu Burger</h3>
@@ -1831,7 +1831,7 @@
                             <div class="extra-info-text"><span class="extra-name">House Classic</span></div>
                             <div class="promo-toggle-switch">
                                 <span class="promo-switch-indicator"></span>
-                                <span class="extra-qty-val hidden">SÃ</span>
+                                <span class="extra-qty-val hidden">SÍ</span>
                             </div>
                         </div>
                         <div class="extra-card promo-burger-card" data-burger="Cheese House"
@@ -1898,7 +1898,7 @@
                         <path
                             d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
                     </svg>
-                    <span class="btn-text">AÃ±adir al pedido</span>
+                    <span class="btn-text">Añadir al pedido</span>
                 </button>
             </div>
         </div>
@@ -1916,8 +1916,8 @@
                     </svg>
                 </div>
                 <p class="preparing-text">Preparando<span>.</span><span>.</span><span>.</span></p>
-                <h2 class="modal-title">Â¡Pedido en proceso!</h2>
-                <p class="modal-description">Â¡Tu pedido estÃ¡ en camino! Recuerda completar el proceso en WhatsApp para
+                <h2 class="modal-title">¡Pedido en proceso!</h2>
+                <p class="modal-description">¡Tu pedido está en camino! Recuerda completar el proceso en WhatsApp para
                     que podamos procesarlo correctamente.</p>
                 <div class="upsell-buttons">
                     <button id="btn-new-order"
@@ -1949,15 +1949,15 @@
             <div class="modal-details">
                 <img src="images/logobh.webp" alt="Logo"
                     style="width: 70px; border-radius: 50%; display: block; margin: 0 auto 15px auto;">
-                <h2 class="modal-title">Â¡Hola! Estamos cerrados</h2>
-                <p class="modal-description">Nuestro horario de atenciÃ³n es:<br><br>
+                <h2 class="modal-title">¡Hola! Estamos cerrados</h2>
+                <p class="modal-description">Nuestro horario de atención es:<br><br>
                     <b>Lunes a Domingo:</b> 12:00 PM - 10:30 PM
                 </p>
                 <p class="modal-description"
                     style="margin-top: 15px; font-weight: bold; color: #ff0000; text-shadow: 0.5px 0.5px 0px rgba(255, 255, 255, 0.3);">
                     Estamos cerrados por ahora, pero puedes pre-ordenar tu pedido.</p>
                 <p class="modal-description" style="margin-top: 10px; font-size: 0.85rem; color: #aaa;">Tu pre-orden se
-                    enviarÃ¡ por WhatsApp y serÃ¡ procesada cuando abramos.</p>
+                    enviará por WhatsApp y será procesada cuando abramos.</p>
                 <div class="upsell-buttons" style="margin-top: 20px;">
                     <button id="btn-pre-order" class="btn-add-order btn-with-spinner">
                         <svg class="btn-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -1977,7 +1977,7 @@
         <div class="modal-content discount-modal-content">
             <button class="close-modal" id="close-discount-modal">&times;</button>
 
-            <!-- PartÃ­culas de celebraciÃ³n -->
+            <!-- Partículas de celebración -->
             <div class="celebration-particles">
                 <div class="particle particle-1"></div>
                 <div class="particle particle-2"></div>
@@ -1991,10 +1991,10 @@
                     <img src="images/logobh.webp" alt="Burger House" class="discount-logo" decoding="async">
                 </div>
 
-                <h2 class="modal-title discount-title">Â¡FELICIDADES!</h2>
+                <h2 class="modal-title discount-title">¡FELICIDADES!</h2>
 
                 <p class="modal-description discount-description">
-                    Eres el cliente nÃºmero <span class="visitor-number">1</span> en entrar a la pÃ¡gina
+                    Eres el cliente número <span class="visitor-number">1</span> en entrar a la página
                 </p>
 
                 <p class="modal-description discount-highlight">
@@ -2008,7 +2008,7 @@
                             <path
                                 d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
                         </svg>
-                        <span class="btn-text">Â¡GENIAL!</span>
+                        <span class="btn-text">¡GENIAL!</span>
                         <span class="shimmer-effect"></span>
                     </button>
                 </div>
@@ -2072,7 +2072,7 @@
             transform: rotate(90deg);
         }
 
-        /* PartÃ­culas de celebraciÃ³n */
+        /* Partículas de celebración */
         .celebration-particles {
             position: absolute;
             top: 0;
@@ -2175,7 +2175,7 @@
             }
         }
 
-        /* TÃ­tulo con gradiente */
+        /* Título con gradiente */
         .discount-title {
             font-size: 2rem;
             font-weight: 800;
@@ -2195,7 +2195,7 @@
             }
         }
 
-        /* DescripciÃ³n */
+        /* Descripción */
         .discount-description {
             color: rgba(255, 255, 255, 0.9);
             font-size: 1.1rem;
@@ -2232,7 +2232,7 @@
             filter: drop-shadow(0 0 10px rgba(230, 0, 0, 0.5));
         }
 
-        /* BotÃ³n Premium */
+        /* Botón Premium */
         .btn-discount-premium {
             position: relative;
             background: linear-gradient(135deg, #e60000 0%, #cc0000 100%);
@@ -2330,7 +2330,7 @@
     <div id="modal-help" class="modal" aria-hidden="true">
         <div class="modal-content-help">
             <button class="help-close-btn" id="help-close-btn">&times;</button>
-            <h2 class="help-title">Â¿CÃ³mo empezar a pedir?</h2>
+            <h2 class="help-title">¿Cómo empezar a pedir?</h2>
             <div class="help-steps">
                 <div class="help-step">
                     <span class="step-number">1</span>
@@ -2344,7 +2344,7 @@
                             </svg>
                         </div>
                         <h3>Selecciona tu hamburguesa</h3>
-                        <p>Pasa por las categorÃ­as y presiona sobre la hamburguesa que deseas.</p>
+                        <p>Pasa por las categorías y presiona sobre la hamburguesa que deseas.</p>
                     </div>
                 </div>
                 <div class="help-step">
@@ -2360,7 +2360,7 @@
                             </svg>
                         </div>
                         <h3>Personaliza tu pedido</h3>
-                        <p>Agrega o quita extras segÃºn tu preferencia.</p>
+                        <p>Agrega o quita extras según tu preferencia.</p>
                     </div>
                 </div>
                 <div class="help-step">
@@ -2376,7 +2376,7 @@
                             </svg>
                         </div>
                         <h3>Agrega al carrito</h3>
-                        <p>Presiona "Agregar al pedido" para aÃ±adir tu hamburguesa al carrito.</p>
+                        <p>Presiona "Agregar al pedido" para añadir tu hamburguesa al carrito.</p>
                     </div>
                 </div>
                 <div class="help-step">
@@ -2390,7 +2390,7 @@
                             </svg>
                         </div>
                         <h3>Completa tu pedido</h3>
-                        <p>Revisa tu carrito, agrega mÃ¡s productos si lo deseas y completa los datos de entrega.</p>
+                        <p>Revisa tu carrito, agrega más productos si lo deseas y completa los datos de entrega.</p>
                     </div>
                 </div>
                 <div class="help-step">
@@ -2404,15 +2404,15 @@
                                     d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                             </svg>
                         </div>
-                        <h3>EnvÃ­a por WhatsApp</h3>
+                        <h3>Envía por WhatsApp</h3>
                         <p>Presiona "Enviar Pedido" para enviar tu orden directamente por WhatsApp.</p>
                     </div>
                 </div>
                 <div
                     style="text-align:center; padding: 15px 0 5px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 20px;">
                     <a href="privacidad.html"
-                        style="color: #ffb703; font-size: 0.85rem; font-weight: 500; text-decoration: underline;">ðŸ”’
-                        PolÃ­tica de Privacidad y Cookies</a>
+                        style="color: #ffb703; font-size: 0.85rem; font-weight: 500; text-decoration: underline;">�???
+                        Política de Privacidad y Cookies</a>
                 </div>
             </div>
         </div>
@@ -2443,43 +2443,43 @@
         // Inicializar Firebase solo si no existe ya (evita duplicidad)
         if (typeof firebase !== 'undefined' && !firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
-            console.log("âœ… Firebase inicializado globalmente en index.html");
+            console.log("�?? Firebase inicializado globalmente en index.html");
 
-            // GESTOR DE AUTENTICACIÃ“N ANÃ“NIMA
+            // GESTOR DE AUTENTICACI�?N AN�?NIMA
             firebase.auth().onAuthStateChanged(function (user) {
                 if (user) {
-                    // Usuario ya estÃ¡ autenticado anÃ³nimamente.
-                    console.log("ðŸ‘¤ Usuario anÃ³nimo autenticado. UID:", user.uid);
+                    // Usuario ya está autenticado anónimamente.
+                    console.log("�??� Usuario anónimo autenticado. UID:", user.uid);
 
-                    // VERIFICACIÃ“N ANTI-TRAMPA: Chequear si el UID ya estÃ¡ en la lista de ganadores.
+                    // VERIFICACI�?N ANTI-TRAMPA: Chequear si el UID ya está en la lista de ganadores.
                     firebase.database().ref('usuarios_descuento/' + user.uid).once('value').then(snapshot => {
                         if (snapshot.exists()) {
-                            console.log("ðŸš« Este usuario ya reclamÃ³ un descuento. Bloqueando futuros intentos.");
+                            console.log("�??� Este usuario ya reclamó un descuento. Bloqueando futuros intentos.");
                             // Marcamos en localStorage para que app.js no intente registrarlo de nuevo.
                             localStorage.setItem('bh_discount_claimed_db', 'true');
                         } else {
-                            console.log("âœ… Usuario limpio, puede participar en dinÃ¡micas.");
+                            console.log("�?? Usuario limpio, puede participar en dinámicas.");
                         }
                     }).catch(() => {
-                        // permission_denied es esperado para usuarios sin descuento â€” ignorar silenciosamente.
+                        // permission_denied es esperado para usuarios sin descuento �?? ignorar silenciosamente.
                     });
                     // Disparar evento para que app.js sepa que puede continuar, independientemente del resultado.
                     document.dispatchEvent(new CustomEvent('firebase-auth-ready', { detail: { user: user } }));
                 } else {
-                    // Usuario no estÃ¡ autenticado, intentar iniciar sesiÃ³n anÃ³nima.
-                    console.log("â³ Intentando inicio de sesiÃ³n anÃ³nimo...");
+                    // Usuario no está autenticado, intentar iniciar sesión anónima.
+                    console.log("⏳ Intentando inicio de sesión anónimo...");
                     firebase.auth().signInAnonymously().catch(function (error) {
-                        // Este es el error 400 que estÃ¡s viendo.
-                        console.error("âŒ ERROR FATAL: No se pudo iniciar sesiÃ³n anÃ³nima.", {
+                        // Este es el error 400 que estás viendo.
+                        console.error("�? ERROR FATAL: No se pudo iniciar sesión anónima.", {
                             code: error.code,
                             message: error.message,
-                            details: "Esto usualmente significa que el 'Inicio de sesiÃ³n anÃ³nimo' no estÃ¡ HABILITADO en tu consola de Firebase -> Authentication -> Sign-in method."
+                            details: "Esto usualmente significa que el 'Inicio de sesión anónimo' no está HABILITADO en tu consola de Firebase -> Authentication -> Sign-in method."
                         });
                     });
                 }
             });
         } else if (firebase.apps.length > 0) {
-            console.log("â„¹ï¸ Firebase ya estaba inicializado, usando instancia existente");
+            console.log("�?�️ Firebase ya estaba inicializado, usando instancia existente");
         }
     </script>
 
@@ -2490,16 +2490,16 @@
                 try {
                     const analytics = firebase.analytics();
                     analytics.logEvent('page_view');
-                    console.log("âœ… Firebase Analytics inicializado correctamente.");
+                    console.log("�?? Firebase Analytics inicializado correctamente.");
                 } catch (e) {
-                    console.error("âŒ Error en Analytics", e);
+                    console.error("�? Error en Analytics", e);
                 }
             }
         });
     </script>
 
 
-    <!-- Carga de lÃ³gica -->
+    <!-- Carga de lógica -->
     <script src="app.js?v=2.4"></script>
     <script src="stories.js"></script>
 </body>
