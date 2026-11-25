@@ -792,6 +792,26 @@ function bhTrackPurchase(order, done) {
 
         let carrito = JSON.parse(localStorage.getItem('bh_cart') || '[]');
         let cuponActivo = JSON.parse(localStorage.getItem('bh_cupon_activo') || 'null');
+
+        // --- CUPONES PROMOCIONALES (multiuso, con fecha de vencimiento) ---
+        // A diferencia de los cupones de Firebase (un solo uso global), estos los puede usar
+        // cualquier cliente hasta la fecha de vencimiento (hora de Caracas, UTC-4).
+        const PROMO_CUPONES = {
+            HOUSEPARTY22: { descuento: 25, vence: '2026-11-22T23:59:59-04:00' }
+        };
+
+        // Si el cupón guardado ya venció, se elimina (no llama a actualizarInterfazCarrito para evitar recursión)
+        function limpiarCuponVencido() {
+            try {
+                if (cuponActivo && cuponActivo.vence && Date.now() > cuponActivo.vence) {
+                    cuponActivo = null;
+                    localStorage.removeItem('bh_cupon_activo');
+                    return true;
+                }
+            } catch (e) {}
+            return false;
+        }
+        limpiarCuponVencido();
         if (carrito.length > 0) actualizarInterfazCarrito();
 
         // --- SISTEMA DE CUPONES ---
@@ -807,6 +827,28 @@ function bhTrackPurchase(order, done) {
             // Verificar si ya hay un cupón activo
             if (cuponActivo) {
                 showToast('⚠️ Ya tienes un cupón aplicado. Elimínalo primero.', 'error');
+                return;
+            }
+
+            // Cupón promocional multiuso (no requiere sesión ni se marca como usado)
+            const promo = PROMO_CUPONES[codigo];
+            if (promo) {
+                const venceMs = Date.parse(promo.vence);
+                if (!venceMs || Date.now() > venceMs) {
+                    showToast('❌ Este cupón ya expiró', 'error');
+                    return;
+                }
+                const subtotalPromo = carrito.reduce((sum, item) => sum + item.subtotal, 0);
+                cuponActivo = {
+                    codigo,
+                    porcentaje: promo.descuento,
+                    monto: subtotalPromo * (promo.descuento / 100),
+                    vence: venceMs
+                };
+                localStorage.setItem('bh_cupon_activo', JSON.stringify(cuponActivo));
+                actualizarInterfazCarrito();
+                showToast('🎉 Cupón aplicado', 'success');
+                input.value = '';
                 return;
             }
 
@@ -1038,6 +1080,7 @@ function bhTrackPurchase(order, done) {
 
             // Recalcular descuento si hay cupón activo
             let totalConDescuento = total;
+            limpiarCuponVencido();
             if (cuponActivo) {
                 const nuevoMontoDescontado = total * (cuponActivo.porcentaje / 100);
                 cuponActivo.monto = nuevoMontoDescontado;
@@ -1823,6 +1866,8 @@ function bhTrackPurchase(order, done) {
                 mensaje += '\n------------------------------\n';
                 let totalConDescuento = totalPedido;
 
+                // Si un cupón promocional venció mientras el cliente tenía el carrito abierto, no se aplica
+                limpiarCuponVencido();
                 if (cuponActivo) {
                     const montoDescontado = totalPedido * (cuponActivo.porcentaje / 100);
                     totalConDescuento = totalPedido - montoDescontado;
